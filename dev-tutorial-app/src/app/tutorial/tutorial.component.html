@@ -1,0 +1,18 @@
+<button (click)="nextSlide()">Next</button>
+<button (click)="toggleEditMode()">Toggle EditMode</button>
+
+<div class="slideshow">
+  <app-slideshow #slide></app-slideshow>
+</div>
+<div class="terminal-box" *ngIf="!ready && !disabled">
+  <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+  <pre>Environnement en cours de creation...</pre>
+</div>
+<div class="terminal-box" *ngIf="!ready && disabled">
+  <mat-progress-bar [mode]="'buffer'" [color]="'accent'"></mat-progress-bar>
+  <pre>Terminal desactive pour cet environnement</pre>
+</div>
+<div class="terminal-box" *ngIf="ready">
+  <app-terminal #term [hidden]="editMode" id="terminal"></app-terminal>
+  <app-editor #editor *ngIf="editMode" [model]="model" (save)="onEditorSave($event)" (quit)="onEditorQuit()"></app-editor>
+</div>

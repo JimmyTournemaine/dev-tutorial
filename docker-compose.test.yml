@@ -1,0 +1,9 @@
+version: '3'
+services:
+  api:
+    image: dev-tutorial-api-test
+    container_name: dev-tutorial-api-test
+    build:
+      dockerfile: Dockerfile-test
+    environment:
+      - DEBUG=test:*,app:server,app:socket

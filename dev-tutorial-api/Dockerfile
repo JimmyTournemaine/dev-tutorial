@@ -1,0 +1,7 @@
+FROM node:latest
+WORKDIR /usr/src/app/api
+COPY package.json ./
+#COPY yarn.lock ./
+RUN yarn install
+EXPOSE 3000
+CMD ["yarn", "start"]

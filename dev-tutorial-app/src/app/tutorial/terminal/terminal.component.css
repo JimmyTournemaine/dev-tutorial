@@ -1,0 +1,9 @@
+@import "xterm";
+
+#term {
+  height: 100%;
+}
+
+.terminal.xterm {
+  height: 100%;
+}

@@ -1,0 +1,15 @@
+# MacOS
+.DS_Store
+
+# Logs
+*.log
+
+# Node
+dist/
+node_modules/
+
+# VSCode
+.editorconfig
+
+# CLI Tools
+/dev-tutorial-cli

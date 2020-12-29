@@ -1,0 +1,31 @@
+<div id="app-tutorials-panel">
+  <div id="search-input">
+    <mat-form-field id="search">
+      <mat-label>Search</mat-label>
+      <input matInput [matAutocomplete]="auto" placeholder="Ex. Git, Ansible">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let tuto of this.tutorials | async">
+          {{ tuto.name }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+
+  <mat-grid-list cols="{{ cols }}">
+    <mat-grid-tile *ngFor="let item of tutorials | async" class="panel-cards">
+      <mat-card class="panel-card">
+        <mat-card-header>
+          <div mat-card-avatar class="panel-card-header-image" [style.background]="'url(' + item.icon + ')'"></div>
+          <mat-card-title>{{ item.name }}</mat-card-title>
+          <mat-card-subtitle>{{ item.resume }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ item.description }}</p>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button (click)="startTutorial(item.slug)">Start!</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

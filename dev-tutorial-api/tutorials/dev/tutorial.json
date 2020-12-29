@@ -1,0 +1,24 @@
+{
+  "name": "Dev' Tutorial",
+  "resume": "Premiers pas sur Dev' Tutorial",
+  "slug": "dev",
+  "icon": "https://www.stickpng.com/assets/images/5847f981cef1014c0b5e48be.png",
+  "description": "Premiers pas sur Dev' Tutorial. Vous explique comment utiliser la plateforme et les fonctionnalites offertes par cette derniere.",
+  "slides": [
+    {
+      "src": "markdown/1-bienvenue.md",
+      "validators": [{
+        "input": {"cmd": "touch", "args": ["/test.txt$/"]},
+        "creates": {"path": "/root/test.txt", "type": "file"}
+      }]
+    },{
+      "src": "markdown/2-file-edition.md",
+      "validators": [{
+        "input": {"cmd": "edit"}
+      }, {
+        "creates": {"path": "/root/test.txt", "type": "file", "minLength": 10}
+      }]
+      
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "name",
+        "resume",
+        "slug",
+        "slides"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minimum": 3
+        },
+        "resume": {
+            "type": "string",
+            "minimum": 10
+        },
+        "slug": {
+            "type": "string",
+            "pattern": "^[a-z-]{3,}$"
+        },
+        "icon": {
+            "type": "string",
+            "format": "uri"
+        },
+        "description": {
+            "type": "string",
+            "minimum": 30
+        },
+        "slides": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "src",
+                    "validators"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "src": {
+                        "type": "string",
+                        "format": "uri-reference"
+                    },
+                    "validators": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/validatorSet"
+                        },
+                        "minItems": 1
+                    }
+                }
+            }
+        }
+    },
+    "additionalProperties": false,
+    "definitions": {
+        "validatorSet": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+                "prevalidate": {
+                    "$ref": "#/definitions/prevalidation"
+                },
+                "input": {
+                    "$ref": "#/definitions/prevalidation"
+                },
+                "rc": {
+                    "$ref": "#/definitions/exitCode"
+                },
+                "exitCode": {
+                    "$ref": "#/definitions/exitCode"
+                },
+                "creates": {
+                    "$ref": "#/definitions/creates"
+                }
+            }
+        },
+        "prevalidation": {
+            "type": "object",
+            "required": [
+                "cmd"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "cmd": {
+                    "type": "string"
+                }
+            }
+        },
+        "exitCode": {
+            "type": "object",
+            "required": [
+                "exitCode"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "exitCode": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "creates": {
+            "type": "object",
+            "required": [
+                "type",
+                "path"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "file",
+                        "directory",
+                        "absent"
+                    ]
+                },
+                "path": {
+                    "type": "string",
+                    "format": "uri-reference"
+                }
+            }
+        }
+    }
+}

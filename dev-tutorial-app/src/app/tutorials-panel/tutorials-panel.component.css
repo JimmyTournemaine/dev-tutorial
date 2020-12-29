@@ -1,0 +1,21 @@
+#app-tutorials-panel {
+  margin: 10px;
+}
+
+#app-tutorials-panel #search-input {
+  width: 80%;
+  margin: auto;
+}
+
+#app-tutorials-panel #search-input #search {
+  width: 100%;
+}
+
+#app-tutorials-panel .panel-card {
+  margin: 10px;
+}
+
+#app-tutorials-panel .panel-card .panel-card-header-image {
+  background-size: cover;
+}
+

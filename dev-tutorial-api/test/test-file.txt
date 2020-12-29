@@ -1,0 +1,1 @@
+This file should be extracted in a container during a test
