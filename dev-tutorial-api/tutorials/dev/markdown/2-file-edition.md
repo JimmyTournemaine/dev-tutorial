@@ -15,3 +15,6 @@ Les *hooks* sont des commandes spéciales qui ne sont pas envoyé au *shell* mai
 Ainsi, pour éditer un fichier, il suffit d'exécuter `edit test.txt`.
 
 Edites le fichier `test.txt` créé précedemment puis entre quelques lignes, puis effectue un clic-droit puis "Sauvegarder et Quitter" pour valider les modifications apportées.
+
+La commande `cat` permet d'afficher l'integralité du contenu d'un fichier.
+Lance la commande pour vérifier que le fichier a bien été transféré et terminer le tutoriel.
