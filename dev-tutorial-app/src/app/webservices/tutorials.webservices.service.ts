@@ -9,6 +9,7 @@ import { Tutorial } from '../tutorial/tutorial';
   providedIn: 'root'
 })
 export class TutorialsWebServices {
+  
 
   constructor(private http: HttpClient) {
 
@@ -23,6 +24,14 @@ export class TutorialsWebServices {
    */
   findAll(): Observable<Tutorial[]> {
     return this.http.get<Tutorial[]>(this.endpoint('/tuto'));
+  }
+
+  /**
+   * Search for tutorials
+   * @param search search
+   */
+  search(search: {search: string}): Observable<Tutorial[]> {
+    return this.http.post<Tutorial[]>(this.endpoint('/tuto/search'), search);
   }
 
   /**

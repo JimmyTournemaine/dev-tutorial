@@ -1,14 +1,11 @@
 <div id="app-tutorials-panel">
   <div id="search-input">
-    <mat-form-field id="search">
-      <mat-label>Search</mat-label>
-      <input matInput [matAutocomplete]="auto" placeholder="Ex. Git, Ansible">
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let tuto of this.tutorials | async">
-          {{ tuto.name }}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+    <form [formGroup]="searchForm">
+      <mat-form-field id="search">
+        <mat-label>Search</mat-label>
+        <input matInput formControlName="searchInput" placeholder="Ex. Git, Ansible">
+      </mat-form-field>
+    </form>
   </div>
 
   <mat-grid-list cols="{{ cols }}">

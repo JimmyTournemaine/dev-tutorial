@@ -18,7 +18,6 @@ import { MatCardModule } from '@angular/material/card';
 import { TutorialsPanelComponent } from './tutorials-panel/tutorials-panel.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { MarkdownModule } from 'ngx-markdown';
 import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
@@ -26,7 +25,6 @@ import { TerminalComponent } from './tutorial/terminal/terminal.component';
 import { EditorComponent } from './tutorial/editor/editor.component';
 import { SlideshowComponent } from './tutorial/slideshow/slideshow.component';
 import { FormsModule } from '@angular/forms';
-import { TestComponent } from './test/test.component';
 
 const monacoConfig: NgxMonacoEditorConfig = {
   defaultOptions: { theme: 'vs-dark' },
@@ -41,7 +39,6 @@ const monacoConfig: NgxMonacoEditorConfig = {
     TerminalComponent,
     EditorComponent,
     SlideshowComponent,
-    TestComponent,
   ],
   imports: [
     BrowserModule,
@@ -59,7 +56,6 @@ const monacoConfig: NgxMonacoEditorConfig = {
     MatInputModule,
     MatCardModule,
     MatGridListModule,
-    MatAutocompleteModule,
     MatProgressBarModule,
     ReactiveFormsModule,
     FormsModule,

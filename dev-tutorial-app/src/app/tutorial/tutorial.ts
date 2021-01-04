@@ -1,7 +1,7 @@
 /**
  * A complete tutorial
  */
-export class Tutorial {
+export interface Tutorial {
   /* The tutorial's name */
   name: string;
 
@@ -18,9 +18,5 @@ export class Tutorial {
   description: string;
 
   /* A Dockerfile to install tutorial requirements */
-  dockerfile: string = 'alpine:latest';
-}
-
-export class TutorialSection {
-
+  dockerfile: string;
 }

@@ -1,9 +1,13 @@
 version: '3'
 services:
   api:
-    image: dev-tutorial-api-test
-    container_name: dev-tutorial-api-test
-    build:
-      dockerfile: Dockerfile-test
+    command: yarn test
     environment:
-      - DEBUG=test:*,app:server,app:socket
+      - DEBUG=app:docker,app:access
+#      - CHOMA_SEED=ogWYLufMQK
+  app:
+    image: dev-tutorial-app-test
+    container_name: dev-tutorial-app-test
+    build:
+      dockerfile: Dockerfile-Test
+    command: yarn test

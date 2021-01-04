@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import * as mongooseFuzzy from 'mongoose-fuzzy-searching';
 
 /**
  * Slide model type
@@ -12,18 +13,19 @@ interface ISlideDescriptor {
  * Tutorial model type (for document creation)
  */
 interface ITutorialDescriptor {
-    name: string;
-    resume: string;
-    slug: string;
-    description: string;
-    icon?: string;
-    slides: ISlideDescriptor[];
+  name: string;
+  resume: string;
+  slug: string;
+  description: string;
+  icon?: string;
+  slides: ISlideDescriptor[];
 }
 
 /**
  * TutorialDescriptor Document type (returned by MongoDB)
  */
 interface TutorialDescriptorDocument extends ITutorialDescriptor, mongoose.Document {
+
 }
 
 /**
@@ -31,6 +33,9 @@ interface TutorialDescriptorDocument extends ITutorialDescriptor, mongoose.Docum
  */
 interface TutorialDescriptorModelInterface extends mongoose.Model<TutorialDescriptorDocument> {
   build(attr: ITutorialDescriptor): TutorialDescriptorDocument;
+
+  // Provided by mongoose-fuzzy-searching
+  fuzzySearch(search: string, callback?: (err: Error, tutos: TutorialDescriptorDocument[]) => void): TutorialDescriptorDocument[];
 }
 
 const slideSchema = new mongoose.Schema({
@@ -73,7 +78,8 @@ const tutorialSchema = new mongoose.Schema({
 tutorialSchema.statics.build = (attr: ITutorialDescriptor) => {
   return new TutorialDescriptor(attr);
 };
+tutorialSchema.plugin(mongooseFuzzy, { fields: ['name', 'resume'] });
 
 const TutorialDescriptor = mongoose.model<any, TutorialDescriptorModelInterface>('TutorialDescriptor', tutorialSchema);
 
-export {TutorialDescriptor, TutorialDescriptorDocument};
+export { TutorialDescriptor, TutorialDescriptorDocument };

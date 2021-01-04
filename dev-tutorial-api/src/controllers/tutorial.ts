@@ -2,7 +2,6 @@
 import { Request, Response } from 'express';
 import * as fs from 'fs';
 import { PassThrough } from 'stream';
-import { TutorialDescriptor } from '../models/tutorial';
 import { DockerService } from '../services/docker/docker';
 import { TutorialService } from '../services/tutorial/tutorial';
 
@@ -17,12 +16,32 @@ export class TutorialController {
    * @param {Response} res The response
    */
   public static index(req: Request, res: Response): void {
-    TutorialService.getInstance().getTutorials((err, tutorials) => {
+    TutorialService.getInstance().getTutorials(undefined, (err, tutorials) => {
       if (err) {
         console.error(err);
         return res.status(500).send(err);
       }
       res.json(tutorials);
+    });
+  }
+
+  /**
+   * Search tutorials
+   * @param {Request} req The request
+   * @param {Response} res The response
+   */
+  public static search(req: Request, res: Response): any {
+    if(req.body.search === undefined) {
+      return res.status(400).json({message: 'Malformed search entity: ' + req.body.toString()});
+    }
+
+    TutorialService.getInstance().getTutorials(req.body.search, (err, tutorials) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+      }
+
+      return res.json(tutorials);
     });
   }
 
@@ -36,7 +55,8 @@ export class TutorialController {
    */
   public static async content(req: Request, res: Response): Promise<Response<any>> {
     const slug = req.params['slug'];
-    const tutorial = await TutorialDescriptor.findOne({ slug });
+    const tutoService = TutorialService.getInstance();
+    const tutorial = await tutoService.getTutorial(slug);
 
     if (!tutorial) {
       return res.status(404).send(`Tutorial '${slug}' not found.`);
@@ -60,7 +80,8 @@ export class TutorialController {
     const slug = req.params.slug;
     const id = parseInt(req.params.id);
 
-    const tutorial = await TutorialDescriptor.findOne({ slug });
+    const tutoService = TutorialService.getInstance();
+    const tutorial = await tutoService.getTutorial(slug);
 
     if (!tutorial) {
       return res.status(404).json({ error: `Tutorial '${slug}' not found` });
@@ -84,7 +105,8 @@ export class TutorialController {
     const slug = req.params.slug;
     const path = req.query.path;
 
-    const tutorial = await TutorialDescriptor.findOne({ slug });
+    const tutoService = TutorialService.getInstance();
+    const tutorial = await tutoService.getTutorial(slug);
     if (!tutorial) {
       return res.status(404).json({ error: `Tutorial '${slug}' not found` });
     }
@@ -116,7 +138,8 @@ export class TutorialController {
   public static async start(req: Request, res: Response) {
     const slug = req.params['slug'];
     const docker = DockerService.getInstance();
-    const tutorial = await TutorialDescriptor.findOne({ slug });
+    const tutoService = TutorialService.getInstance();
+    const tutorial = await tutoService.getTutorial(slug);
 
     if (!tutorial) {
       return res.status(404).json({ message: `Tutorial '${slug}' not found.` });
@@ -139,7 +162,8 @@ export class TutorialController {
   public static async status(req: Request, res: Response) {
     const slug = req.params['slug'];
     const docker = DockerService.getInstance();
-    const tutorial = await TutorialDescriptor.findOne({ slug });
+    const tutoService = TutorialService.getInstance();
+    const tutorial = await tutoService.getTutorial(slug);
 
     if (!tutorial) {
       res.status(404).send(`Tutorial '${slug}' not found.`);
@@ -158,7 +182,8 @@ export class TutorialController {
   public static async stop(req: Request, res: Response) {
     const slug = req.params['slug'];
     const docker = DockerService.getInstance();
-    const tutorial = await TutorialDescriptor.findOne({ slug });
+    const tutoService = TutorialService.getInstance();
+    const tutorial = await tutoService.getTutorial(slug);
 
     if (!tutorial) {
       return res.status(404).send(`Tutorial '${slug}' not found.`);

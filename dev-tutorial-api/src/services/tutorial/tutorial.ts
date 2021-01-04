@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {TutorialDescriptor, TutorialDescriptorDocument} from '../../models/tutorial';
+import { TutorialDescriptor, TutorialDescriptorDocument } from '../../models/tutorial';
 
 /**
  * Socket service to use terminal
@@ -26,7 +26,7 @@ export class TutorialService {
     await TutorialDescriptor.deleteMany({});
 
     // Load filesystem descriptors to load them in database
-    const files = fs.readdirSync('tutorials', {withFileTypes: true});
+    const files = fs.readdirSync('tutorials', { withFileTypes: true });
     const tutoDescSaved = [];
     for (const dir of files) {
       if (dir.isDirectory()) {
@@ -36,16 +36,16 @@ export class TutorialService {
       }
     }
 
-    return Promise.all(tutoDescSaved).then(() => {});
+    return Promise.all(tutoDescSaved).then(() => { });
   }
 
   /**
    * Initialize the service
    * @return {TutorialService} The initializing service.
    */
-  public static init(): TutorialService {
+  public static init(): Promise<void> {
     this.instance = new TutorialService();
-    return this.instance;
+    return this.instance.loaded;
   }
 
   /**
@@ -64,13 +64,21 @@ export class TutorialService {
    * @param {Callback} callback
    * @return {Promise} promise
    */
-  public async getTutorials(callback?: (err: NodeJS.ErrnoException | null, tutorials: TutorialDescriptorDocument[]) => void): Promise<TutorialDescriptorDocument[]> {
+  public async getTutorials(search?: string, callback?: (err: NodeJS.ErrnoException | null, tutorials: TutorialDescriptorDocument[]) => void): Promise<TutorialDescriptorDocument[]> {
     return this.loaded.then(() => {
-      return TutorialDescriptor.find({}, (err, tutos) => {
-        if (callback) {
-          callback(err, tutos);
-        }
-      });
+      if (search) {
+        return TutorialDescriptor.fuzzySearch(search, (err, tutos) => {
+          if (callback) {
+            callback(err, tutos);
+          }
+        });
+      } else {
+        return TutorialDescriptor.find({}, (err, tutos) => {
+          if (callback) {
+            callback(err, tutos);
+          }
+        });
+      }
     });
   }
 
@@ -82,7 +90,7 @@ export class TutorialService {
    */
   public async getTutorial(tutoId: string, callback?: (err: NodeJS.ErrnoException | null, tutorial: TutorialDescriptorDocument) => void): Promise<TutorialDescriptorDocument> {
     return this.loaded.then(() => {
-      return TutorialDescriptor.findOne({'slug': tutoId}, (err, tuto) => {
+      return TutorialDescriptor.findOne({ 'slug': tutoId }, (err, tuto) => {
         if (callback) {
           callback(err, tuto);
         }

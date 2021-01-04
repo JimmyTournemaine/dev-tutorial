@@ -3,10 +3,9 @@ import { app } from './app';
 import { agent as request } from 'supertest';
 import * as fs from 'fs';
 import { DemuxStream, DockerService } from './services/docker/docker';
-import { fail } from 'assert';
 
 describe('REST API Tests', function () {
-
+  
   it('should get 404 on non existing path', async function () {
     const res = await request(app).get('/');
     expect(res.status).to.equal(404);
@@ -19,6 +18,23 @@ describe('REST API Tests', function () {
     expect(res.body).not.to.be.empty;
     expect(res.body).to.be.an('Array');
     expect(res.body).to.have.lengthOf(2);
+
+    res.body.forEach((tuto: any) => {
+      expect(tuto).to.have.property('name');
+      expect(tuto).to.have.property('resume');
+      expect(tuto).to.have.property('slug');
+      expect(tuto).to.have.property('description');
+      expect(tuto).to.have.property('slides');
+    });
+  });
+
+  it('should list matching tutorials', async function () {
+    const res = await request(app).post('/tuto/search').send({ search: 'dev' });
+
+    expect(res.status).to.equal(200);
+    expect(res.body).not.to.be.empty;
+    expect(res.body).to.be.an('Array');
+    expect(res.body).to.have.lengthOf(1);
 
     res.body.forEach((tuto: any) => {
       expect(tuto).to.have.property('name');
@@ -82,7 +98,7 @@ describe('REST API Tests', function () {
     expect(status.status).to.equal(200);
 
     // When the container is ready, status request should send 201 (Created)
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       // Wait for 201 Created
       const interval = setInterval(async () => {
         const status = await request(app).get(start.headers.location);
@@ -100,6 +116,8 @@ describe('REST API Tests', function () {
     });
   });
   it('should write a file in a docker container', function (done) {
+    this.timeout(5000);
+
     request(app)
       .post('/tuto/dev/write?path=' + encodeURI('/root/test-write-request.txt'))
       .set('content-type', 'application/octet-stream')

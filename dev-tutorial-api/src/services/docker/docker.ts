@@ -124,12 +124,12 @@ class DockerAttachedHandler extends EventEmitter {
   }
 
   emit(event: string | symbol, ...args: any[]): boolean {
-    logStream('emitting:', event, ...args);
+    //logStream('emitting:', event, ...args);
     return super.emit(event, ...args);
   }
 
   write(data: string) {
-    logStream('receiving:', 'data', data);
+    //logStream('receiving:', 'data', data.replace(/[\x00-\x1F\x7F-\x9F]/g, ""));
     this.stream.write(data);
   }
 
