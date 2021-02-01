@@ -1,5 +1,15 @@
 # Getting Started
 
+## Requirements
+
+* Docker Engine API >= 1.40
+
+For MacOS: 
+* Uncomment "socat" part in docker-compose.yml and "socat" dependencies in the other services.
+* Others: make sure that the Docker Engine API is authorized using the setting: "Exposing Daemon on tcp://localhost:2375 without TLS".
+
+## Build and run
+
 Using a shell which handle `declare -A`  (zsh, bash>=4, ...) :
 ```bash
 # Build and start

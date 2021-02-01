@@ -1,13 +1,14 @@
 version: '3'
 services:
-  socat:
-    container_name: tcp-connect
-    image: alpine/socat
-    ports:
-      - "2375:2375"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
+  # Darwin (MacOS) only
+  # socat:
+  #   container_name: tcp-connect
+  #   image: alpine/socat
+  #   ports:
+  #     - "2375:2375"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
   db:
     container_name: mongo
     image: mongo
@@ -30,7 +31,7 @@ services:
        - /usr/src/app/api/node_modules
     tty: true
     depends_on:
-      - socat
+      # - socat
       - db
   app:
     container_name: dev-tutorial-app
