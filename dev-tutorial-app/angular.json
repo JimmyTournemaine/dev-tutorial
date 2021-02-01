@@ -35,7 +35,7 @@
             ],
             "scripts": [
               "node_modules/marked/lib/marked.js",
-              "node_modules/prismjs/prism.js",
+              "node_modules/prismjs/prism.js"
             ]
           },
           "configurations": {
@@ -72,7 +72,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "dev-tutorial-app:build"
+            "browserTarget": "dev-tutorial-app:build",
+            "proxyConfig": "src/proxy.conf.json"
           },
           "configurations": {
             "production": {

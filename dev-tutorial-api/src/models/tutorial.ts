@@ -19,6 +19,7 @@ interface ITutorialDescriptor {
   description: string;
   icon?: string;
   slides: ISlideDescriptor[];
+  dirname: string;
 }
 
 /**
@@ -74,6 +75,10 @@ const tutorialSchema = new mongoose.Schema({
   slides: {
     type: [slideSchema],
   },
+  dirname: {
+    type: String,
+    required: true,
+  }
 });
 tutorialSchema.statics.build = (attr: ITutorialDescriptor) => {
   return new TutorialDescriptor(attr);

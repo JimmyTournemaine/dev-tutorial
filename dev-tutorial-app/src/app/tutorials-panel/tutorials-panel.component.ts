@@ -13,12 +13,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class TutorialsPanelComponent implements OnInit, AfterViewInit {
 
-  @Input()
-  cols: number;
-
-  @Input('max-cards')
-  maxCards: number;
-
   tutorials: Observable<Tutorial[]>;
   searchForm: FormGroup;
 

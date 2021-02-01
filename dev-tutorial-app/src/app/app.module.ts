@@ -13,22 +13,43 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { TutorialComponent } from './tutorial/tutorial.component';
+import { TutorialCompletedDialogComponent, TutorialComponent } from './tutorial/tutorial.component';
 import { MatCardModule } from '@angular/material/card';
 import { TutorialsPanelComponent } from './tutorials-panel/tutorials-panel.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { MarkdownModule } from 'ngx-markdown';
+import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
 import { TerminalComponent } from './tutorial/terminal/terminal.component';
 import { EditorComponent } from './tutorial/editor/editor.component';
 import { SlideshowComponent } from './tutorial/slideshow/slideshow.component';
 import { FormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const monacoConfig: NgxMonacoEditorConfig = {
   defaultOptions: { theme: 'vs-dark' },
 };
+
+function markedOptionsFactory(): MarkedOptions {
+  const renderer = new MarkedRenderer();
+  const linkRenderer = renderer.link;
+
+  renderer.link = (href, title, text) => {
+    const html = linkRenderer.call(renderer, href, title, text);
+    return html.replace(/^<a /, '<a role="link" tabindex="0" target="_blank" rel="nofollow noopener noreferrer" ');
+  };
+
+  return {
+    renderer,
+    gfm: true,
+    breaks: false,
+    pedantic: false,
+    smartLists: true,
+    smartypants: false,
+  };
+}
+
 
 @NgModule({
   declarations: [
@@ -39,11 +60,17 @@ const monacoConfig: NgxMonacoEditorConfig = {
     TerminalComponent,
     EditorComponent,
     SlideshowComponent,
+    TutorialCompletedDialogComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    MarkdownModule.forRoot({ loader: HttpClient }),
+    MarkdownModule.forRoot({
+      loader: HttpClient, markedOptions: {
+        provide: MarkedOptions,
+        useFactory: markedOptionsFactory
+      }
+    }),
     AppRoutingModule,
     BrowserAnimationsModule,
     LayoutModule,
@@ -57,6 +84,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
     MatCardModule,
     MatGridListModule,
     MatProgressBarModule,
+    MatDialogModule,
     ReactiveFormsModule,
     FormsModule,
     MonacoEditorModule.forRoot(monacoConfig),

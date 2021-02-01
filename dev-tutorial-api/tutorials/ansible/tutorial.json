@@ -1,0 +1,31 @@
+{
+  "name": "Ansible",
+  "resume": "Configuration de deploiements automatises",
+  "slug": "ansible",
+  "icon": "public/ansible_logo.png",
+  "description": "Ansible est une plateforme de gestion de deploiements de serveurs en multinoeuds. Il permet l'execution de taches ad-hoc et la gestion de configuration.",
+  "slides": [
+    {
+      "src": "markdown/1-introduction.md",
+      "validators": [{
+        "input": {"cmd": "ansible", "args": ["-m", "ping"]},
+        "rc": {"exitCode": 0}
+      },{
+        "input": {"cmd": "ansible", "args": ["-m", "ping", "-a", "data=pang"]},
+        "rc": {"exitCode": 0}
+      }]
+    },{
+      "src": "markdown/2-playbooks.md",
+      "validators": [{
+        "input": {"cmd": "ansible-galaxy", "args":["role", "init"]},
+        "creates": {"path": "/etc/ansible/roles/tomcat", "type": "directory"}
+      }]
+    },{
+      "src": "markdown/3-roles.md",
+      "validators": [{
+        "input": {"cmd": "ansible-galaxy", "args":["role", "init"]},
+        "creates": {"path": "/etc/ansible/roles/tomcat", "type": "directory"}
+      }]
+    }
+  ]
+}

@@ -1,9 +1,11 @@
 <button (click)="nextSlide()">Next</button>
+<button (click)="onTutorialCompleted()">Completed</button>
 <button (click)="toggleEditMode()">Toggle EditMode</button>
 
-<div class="slideshow">
+<div class="slideshow" #slideshow>
   <app-slideshow #slide></app-slideshow>
 </div>
+
 <div class="terminal-box" *ngIf="!ready && !disabled">
   <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
   <pre>Environnement en cours de creation...</pre>

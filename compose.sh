@@ -20,6 +20,11 @@ if [ -f "docker-compose.$ENV.yml" ]; then
     docker-compose -f docker-compose.yml -f docker-compose.$ENV.yml up $(echo $services[$ENV] | xargs)
   fi
 else
-docker-compose config
-  docker-compose $CMD
+  docker-compose config
+  if [ "$CMD" = "build" ] || [ "$CMD" = "build-up" ]; then
+    docker-compose build --no-cache
+  fi
+  if [ "$CMD" = "up" ] || [ "$CMD" = "build-up" ]; then
+    docker-compose up
+  fi
 fi

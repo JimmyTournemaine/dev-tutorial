@@ -2,7 +2,7 @@
   "name": "Dev' Tutorial",
   "resume": "Premiers pas sur Dev' Tutorial",
   "slug": "dev",
-  "icon": "https://www.stickpng.com/assets/images/5847f981cef1014c0b5e48be.png",
+  "icon": "public/dev_logo.png",
   "description": "Premiers pas sur Dev' Tutorial. Vous explique comment utiliser la plateforme et les fonctionnalites offertes par cette derniere.",
   "slides": [
     {

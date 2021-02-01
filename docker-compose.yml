@@ -22,7 +22,7 @@ services:
       context: ./dev-tutorial-api
       dockerfile: Dockerfile
     environment:
-      - DEBUG=app:access
+      - DEBUG=app:server,app:access,app:socket
     ports:
       - "3000:3000"
     volumes:

@@ -44,7 +44,7 @@ export class HookFactory {
       regexp: /^edit (\/?(?:[^/ ]\/?)+)/,
       cancel: true,
       action: (edit: RegExpExecArray): Promise<any> => {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
           const filepath = path.join(service.wd, edit[1]);
 
           // Send filecontent threw the socket

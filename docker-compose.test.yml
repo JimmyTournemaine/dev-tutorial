@@ -3,8 +3,9 @@ services:
   api:
     command: yarn test
     environment:
-      - DEBUG=app:docker,app:access
-#      - CHOMA_SEED=ogWYLufMQK
+      - DEV_API_EXTRA_TUTORIALS=test/extra-tuto test/extra-tuto2
+      - DEBUG=app:access,app:docker,test:*
+      #- CHOMA_SEED=CHOMA_SEED=coc1gRx0G0
   app:
     image: dev-tutorial-app-test
     container_name: dev-tutorial-app-test

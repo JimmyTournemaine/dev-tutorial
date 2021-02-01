@@ -31,8 +31,8 @@ export class TutorialController {
    * @param {Response} res The response
    */
   public static search(req: Request, res: Response): any {
-    if(req.body.search === undefined) {
-      return res.status(400).json({message: 'Malformed search entity: ' + req.body.toString()});
+    if (req.body.search === undefined) {
+      return res.status(400).json({ message: 'Malformed search entity: ' + req.body.toString() });
     }
 
     TutorialService.getInstance().getTutorials(req.body.search, (err, tutorials) => {
@@ -68,6 +68,19 @@ export class TutorialController {
     }
 
     res.json(slides);
+  }
+
+  public static async static(req: Request, res: Response) {
+    const slug = req.params['slug'];
+    const path = req.params['path'];
+    const tutoService = TutorialService.getInstance();
+    const tutorial = await tutoService.getTutorial(slug);
+
+    if (!tutorial) {
+      return res.status(404).send(`Tutorial '${slug}' not found.`);
+    }
+
+    res.sendFile(path, { root: tutorial.dirname + '/public/' });
   }
 
   /**
@@ -149,7 +162,7 @@ export class TutorialController {
 
     res
       .header('Access-Control-Expose-Headers', 'Location')
-      .header('Location', `/tuto/${slug}/status`)
+      .header('Location', `/api/tuto/${slug}/status`)
       .status(202)
       .json({ 'message': 'Accepted' });
   }

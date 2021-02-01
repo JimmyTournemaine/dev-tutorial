@@ -1,0 +1,8 @@
+FROM node:10 AS compile-image
+WORKDIR /usr/src/app/app-ui
+COPY . ./
+RUN yarn install
+RUN yarn build --prod
+
+FROM nginx
+COPY --from=compile-image /usr/src/app/app-ui/dist/dev-tutorial-app /usr/share/nginx/html

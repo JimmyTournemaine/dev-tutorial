@@ -1,3 +1,20 @@
+# Getting Started
+
+Using a shell which handle `declare -A`  (zsh, bash>=4, ...) :
+```bash
+# Build and start
+./compose.sh build-up
+
+# Only build or start
+./compose.sh build
+./compose.sh up
+
+# For testing purpose
+./compose.sh build-up test
+./compose.sh build test
+./compose.sh up test
+```
+
 # Cheatsheet
 
 Retrieve `node_modules` generated in the docker containers :

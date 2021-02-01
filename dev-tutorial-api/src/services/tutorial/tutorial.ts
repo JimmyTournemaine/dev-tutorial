@@ -6,45 +6,65 @@ import { TutorialDescriptor, TutorialDescriptorDocument } from '../../models/tut
  */
 export class TutorialService {
 
+  private readonly DEFAULT_DIR = 'tutorials';
+
   static instance: TutorialService;
+
   private loaded: Promise<void>;
+  private directories: string[] = [this.DEFAULT_DIR];
 
   /**
    * Trigger the filesystem loading
    */
-  private constructor() {
-    this.loaded = this.load();
+  private constructor(extraTutorialDirs: string[] = []) {
+    this.loaded = this.load(extraTutorialDirs);
+    this.directories.push(...extraTutorialDirs);
   }
 
   /**
    * Load filesystem information to mongodb database.
    * @return {Promise} A promise of all tutorials are loaded in the database.
    */
-  private async load(): Promise<void> {
+  private async load(extraTutorialDirs: string[]): Promise<void> {
 
     // Clean data
     await TutorialDescriptor.deleteMany({});
 
     // Load filesystem descriptors to load them in database
-    const files = fs.readdirSync('tutorials', { withFileTypes: true });
-    const tutoDescSaved = [];
-    for (const dir of files) {
-      if (dir.isDirectory()) {
-        const content = fs.readFileSync(`tutorials/${dir.name}/tutorial.json`);
-        const descriptors = JSON.parse(content.toString());
-        tutoDescSaved.push(TutorialDescriptor.build(descriptors).save());
-      }
+    let dir = 'tutorials';
+    const tutoDescSaved = this.loadFrom(dir);
+
+    // Load extra tutorials
+    for (dir of extraTutorialDirs) {
+      tutoDescSaved.push(...this.loadFrom(dir));
     }
 
     return Promise.all(tutoDescSaved).then(() => { });
+  }
+
+  private loadFrom(basedir: string) {
+    const files = fs.readdirSync(basedir, { withFileTypes: true });
+    const tutoDescSaved = [];
+    for (const dir of files) {
+      if (dir.isDirectory()) {
+        const content = fs.readFileSync(`${basedir}/${dir.name}/tutorial.json`);
+        let descriptors = JSON.parse(content.toString());
+        descriptors.dirname = `${basedir}/${dir.name}`;
+        if(descriptors.icon.startsWith('public/')) {
+          descriptors.icon = `/api/tuto/${descriptors.slug}/static/${descriptors.icon.slice(7)}`;
+        }
+        tutoDescSaved.push(TutorialDescriptor.build(descriptors).save());
+      }
+    }
+    return tutoDescSaved;
   }
 
   /**
    * Initialize the service
    * @return {TutorialService} The initializing service.
    */
-  public static init(): Promise<void> {
-    this.instance = new TutorialService();
+  public static init(...extraTutorialDirs: string[]): Promise<void> {
+    this.instance = new TutorialService(extraTutorialDirs);
     return this.instance.loaded;
   }
 
@@ -95,6 +115,12 @@ export class TutorialService {
           callback(err, tuto);
         }
       });
+    });
+  }
+
+  public async listDirectories(): Promise<string[]> {
+    return this.loaded.then(() => {
+      return this.directories;
     });
   }
 }

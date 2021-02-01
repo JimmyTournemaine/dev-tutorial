@@ -315,13 +315,13 @@ abstract class DockerExecValidator<O extends DockerExecValidatorOptions> extends
       const buffers = [];
       stream.onErr((chunk) => console.error('exec err \'%s\'', chunk));
       stream.onOut((chunk) => { buffers.push(chunk); });
-      stream.onClose(() => { // FIXME async is needed ???
+      stream.onClose(() => {
         const stdout = Buffer.concat(buffers).toString();
         resolve(this.isStdoutValid(stdout.trim()));
       });
     });
   }
-  protected abstract async isStdoutValid(stdout: string): Promise<boolean>;
+  protected abstract isStdoutValid(stdout: string): Promise<boolean>;
 }
 
 interface CreatesFileValidatorOptions {

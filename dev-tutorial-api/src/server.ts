@@ -74,11 +74,9 @@ function onError(error: any) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
       process.exit(1);
-      break;
     case 'EADDRINUSE':
       console.error(bind + ' is already in use');
       process.exit(1);
-      break;
     default:
       throw error;
   }
@@ -102,7 +100,6 @@ function onIOConnection(sock: Socket) {
   SocketManager.getInstance().socket(sock).service();
 
   sock.on('disconnect', (reason) => logger('socket %s disconnected', sock.id, reason));
-  sock.on('reconnect_attempt', () => logger('socket %s try to reconnect', sock.id));
 }
 
 export { server };

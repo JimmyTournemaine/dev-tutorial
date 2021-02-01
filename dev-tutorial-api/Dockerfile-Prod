@@ -1,0 +1,11 @@
+FROM node:latest AS compile-image
+WORKDIR /usr/src/app/api
+COPY . ./
+RUN yarn install
+RUN yarn build
+
+FROM node:latest
+ENV NODE_ENV=production
+COPY --from=compile-image /usr/src/app/api/dist /usr/src/app/api/dist
+EXPOSE 3000
+CMD ["yarn", "startup"]

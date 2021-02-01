@@ -5,19 +5,24 @@ import * as fs from 'fs';
 import { DemuxStream, DockerService } from './services/docker/docker';
 
 describe('REST API Tests', function () {
-  
+
   it('should get 404 on non existing path', async function () {
-    const res = await request(app).get('/');
+    const res = await request(app).get('/api');
     expect(res.status).to.equal(404);
   });
 
+  it('should get a public asset from a tutorial', async function () {
+    const res = await request(app).get(`/api/tuto/dev/static/icon.png`);
+    expect(res.status).to.equal(200);
+  });
+
   it('should list all tutorials', async function () {
-    const res = await request(app).get('/tuto');
+    const res = await request(app).get('/api/tuto');
 
     expect(res.status).to.equal(200);
     expect(res.body).not.to.be.empty;
     expect(res.body).to.be.an('Array');
-    expect(res.body).to.have.lengthOf(2);
+    expect(res.body).to.have.lengthOf(9);
 
     res.body.forEach((tuto: any) => {
       expect(tuto).to.have.property('name');
@@ -29,12 +34,12 @@ describe('REST API Tests', function () {
   });
 
   it('should list matching tutorials', async function () {
-    const res = await request(app).post('/tuto/search').send({ search: 'dev' });
+    const res = await request(app).post('/api/tuto/search').send({ search: 'dev' });
 
     expect(res.status).to.equal(200);
     expect(res.body).not.to.be.empty;
     expect(res.body).to.be.an('Array');
-    expect(res.body).to.have.lengthOf(1);
+    expect(res.body).to.have.lengthOf(8);
 
     res.body.forEach((tuto: any) => {
       expect(tuto).to.have.property('name');
@@ -46,7 +51,7 @@ describe('REST API Tests', function () {
   });
 
   it('should get a tutorial slides content', async function () {
-    const res = await request(app).get('/tuto/dev');
+    const res = await request(app).get('/api/tuto/dev');
 
     expect(res.ok);
     expect(res.body).not.to.be.empty;
@@ -58,13 +63,13 @@ describe('REST API Tests', function () {
   });
 
   it('should respond 404 on unknown tutorial', async function () {
-    const res = await request(app).get('/tuto/not-exists');
+    const res = await request(app).get('/api/tuto/not-exists');
 
     expect(res.status).to.equal(404);
   });
 
   it('should get a tutorial slide content', async function () {
-    const res = await request(app).get('/tuto/dev/slides/1');
+    const res = await request(app).get('/api/tuto/dev/slides/1');
 
     expect(res.ok);
     expect(res.text).not.to.be.empty;
@@ -72,13 +77,13 @@ describe('REST API Tests', function () {
   });
 
   it('should get 404 on unknown slide id of a tutorial', async function () {
-    const res = await request(app).get('/tuto/dev/slides/3');
+    const res = await request(app).get('/api/tuto/dev/slides/3');
 
     expect(res.status).to.equal(404);
   });
 
   it('should respond 404 on unknown tutorial', async function () {
-    const res = await request(app).get('/tuto/not-exists/slides/1');
+    const res = await request(app).get('/api/tuto/not-exists/slides/1');
 
     expect(res.status).to.equal(404);
   });
@@ -87,7 +92,7 @@ describe('REST API Tests', function () {
     this.timeout(60000);
 
     // Start request should send 202 (Accepted)
-    const start = await request(app).post('/tuto/dev/start');
+    const start = await request(app).post('/api/tuto/dev/start');
     expect(start.status).to.equal(202);
     expect(start.headers).to.have.property('location');
     expect(start.body).to.be.an('object');
@@ -116,13 +121,18 @@ describe('REST API Tests', function () {
     });
   });
   it('should write a file in a docker container', function (done) {
-    this.timeout(5000);
+    this.timeout(50000);
 
-    request(app)
-      .post('/tuto/dev/write?path=' + encodeURI('/root/test-write-request.txt'))
-      .set('content-type', 'application/octet-stream')
-      .send(fs.readFileSync('./test/test-file.txt'))
-      .expect(204)
+    request(app).post('/api/tuto/dev/start').expect(202)
+      .then(() => {
+        request(app)
+          .post('/api/tuto/dev/write?path=' + encodeURI('/root/test-write-request.txt'))
+          .set('content-type', 'application/octet-stream')
+          .send(fs.readFileSync('./test/test-file.txt'))
+          .expect(204);
+      })
+      .then(() => new Promise((resolve) => setTimeout(resolve, 20000))
+      .then(() => request(app).get('/api/tuto/dev/status').expect(201))
       .then(() => DockerService.getInstance().exec('dev', 'cat /root/test-write-request.txt'))
       .then((stream: DemuxStream) => {
         const chunks = [];
@@ -139,18 +149,19 @@ describe('REST API Tests', function () {
           expect(catResult).to.equals(expected);
           done();
         });
-      });
+      }))
+      .catch(done);
   });
   it('should got an error trying to write a file in a docker container that is not exist', async function () {
     await request(app)
-      .post('/tuto/test/write?path=' + encodeURI('/root/test-write-request.txt'))
+      .post('/api/tuto/test/write?path=' + encodeURI('/root/test-write-request.txt'))
       .set('content-type', 'application/octet-stream')
       .attach('file', './test/test-file.txt')
       .expect(404);
   });
   it('should got an error trying to write a file in a docker container that is not started (= not currently used)', async function () {
     await request(app)
-      .post('/tuto/git/write?path=' + encodeURI('/root/test-write-request.txt'))
+      .post('/api/tuto/git/write?path=' + encodeURI('/root/test-write-request.txt'))
       .set('content-type', 'application/octet-stream')
       .attach('file', './test/test-file.txt')
       .expect(409);

@@ -40,8 +40,9 @@ router.post('/tuto/:slug/start', new PromiseHandler(TutorialController.start).ha
 router.get('/tuto/:slug/status', TutorialController.status);
 router.post('/tuto/:slug/write', TutorialController.write);
 router.get('/tuto/:slug/slides/:id(\\d+)', new PromiseHandler(TutorialController.slide).handler);
+router.get('/tuto/:slug/static/:path', new PromiseHandler(TutorialController.static).handler);
 router.get('/tuto/:slug', new PromiseHandler(TutorialController.content).handler);
-router.post('/tuto/search', TutorialController.search); // not promise
-router.get('/tuto', TutorialController.index); // not promise
+router.post('/tuto/search', TutorialController.search);
+router.get('/tuto', TutorialController.index);
 
 export { router as tutoRouter };

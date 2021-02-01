@@ -23,10 +23,14 @@ app.use(express.raw({ type: 'application/octet-stream' }));
 app.use(express.json({}));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/static', express.static('public'));
-app.use('/', tutoRouter);
+app.use('/api', tutoRouter);
 
-tuto.init();
+let extraDirs = [];
+const extraDirsEnv = process.env['DEV_API_EXTRA_TUTORIALS'];
+if (extraDirsEnv) {
+  extraDirs = extraDirsEnv.split(' ');
+}
+tuto.init(...extraDirs);
 
 docker.connect({ host: environment.docker.host, port: environment.docker.port });
 

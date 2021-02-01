@@ -1,6 +1,6 @@
 .slideshow {
-  width: 50%;
-  margin: 10px;
+  width: 45vw;
+  padding: 10px;
 }
 
 #terminal {
@@ -15,13 +15,18 @@
   top: 50%;
   height: 70%;
   transform: translateY(-50%);
-  width: 100%;
-  max-width: 600px;
+  width: 50vw;
   border-radius: 6px;
   padding-top: 45px;
   margin-top: 8px;
   overflow: hidden;
   background-color: rgb(30, 30, 30);
+  transition: width 2s;
+}
+
+/* Full size - (margin: 18 + 2*10px + position right: 10px) */
+.terminal-box.full {
+  width: calc(100vw - 48px);
 }
 
 .terminal-box mat-progress-bar {

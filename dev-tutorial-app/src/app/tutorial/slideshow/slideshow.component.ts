@@ -1,7 +1,6 @@
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { reduce } from 'rxjs/operators';
 import { TutorialsWebServices } from 'src/app/webservices/tutorials.webservices.service';
 
 @Component({

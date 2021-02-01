@@ -4,8 +4,10 @@ import { describe } from 'mocha';
 import { environment } from '../../environments/environment';
 import { DemuxStream, DockerService as docker } from './docker';
 import * as fs from 'fs';
-import { doesNotMatch, fail } from 'assert';
-import { partial } from '../../../test/partial';
+import { fail } from 'assert';
+import { debug } from 'debug';
+
+const logger = debug('test:docker');
 
 describe('Docker Service', function () {
   describe('Docker service initialization', function () {
@@ -35,18 +37,22 @@ describe('Docker Service', function () {
     });
 
     it('should start a tutorial container, then stop and remove it', async function () {
+
       // Start
+      logger('starting');
       const container = await docker.getInstance().run(tutoId);
       expect(container).not.to.be.undefined;
       expect(container).to.have.property('id');
 
       // Check start status
+      logger('inspect');
       const inspect = await container.inspect();
       expect(inspect).to.have.nested.property('State.Status').that.equals('running');
       expect(inspect).to.have.nested.property('State.Running').that.is.true;
       expect(inspect).to.have.nested.property('State.Dead').that.is.false;
 
       // Stop/Remove
+      logger('destroy');
       await docker.getInstance().destroy(tutoId);
 
       // Check Stop/Remove status (timeout race inspect which hangs when container does not exists)
@@ -54,6 +60,7 @@ describe('Docker Service', function () {
         container.inspect(),
         new Promise((resolve) => setTimeout(() => resolve('timeout'), 3000))
       ]);
+      logger('check state');
       expect(inspect2).equals('timeout');
     });
   });

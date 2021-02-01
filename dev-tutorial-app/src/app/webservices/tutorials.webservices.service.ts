@@ -9,13 +9,13 @@ import { Tutorial } from '../tutorial/tutorial';
   providedIn: 'root'
 })
 export class TutorialsWebServices {
-  
+
 
   constructor(private http: HttpClient) {
 
   }
 
-  private endpoint(path: string): string {
+  private endpoint(path: string, prefix = true): string {
     return environment.apiEndpoint + path;
   }
 
@@ -30,7 +30,7 @@ export class TutorialsWebServices {
    * Search for tutorials
    * @param search search
    */
-  search(search: {search: string}): Observable<Tutorial[]> {
+  search(search: { search: string; }): Observable<Tutorial[]> {
     return this.http.post<Tutorial[]>(this.endpoint('/tuto/search'), search);
   }
 
@@ -61,7 +61,7 @@ export class TutorialsWebServices {
    * @return {Observable} An boolean observable that will be true if container is created and started.
    */
   status(location: string): Observable<HttpResponse<Object>> {
-    return this.http.get(this.endpoint(location), { observe: 'response' });
+    return this.http.get(environment.apiHost + location, { observe: 'response' });
   }
 
   /**

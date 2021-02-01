@@ -154,7 +154,7 @@ export class CommandParser {
             builder.arg(text);
           }
         } else {
-          console.log('Ignored node (not handled yet)', node);
+          logger('Ignored node (not handled yet)', node);
         }
       }
     }

@@ -1,11 +1,12 @@
-import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { TerminalComponent } from './terminal/terminal.component';
 import { EditorComponent } from './editor/editor.component';
 import { NgxEditorModel } from 'ngx-monaco-editor';
 import { SlideshowComponent } from './slideshow/slideshow.component';
 import { TutorialsWebServices } from '../webservices/tutorials.webservices.service';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import * as io from 'socket.io-client';
 
 @Component({
@@ -15,11 +16,13 @@ import * as io from 'socket.io-client';
 })
 export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  @ViewChild('slideshow') private slideshowElement: ElementRef;
   @ViewChild('slide') slideshow: SlideshowComponent;
 
   @ViewChild('term', { static: false }) set terminalView(terminal: TerminalComponent) {
     if (terminal) {
       this.attachTerminal(terminal);
+      this.terminal = terminal;
     }
   }
 
@@ -32,6 +35,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   tutoId: string;
   socket: SocketIOClient.Socket;
 
+  terminal: TerminalComponent;
   ready: boolean = false;
   disabled: boolean = false;
 
@@ -40,8 +44,10 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   model: NgxEditorModel;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private ws: TutorialsWebServices,
+    private dialog: MatDialog
   ) { }
 
 
@@ -61,6 +67,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Next slide
+    this.socket.on('completed', () => { this.onTutorialCompleted(); });
     this.socket.on('next', () => { this.slideshow.nextSlide(); });
 
     // Switch terminal => editor on 'edit' command hook
@@ -92,7 +99,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.socket) {
-      console.warn('destroying app');
       this.socket.emit('destroy');
     }
     this.socket.close();
@@ -103,8 +109,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param info The file path and the content of the file
    */
   editFile(info: { path: string, content: string; }) {
-    this.model = {uri: info.path, value: info.content };
-    console.log(this.model);
+    this.model = { uri: info.path, value: info.content };
     this.editMode = true;
   }
 
@@ -125,6 +130,22 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     this.socket.emit('attach', this.tutoId);
   }
 
+  onTutorialCompleted() {
+    const dialogRef = this.dialog.open(TutorialCompletedDialogComponent);
+
+    dialogRef.afterClosed().subscribe((result: 'stay'|'leave') => {
+      if(result == 'leave') {
+        this.router.navigate(["home"]);
+      } else {
+        // full viewport terminal
+        const box = this.slideshowElement.nativeElement.parentNode.querySelector('.terminal-box');
+        this.slideshowElement.nativeElement.remove();
+        box.classList.add('full');
+        setTimeout(() => this.terminal.resize(), 2100); // wait animation end
+      }
+    });
+  }
+
   /**
    * FIXME: debugging purpose only
    */
@@ -139,4 +160,16 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     this.slideshow.nextSlide();
   }
 
+}
+
+@Component({
+  selector: 'tutorial-completed-dialog',
+  templateUrl: 'tutorial-completed-dialog.component.html',
+})
+export class TutorialCompletedDialogComponent {
+  constructor(public dialogRef: MatDialogRef<TutorialCompletedDialogComponent>) { }
+
+  close(state: 'stay'|'leave') {
+    this.dialogRef.close(state);
+  }
 }
