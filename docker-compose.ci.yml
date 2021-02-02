@@ -6,6 +6,8 @@ services:
       - DEV_API_EXTRA_TUTORIALS=test/extra-tuto test/extra-tuto2
       - DEBUG=
       - CHOMA_SEED=
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   app:
     image: dev-tutorial-app-test
     container_name: dev-tutorial-app-test
