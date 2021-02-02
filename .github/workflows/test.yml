@@ -15,6 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: ./compose.py -e test --build
+      run: ./compose.py -e ci --build
     - name: Run the API Tests
-      run: ./compose.py -e test --up -s api
+      run: ./compose.py -e ci --up -s api

@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://host.docker.internal:3000",
+    "target": "http://dev-tutorial-api:3000",
     "secure": false
   }
 }

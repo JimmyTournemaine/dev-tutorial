@@ -1,0 +1,14 @@
+version: '3'
+services:
+  api:
+    command: yarn test-ci
+    environment:
+      - DEV_API_EXTRA_TUTORIALS=test/extra-tuto test/extra-tuto2
+      - DEBUG=
+      - CHOMA_SEED=
+  app:
+    image: dev-tutorial-app-test
+    container_name: dev-tutorial-app-test
+    build:
+      dockerfile: Dockerfile-Test
+    command: yarn test
