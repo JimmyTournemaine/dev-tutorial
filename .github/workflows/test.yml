@@ -9,17 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_HOST: tcp://0.0.0.0:2375
     steps:
-    - name: Test 1
-      run: ls /etc/docker
-    - name: Test 2
-      run: cat /etc/docker/daemon.json
-    - name: Test 3
-      run: "echo '{\"hosts\": [\"tcp://0.0.0.0:2375\", \"unix:///var/run/docker.sock\"]}' >> /etc/docker/daemon.json"
-    - name: Test 4
-      run: systemctl restart docker.service
     - uses: actions/checkout@v2
     - name: Build the Docker image
       run: ./compose.py -e ci --build
