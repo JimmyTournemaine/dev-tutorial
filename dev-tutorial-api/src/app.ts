@@ -32,7 +32,7 @@ if (extraDirsEnv) {
 }
 tuto.init(...extraDirs);
 
-docker.connect({ host: environment.docker.host, port: environment.docker.port });
+docker.connect(environment.docker);
 
 mongoose.connect(environment.mongodb, {
   useCreateIndex: true,

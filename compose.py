@@ -15,8 +15,8 @@ def run(cmd):
 def dump_config(args):
     run('docker-compose ' + args + ' config')
 
-def build(args):
-    run('docker-compose ' + args + ' build --no-cache')
+def build(args, services):
+    run('docker-compose ' + args + ' build --no-cache ' + ' '.join(services))
 
 def up(args, services):
     run('docker-compose ' + args + ' up ' + ' '.join(services))
@@ -73,7 +73,7 @@ def main(argv):
     if(_verbose):
         dump_config(compose_args)
     if(to_build):
-        build(compose_args)
+        build(compose_args, services)
     if(to_up):
         up(compose_args, services)
 
