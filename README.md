@@ -2,27 +2,27 @@
 
 ## Requirements
 
+* Python >= 2
 * Docker Engine API >= 1.40
 
-For MacOS: 
-* Uncomment "socat" part in docker-compose.yml and "socat" dependencies in the other services.
+* MacOS: Uncomment "socat" part in docker-compose.yml and "socat" dependencies in the other services.
 * Others: make sure that the Docker Engine API is authorized using the setting: "Exposing Daemon on tcp://localhost:2375 without TLS".
 
 ## Build and run
 
-Using a shell which handle `declare -A`  (zsh, bash>=4, ...) :
+You can compose you environment easily using the provided script.
+For more information, run `./compose.py -h`
+
 ```bash
 # Build and start
-./compose.sh build-up
+./compose.py --build --up
 
 # Only build or start
-./compose.sh build
-./compose.sh up
+./compose.sh --build
+./compose.sh --up
 
 # For testing purpose
-./compose.sh build-up test
-./compose.sh build test
-./compose.sh up test
+./compose.sh --up -e test
 ```
 
 # Cheatsheet

@@ -54,20 +54,13 @@ describe('Docker Service', function () {
       // Stop/Remove
       logger('destroy');
       await docker.getInstance().destroy(tutoId);
-
-      // Check Stop/Remove status (timeout race inspect which hangs when container does not exists)
-      const inspect2 = await Promise.race([
-        container.inspect(),
-        new Promise((resolve) => setTimeout(() => resolve('timeout'), 3000))
-      ]);
-      logger('check state');
-      expect(inspect2).equals('timeout');
     });
   });
   describe('Docker advanced container features', function () {
     const tutoId = 'dev';
     this.timeout(120000);
 
+    before(() => docker.connect(environment.docker));
     beforeEach(async function () {
       await docker.getInstance().run(tutoId);
     });

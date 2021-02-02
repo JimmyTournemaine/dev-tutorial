@@ -407,15 +407,19 @@ export class DockerService implements IDockerService {
     const container = await this.findContainerIfExists(tutoId);
 
     if (container) {
-      const inspect = await container.inspect();
+      try {
+        const inspect = await container.inspect();
 
-      if (inspect['State']['Running']) {
-        await container.stop();
-        this.cache.update(tutoId, 'container stopped');
+        if (inspect['State']['Running']) {
+          await container.stop();
+          this.cache.update(tutoId, 'container stopped');
+        }
+
+        await container.remove();
+        this.cache.remove(tutoId);
+      } catch (error) {
+        console.error(`Unable to destroy ${tutoId} container: ${error.toString()}`);
       }
-
-      await container.remove();
-      this.cache.remove(tutoId);
     }
   }
 }

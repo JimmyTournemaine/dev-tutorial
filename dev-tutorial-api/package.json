@@ -2,18 +2,11 @@
   "name": "dev-tutorial-api",
   "version": "0.0.0",
   "private": true,
-  "config": {
-    "testUt": "src/**/*.spec.ts",
-    "testIt": "src/*.spec.ts",
-    "testOps": "--require choma --trace-warnings"
-  },
   "scripts": {
     "build": "tsc -p tsconfig.prod.json",
     "startup": "node dist/server.js",
     "start": "nodemon -e ts --exec \"tsc && node dist/server.js || exit 1\"",
-    "test-ut": "nodemon -e ts --exec \"mocha -r ts-node/register $npm_package_config_testUt $npm_package_config_testOps \"",
-    "test-it": "nodemon -e ts --exec \"mocha -r ts-node/register $npm_package_config_testIt $npm_package_config_testOps \"",
-    "test": "nodemon -e ts --exec \"mocha -r ts-node/register $npm_package_config_testUt $npm_package_config_testIt $npm_package_config_testOps \""
+    "test": "nodemon -e ts --exec \"mocha -r ts-node/register src/**/*.spec.ts $npm_package_config_testOps --require choma --trace-warnings \""
   },
   "dependencies": {
     "async": "^3.2.0",
