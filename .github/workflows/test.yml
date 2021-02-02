@@ -11,9 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: bradennapier/eslint-plus-action@v3.4.2
+      - uses: a-b-r-o-w-n/eslint-action@v2
         with:
-          working-directory: ./dev-tutorial-api
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          files: "src/**/*"
+          working-directory: "./dev-tutorial-api"
   test:
     runs-on: ubuntu-latest
     steps:
