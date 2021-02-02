@@ -2,15 +2,11 @@
   "name": "dev-tutorial-api",
   "version": "0.0.0",
   "private": true,
-  "config": {
-    "mocha": "mocha -r ts-node/register src/**/*.spec.ts --require choma --trace-warnings"
-  },
   "scripts": {
-    "build": "tsc -p tsconfig.prod.json",
-    "startup": "node dist/server.js",
-    "start": "nodemon -e ts --exec \"tsc && node dist/server.js || exit 1\"",
-    "test": "nodemon -e ts --exec \"$npm_package_config_mocha \"",
-    "test-ci": "$npm_package_config_mocha --exit"
+    "start": "node dist/server.js",
+    "serve": "nodemon -e ts --exec tsnode src/server.ts",
+    "test": "nodemon -e ts --exec \"mocha -r ts-node/register src/**/*.spec.ts --require choma --trace-warnings \"",
+    "test-ci": "mocha dist/**/*.spec.js --require choma --trace-warnings --exit"
   },
   "dependencies": {
     "async": "^3.2.0",

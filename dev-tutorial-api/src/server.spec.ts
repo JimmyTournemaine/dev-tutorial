@@ -3,15 +3,38 @@ import { expect } from 'chai';
 import { server } from './server';
 import { DockerService, TtyLog } from './services/docker/docker';
 import { agent as request } from 'supertest';
-import { partial } from '../test/partial';
 import { environment } from './environments/environment';
 import { app } from './app';
 import * as io from 'socket.io-client';
 import * as fs from 'fs';
 import * as debug from 'debug';
 import { SocketManager } from './services/socket/socket';
+import { Done } from 'mocha';
 
 const logger = debug('test:server');
+
+/**
+ * Allow to handle multiple "done" callbacks.
+ */
+class PartialDone {
+  private value = 0;
+
+  constructor(private expected: number, private _done: Done) { }
+
+  done(err?: any): void {
+    if (err) {
+      return this._done(new Error(`error at ${this.value}/${this.expected}, reason: ${err}`));
+    }
+    logger('%d of %d done', this.value + 1, this.expected);
+    if (++this.value == this.expected) {
+      this._done();
+    }
+  };
+}
+const partial = (expected: number, done: Done): PartialDone => {
+  return new PartialDone(expected, done);
+};
+
 
 // Randomize input to simulate input chunks
 const randomizeInput = (input: string, callback: (chunk: string) => void): void => {

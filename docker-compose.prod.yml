@@ -1,6 +1,7 @@
 version: '3'
 services:
   api:
+    command: ./build.py start --prod
     image: dev-tutorial-api-prod
     build:
       dockerfile: Dockerfile-Prod

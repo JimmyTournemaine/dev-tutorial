@@ -1,7 +1,7 @@
 version: '3'
 services:
   api:
-    command: yarn test-ci
+    command: ./build.py test-ci --ci
     environment:
       - DEV_API_EXTRA_TUTORIALS=test/extra-tuto test/extra-tuto2
       - DEBUG=

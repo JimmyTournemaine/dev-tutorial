@@ -8,4 +8,4 @@ FROM node:latest
 ENV NODE_ENV=production
 COPY --from=compile-image /usr/src/app/api/dist /usr/src/app/api/dist
 EXPOSE 3000
-CMD ["yarn", "startup"]
+CMD ["yarn", "start"]
