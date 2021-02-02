@@ -7,11 +7,14 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Lint
+      uses: reviewdog/action-eslint@v1.0.0
+    - name: Build test images
       run: ./compose.py -e ci --build
-    - name: Run the API Tests
+    - name: Run tests
       run: ./compose.py -e ci --up -s api
