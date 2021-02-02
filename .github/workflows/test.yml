@@ -11,11 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: a-b-r-o-w-n/eslint-action@v2
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          files: "src/**/*"
-          working-directory: "./dev-tutorial-api"
+          fetch-depth: 0
+      - uses: github/super-linter@v3
+        with:
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test:
     runs-on: ubuntu-latest
     steps:
