@@ -12,7 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: bradennapier/eslint-plus-action@v3.4.2
-        working-directory: ./dev-tutorial-api
+        with:
+          working-directory: ./dev-tutorial-api
   test:
     runs-on: ubuntu-latest
     steps:
