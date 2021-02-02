@@ -10,18 +10,11 @@ jobs:
   eslint:
     runs-on: ubuntu-latest
     steps:
-      - run: yarn global add eslint
       - uses: actions/checkout@v2
-      - name: eslint
-        uses: reviewdog/action-eslint@v1
-        #with:
-        #  reporter: github-pr-review # Change reporter.
-        #  eslint_flags: 'src/'
+      - uses: bradennapier/eslint-plus-action@v3.4.2
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Lint
-        uses: reviewdog/action-eslint@v1.0.0
       - name: Build test images
         run: ./compose.py -e ci --build
       - name: Run tests
