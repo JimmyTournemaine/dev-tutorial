@@ -18,7 +18,10 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TYPESCRIPT_ES_CONFIG_FILE: $GITHUB_WORKSPACE/dev-tutorial/dev-tutorial/dev-tutorial-api/.eslintrc.json
+          
+          LINTER_RULES_PATH: ./dev-tutorial-api
+          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.json
+          VALIDATE_TYPESCRIPT_ES: true
   test:
     runs-on: ubuntu-latest
     steps:
