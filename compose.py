@@ -20,7 +20,8 @@ def build(args, services):
 
 def up(args, services):
     if 'darwin' == sys.platform:
-        run('docker run -d --name tcp-connect -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock alpine/socat tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock')
+        run('docker run -d --name tcp-connect -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock alpine/socat tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock || docker start tcp-connect')
+
 
     run('docker-compose ' + args + ' up --remove-orphans ' + ' '.join(services))
 

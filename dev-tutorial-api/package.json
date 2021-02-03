@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node dist/server.js",
+    "lint": "eslint 'src/**/*.ts'",
     "serve": "nodemon -e ts --exec tsnode src/server.ts",
     "test": "nodemon -e ts --exec \"mocha -r ts-node/register src/**/*.spec.ts --require choma --trace-warnings \"",
     "test-ci": "mocha dist/**/*.spec.js --require choma --trace-warnings --exit"
@@ -40,8 +41,8 @@
     "@types/supertest": "^2.0.10",
     "@types/tar-stream": "^2.1.0",
     "@types/tmp": "^0.2.0",
-    "@typescript-eslint/eslint-plugin": "^2.27.0",
-    "@typescript-eslint/parser": "^2.27.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "choma": "^1.2.1",

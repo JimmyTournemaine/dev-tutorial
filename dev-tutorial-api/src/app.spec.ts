@@ -19,7 +19,7 @@ xdescribe('REST API Tests', function () {
   });
 
   it('should get a public asset from a tutorial', async function () {
-    const res = await request(app).get(`/api/tuto/dev/static/icon.png`);
+    const res = await request(app).get('/api/tuto/dev/static/icon.png');
     expect(res.status).to.equal(200);
   });
 
@@ -31,7 +31,7 @@ xdescribe('REST API Tests', function () {
     expect(res.body).to.be.an('Array');
     expect(res.body).to.have.lengthOf(3);
 
-    res.body.forEach((tuto: any) => {
+    res.body.forEach((tuto: unknown) => {
       expect(tuto).to.have.property('name');
       expect(tuto).to.have.property('resume');
       expect(tuto).to.have.property('slug');
@@ -48,7 +48,7 @@ xdescribe('REST API Tests', function () {
     expect(res.body).to.be.an('Array');
     expect(res.body).to.have.lengthOf(2);
 
-    res.body.forEach((tuto: any) => {
+    res.body.forEach((tuto: unknown) => {
       expect(tuto).to.have.property('name');
       expect(tuto).to.have.property('resume');
       expect(tuto).to.have.property('slug');
@@ -63,7 +63,7 @@ xdescribe('REST API Tests', function () {
     expect(res.ok);
     expect(res.body).not.to.be.empty;
     expect(res.body).to.be.an('Array');
-    res.body.forEach((content: any) => {
+    res.body.forEach((content: unknown) => {
       expect(content).not.to.be.empty;
       expect(content).to.have.length.greaterThan(30);
     });
@@ -147,7 +147,7 @@ xdescribe('REST API Tests', function () {
         .then((stream: DemuxStream) => {
           const chunks = [];
           stream.onOut((data: Buffer) => { chunks.push(data); });
-          stream.onErr((err: any) => {
+          stream.onErr((err: string|Error) => {
             if (!(err instanceof Error)) {
               err = new Error(err);
             }

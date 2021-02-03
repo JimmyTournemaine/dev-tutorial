@@ -29,10 +29,10 @@ class Command {
     this.options = new Map();
   }
 
-  addOption(name: string, value: string) {
+  addOption(name: string, value: string): void {
     this.options.set(name, value);
   }
-  addArg(value: string) {
+  addArg(value: string): void {
     this.args.push(value);
   }
 
@@ -52,14 +52,11 @@ class Command {
     return false;
   }
 
-  is(name: string): boolean;
-  is(...values: string[]): boolean;
-  is(name: string, ...values: (string | RegExp)[]): boolean;
   is(name: string, ...values: (string | RegExp)[]): boolean {
     return name == this.name && (values.length == 0 || this.hasArgs(...values));
   }
 
-  hasOption(option: string | RegExp, value?: string): any {
+  hasOption(option: string | RegExp, value?: string): boolean {
     for (const entry of this.options.entries()) {
       if (this.matchArg(entry[0], option)) {
         return !value || entry[1] === value;
@@ -112,8 +109,8 @@ class CommandBuilder {
 }
 
 export class CommandParser {
-  static SHORT_OPT: RegExp = /^\-[a-z0-9]+/;
-  static LONG_OPT: RegExp = /^\-\-[a-z0-9-]+/;
+  static SHORT_OPT = /^-[a-z0-9]+/;
+  static LONG_OPT = /^--[a-z0-9-]+/;
 
   static parse(cmd: string): Command {
     logger(cmd);

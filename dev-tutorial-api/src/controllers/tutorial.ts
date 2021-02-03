@@ -30,7 +30,7 @@ export class TutorialController {
    * @param {Request} req The request
    * @param {Response} res The response
    */
-  public static search(req: Request, res: Response): any {
+  public static search(req: Request, res: Response): Response<any> {
     if (req.body.search === undefined) {
       return res.status(400).json({ message: 'Malformed search entity: ' + req.body.toString() });
     }
@@ -70,7 +70,7 @@ export class TutorialController {
     res.json(slides);
   }
 
-  public static async static(req: Request, res: Response) {
+  public static async static(req: Request, res: Response): Promise<Response<any>> {
     const slug = req.params['slug'];
     const path = req.params['path'];
     const tutoService = TutorialService.getInstance();
@@ -125,7 +125,7 @@ export class TutorialController {
     }
 
     if (!path || !(typeof path === 'string')) {
-      return res.status(400).json({ error: `Unknown or unprocessable path` });
+      return res.status(400).json({ error: 'Unknown or unprocessable path' });
     }
 
     if (!DockerService.getInstance().isContainerReady(slug)) {
@@ -148,7 +148,7 @@ export class TutorialController {
    * @param {Request} req The request
    * @param {Response} res The response
    */
-  public static async start(req: Request, res: Response) {
+  public static async start(req: Request, res: Response): Promise<Response<any>> {
     const slug = req.params['slug'];
     const docker = DockerService.getInstance();
     const tutoService = TutorialService.getInstance();
@@ -172,7 +172,7 @@ export class TutorialController {
    * @param {Request} req The request
    * @param {Response} res The response
    */
-  public static async status(req: Request, res: Response) {
+  public static async status(req: Request, res: Response): Promise<void> {
     const slug = req.params['slug'];
     const docker = DockerService.getInstance();
     const tutoService = TutorialService.getInstance();
@@ -192,7 +192,7 @@ export class TutorialController {
    * @param {Request} req The request
    * @param {Response} res The response
    */
-  public static async stop(req: Request, res: Response) {
+  public static async stop(req: Request, res: Response): Promise<Response<any>> {
     const slug = req.params['slug'];
     const docker = DockerService.getInstance();
     const tutoService = TutorialService.getInstance();

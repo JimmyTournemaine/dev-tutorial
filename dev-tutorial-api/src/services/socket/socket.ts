@@ -12,7 +12,7 @@ const batchLog = debug('app:socket-validation');
 const hookLog = debug('app:hook');
 
 class ValidationBatch {
-  output: string = '';
+  output = '';
   ttylog: TtyLog;
 
   async validate(validators: Validators) {
@@ -154,8 +154,8 @@ export class SocketManager implements ISocketManager {
 export class SocketService implements ISocketService {
   tutoId: string;
   validation: Validation;
-  wd: string = '/';
-  currentCommand: string = '';
+  wd = '/';
+  currentCommand = '';
 
   private hooks: Hook[];
 

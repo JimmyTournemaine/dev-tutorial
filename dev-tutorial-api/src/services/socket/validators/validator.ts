@@ -1,8 +1,7 @@
-import { EventEmitter } from "events";
-import { DockerService, IDockerService, TtyLog } from "../../docker/docker";
-import { ISocketService } from "../socket";
+import { EventEmitter } from 'events';
+import { DockerService, IDockerService, TtyLog } from '../../docker/docker';
+import { ISocketService } from '../socket';
 import * as debug from 'debug';
-import { CommandParser } from "./command-parser";
 
 const logger = debug('app:validator');
 
@@ -18,7 +17,7 @@ const logger = debug('app:validator');
  */
 export interface Validator<O> {
   injectService(service: Readonly<ISocketService>): void;
-  validate(...arg: any): any;
+  validate(...arg: any[]): any;
 }
 
 export abstract class Validator<O> {
@@ -26,7 +25,7 @@ export abstract class Validator<O> {
 }
 
 export abstract class PostValidator<O> extends Validator<O> {
-  protected willValidate: boolean = true;
+  protected willValidate = true;
 
   async isValid(output: string, ttylog: TtyLog): Promise<boolean> {
     const isvalid = await this.validate(output, ttylog);
@@ -68,7 +67,7 @@ export class PreValidator extends Validator<PreValidatorOptions> {
     const expected = this.options.cmd.split(' ').filter((v) => v);
     const given = cmd.split(' ').filter((v) => v);
 
-    return expected.every((value: string, index: number, array: string[]) => {
+    return expected.every((value: string, index: number) => {
       return value == given[index];
     });
   }
@@ -110,7 +109,7 @@ export class Validators extends EventEmitter {
     return this.current.prevalidate(cmd);
   }
 
-  async validate(output: string, ttylog: TtyLog) {
+  async validate(output: string, ttylog: TtyLog): Promise<void> {
     await this.current.validate(output, ttylog);
 
     if (this.current.isValid()) {
@@ -144,12 +143,12 @@ class ValidatorSequence {
 
 class ValidatorSet {
   prevalidator: PreValidator;
-  prevalidated: boolean = false;
+  prevalidated = false;
 
-  validators: PostValidator<any>[];
-  validated: number = 0;
+  validators: PostValidator<unknown>[];
+  validated = 0;
 
-  constructor(prevalidator: PreValidator, validators: PostValidator<any>[]) {
+  constructor(prevalidator: PreValidator, validators: PostValidator<unknown>[]) {
     this.prevalidator = prevalidator;
     this.validators = validators;
   }
@@ -198,7 +197,7 @@ class ValidatorSet {
     return Promise.all(validatorsInProcess);
   }
 
-  isValid() {
+  isValid(): boolean {
     logger('is valid ? pre=%s, post=%s/%s', this.prevalidated, this.validated, this.validators.length);
     return this.prevalidated && this.validated == this.validators.length;
   }
@@ -233,7 +232,7 @@ export class ValidatorDescriptorsParser {
    * @param service The SocketService
    * @param descriptor A slide validators descriptor
    */
-  static create(service: ISocketService, descriptor: Array<Object>): Validators {
+  static create(service: ISocketService, descriptor: Array<unknown>): Validators {
     const validationSeq = [];
     for (const validationSet of descriptor) {
       let prevalidator: PreValidator;
@@ -282,6 +281,7 @@ export class ExitCodeValidator extends PostValidator<ExitCodeValidatorOptions> {
   Execute a command in the docker container to validate something
 */
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface DockerExecValidatorOptions { }
 /**
  * Execute a command in a docker container to validate something.
@@ -297,7 +297,7 @@ abstract class DockerExecValidator<O extends DockerExecValidatorOptions> extends
     this.command = command;
   }
 
-  setDockerService(docker: IDockerService) {
+  setDockerService(docker: IDockerService): void {
     this.docker = docker;
   }
 
@@ -305,11 +305,11 @@ abstract class DockerExecValidator<O extends DockerExecValidatorOptions> extends
     return (this.docker) ? this.docker : DockerService.getInstance();
   }
 
-  injectService(service: Readonly<ISocketService>) {
+  injectService(service: Readonly<ISocketService>): void {
     this.tutoId = service.tutoId;
   }
 
-  async validate(_output: string, _ttylog: TtyLog): Promise<boolean> {
+  async validate(): Promise<boolean> {
     const stream = await this.getDockerService().exec(this.tutoId, this.command);
     return new Promise((resolve) => {
       const buffers = [];
@@ -376,7 +376,7 @@ export class CreatesValidator extends DockerExecValidator<CreatesValidatorOption
 */
 
 interface DescriptorMapping {
-  type: ValidatorConstructor<any, any>;
+  type: ValidatorConstructor<unknown, unknown>;
   useService: boolean;
   prevalidate: boolean;
 }
@@ -396,4 +396,3 @@ const descriptorMapping: Record<DescriptorKey, DescriptorMapping> = {
   exitCode: { type: ExitCodeValidator, useService: false, prevalidate: false },
   creates: { type: CreatesValidator, useService: true, prevalidate: false },
 };
-

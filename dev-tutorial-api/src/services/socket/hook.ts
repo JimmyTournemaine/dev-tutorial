@@ -16,7 +16,7 @@ export class Hook {
 
   constructor(private options: HookOptions) { }
 
-  test(cmd: string) {
+  test(cmd: string): boolean {
     return this.options.regexp.test(cmd);
   }
 
@@ -32,13 +32,13 @@ export class Hook {
 
 export class HookFactory {
 
-  static createHooks(service: SocketService) {
+  static createHooks(service: SocketService): Hook[] {
     return [
       this.createEditHook(service),
     ];
   }
 
-  private static createEditHook(service: SocketService) {
+  private static createEditHook(service: SocketService): Hook {
     return new Hook({
       name: 'edit',
       regexp: /^edit (\/?(?:[^/ ]\/?)+)/,

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { PassThrough, Stream } from 'stream';
+import { PassThrough } from 'stream';
 import { DemuxStream, DockerService } from '../../docker/docker';
 import { SocketService } from '../socket';
 import { CreatesValidator, ExitCodeValidator, PreValidator, ValidatorDescriptorsParser, ValidatorFactory } from './validator';
@@ -26,29 +26,24 @@ class PassThroughDemuxStream extends DemuxStream {
 describe('Validation', function () {
 
   const ttylogExample = { cmd: 'ls -l', user: 'root', workdir: '/', exitCode: 0 };
-  const outputExample = `total 16
--rw-r--r--   1 root  root  242  4 nov 22:30 README.md
-drwxr-xr-x  13 root  root  416 12 nov 00:09 dev-tutorial-api
-drwxr-xr-x  20 root  root  640  4 nov 19:54 dev-tutorial-app
--rw-r--r--   1 root  root  922  4 nov 22:21 docker-compose.yml`;
 
   describe('Pre-Validation', function () {
     it('should pre-validate a command', async function () {
       const validator = ValidatorFactory.create(PreValidator, { cmd: 'git --version' });
 
-      let validation = await validator.validate('git --version');
+      const validation = await validator.validate('git --version');
       expect(validation).to.be.true;
     });
     it('should not pre-validate a not matching command', async function () {
       const validator = ValidatorFactory.create(PreValidator, { cmd: 'git --version' });
 
-      let validation = await validator.validate('ls -l');
+      const validation = await validator.validate('ls -l');
       expect(validation).to.be.false;
     });
     it('should pre-validate a command with too much blanks', async function () {
       const validator = ValidatorFactory.create(PreValidator, { cmd: 'git --version' });
 
-      let validation = await validator.validate('git   --version');
+      const validation = await validator.validate('git   --version');
       expect(validation).to.be.true;
     });
     // it('should pre-validate a command with options regardless the order', async function () {
@@ -113,7 +108,7 @@ drwxr-xr-x  20 root  root  640  4 nov 19:54 dev-tutorial-app
       validator.setDockerService(dockerStub);
 
       // Validation
-      let validation = await validator.validate(undefined, undefined);
+      const validation = await validator.validate();
       expect(validation).to.be.true;
 
       // Validation (with dumb extra args)
@@ -127,8 +122,8 @@ drwxr-xr-x  20 root  root  640  4 nov 19:54 dev-tutorial-app
     it('should parse validator successfully', function (done) {
       const serviceStub = sinon.createStubInstance(SocketService);
       const descriptor = [{
-        "input": { "cmd": "git --version" },
-        "rc": { "exitCode": 0 }
+        'input': { 'cmd': 'git --version' },
+        'rc': { 'exitCode': 0 }
       }];
 
       const validators = ValidatorDescriptorsParser.create(serviceStub, descriptor);
@@ -145,8 +140,8 @@ drwxr-xr-x  20 root  root  640  4 nov 19:54 dev-tutorial-app
     it('should parse validator successfully without waiting', function (done) {
       const serviceStub = sinon.createStubInstance(SocketService);
       const descriptor = [{
-        "input": { "cmd": "git --version" },
-        "rc": { "exitCode": 0 }
+        'input': { 'cmd': 'git --version' },
+        'rc': { 'exitCode': 0 }
       }];
 
       const validators = ValidatorDescriptorsParser.create(serviceStub, descriptor);
@@ -173,6 +168,6 @@ drwxr-xr-x  20 root  root  640  4 nov 19:54 dev-tutorial-app
       validator.validate(' ansible-playbook playbooks/test.yml -l vougeot -e @test.json --tags=test');
       validator.validate('echo "$HOME/test" > /dev/null 2>error.log');
       validator.validate('cat myfile.text | tee -e file.log');
-    })
+    });
   });
 });

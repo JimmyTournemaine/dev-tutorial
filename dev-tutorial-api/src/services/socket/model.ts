@@ -1,14 +1,14 @@
-import { TutorialDescriptorDocument } from "../../models/tutorial";
-import { TutorialService } from "../tutorial/tutorial";
-import { ISocketService } from "./socket";
-import { ValidatorDescriptorsParser, Validators } from "./validators/validator";
+import { TutorialDescriptorDocument } from '../../models/tutorial';
+import { TutorialService } from '../tutorial/tutorial';
+import { ISocketService } from './socket';
+import { ValidatorDescriptorsParser, Validators } from './validators/validator';
 
 /**
  * The tutorial model
  */
 export class Tutorial {
   private slides: Slide[];
-  private currentSlide: number = 0;
+  private currentSlide = 0;
 
   /**
    * @param {string} tutoId The tutorial identifier

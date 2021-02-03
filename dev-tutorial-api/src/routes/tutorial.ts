@@ -1,4 +1,4 @@
-import { Router, Request, Response, RequestHandler, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { TutorialController } from '../controllers/tutorial';
 
 const router = Router();

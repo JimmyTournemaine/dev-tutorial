@@ -6,7 +6,7 @@ import * as mongooseFuzzy from 'mongoose-fuzzy-searching';
  */
 interface ISlideDescriptor {
   src: string;
-  validators: Object[];
+  validators: Record<string, unknown>[];
 }
 
 /**
@@ -80,7 +80,7 @@ const tutorialSchema = new mongoose.Schema({
     required: true,
   }
 });
-tutorialSchema.statics.build = (attr: ITutorialDescriptor) => {
+tutorialSchema.statics.build = (attr: ITutorialDescriptor): any => {
   return new TutorialDescriptor(attr);
 };
 tutorialSchema.plugin(mongooseFuzzy, { fields: ['name', 'resume'] });

@@ -21,7 +21,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
           LINTER_RULES_PATH: ./dev-tutorial-api
-          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.json
+          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.yml
           VALIDATE_TYPESCRIPT_ES: true
   test:
     runs-on: ubuntu-latest

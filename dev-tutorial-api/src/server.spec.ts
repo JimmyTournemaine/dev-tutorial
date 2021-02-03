@@ -29,7 +29,7 @@ class PartialDone {
     if (++this.value == this.expected) {
       this._done();
     }
-  };
+  }
 }
 const partial = (expected: number, done: Done): PartialDone => {
   return new PartialDone(expected, done);
@@ -40,8 +40,8 @@ const partial = (expected: number, done: Done): PartialDone => {
 const randomizeInput = (input: string, callback: (chunk: string) => void): void => {
   let index = 0;
   while (index < input.length) {
-    let substrSize = Math.min(input.length - index, Math.floor(Math.random() * 3) + 1); // at most 4? 
-    let value = input.substr(index, substrSize);
+    const substrSize = Math.min(input.length - index, Math.floor(Math.random() * 3) + 1); // at most 4? 
+    const value = input.substr(index, substrSize);
     index += substrSize;
 
     setTimeout(() => callback(value), 100);
@@ -133,7 +133,7 @@ xdescribe('Server integration tests', function () {
         expect(info.path).not.to.be.undefined;
         part.done();
       });
-      socket.on('attached', (id: string) => {
+      socket.on('attached', () => {
         randomizeInput('edit anaconda-post.log\r', (chunk: string) => {
           socket.emit('cmd', chunk);
         });
@@ -145,7 +145,7 @@ xdescribe('Server integration tests', function () {
       const part = partial(2, done);
 
       socket.on('edit-start', (info: any) => {
-        socket.on('edit-content', (chunk: string) => {
+        socket.on('edit-content', () => {
           done('stderr should be handle by edit-error');
         });
         socket.on('edit-error', (err: any) => {
@@ -159,14 +159,14 @@ xdescribe('Server integration tests', function () {
         expect(info.path).not.to.be.undefined;
         part.done();
       });
-      socket.on('attached', (id: string) => {
+      socket.on('attached', () => {
         socket.emit('cmd', 'edit testfile.txt\r');
       });
       socket.emit('attach', tutoId);
     });
 
     it('should send an error when trying to attach a socket to a non existent docker container', function (done) {
-      socket.on('attached', (id: string) => {
+      socket.on('attached', () => {
         done('Should not be attached to void');
       });
       socket.on('err', (err: any) => {
@@ -178,13 +178,13 @@ xdescribe('Server integration tests', function () {
     });
 
     it('should complete the demo tutorial', function (done) {
-      socket.on('attached', (id: string) => {
+      socket.on('attached', () => {
         // Slide 2
         socket.once('next', () => {
           // All slides done
           socket.once('next', () => done(new Error('Got next instead of completed')));
           socket.once('completed', () => done());
-          socket.once('edit-start', (info: any) => {
+          socket.once('edit-start', () => {
             let content = '';
             socket.on('edit-content', (chunk: string) => {
               content += chunk;

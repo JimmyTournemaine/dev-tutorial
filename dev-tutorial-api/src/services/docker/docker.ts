@@ -8,7 +8,6 @@ import * as tmp from 'tmp';
 import * as fs from 'fs';
 
 const log = debug('app:docker');
-const logStream = debug('app:docker-stream');
 
 type CacheItemState = 'undefined' | 'image built' | 'container created' | 'container started' | 'container stopped' | 'destroying';
 
@@ -124,21 +123,19 @@ class DockerAttachedHandler extends EventEmitter {
   }
 
   emit(event: string | symbol, ...args: any[]): boolean {
-    //logStream('emitting:', event, ...args);
     return super.emit(event, ...args);
   }
 
-  write(data: string) {
-    //logStream('receiving:', 'data', data.replace(/[\x00-\x1F\x7F-\x9F]/g, ""));
+  write(data: string): void {
     this.stream.write(data);
   }
 
-  resize(size: { h: number, w: number; }) {
+  resize(size: { h: number; w: number }): void {
     log('resizing exec:', size);
     this.exec.resize(size);
   }
 
-  attach() {
+  attach(): void {
     let firstty = true;
     this.stream.on('data', (chunk: any) => {
       for (const line of chunk.toString().split('\n')) {
@@ -188,7 +185,7 @@ export class DockerService implements IDockerService {
    * Setup the docker API.
    * @param {any} dockerOptions Docker setup
    */
-  private constructor(dockerOptions: any) {
+  private constructor(dockerOptions: Docker.DockerOptions) {
     this.docker = new Docker(dockerOptions);
     this.cache = new DockerCache();
   }
@@ -210,7 +207,7 @@ export class DockerService implements IDockerService {
    * @param {any} dockerOptions Options of docker API service
    * @return {DockerService} The connected service
    */
-  static connect(dockerOptions?: any): DockerService {
+  static connect(dockerOptions?: Docker.DockerOptions): DockerService {
     this.instance = new DockerService(dockerOptions);
     return this.instance;
   }

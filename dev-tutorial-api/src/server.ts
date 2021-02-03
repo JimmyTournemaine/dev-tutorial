@@ -1,10 +1,13 @@
 #!/usr/bin/env node
+/* eslint-disable no-fallthrough */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 
 import { Socket } from 'socket.io';
-import { SocketManager, SocketService } from './services/socket/socket';
+import { SocketManager } from './services/socket/socket';
 import { app } from './app';
 import * as http from 'http';
 import * as debug from 'debug';
+import * as socketio from 'socket.io';
 
 const logger = debug('app:server');
 
@@ -22,7 +25,7 @@ const server = http.createServer(app);
 /**
  * Create Socket server
  */
-const io = require('socket.io')(server);
+const io = socketio(server);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -62,7 +65,7 @@ function normalizePort(val: string): string | number | false {
  * Event listener for HTTP server "error" event.
  * @param {any} error
  */
-function onError(error: any) {
+function onError(error: any): never {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -71,21 +74,21 @@ function onError(error: any) {
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-    default:
-      throw error;
+  case 'EACCES':
+    console.error(bind + ' requires elevated privileges');
+    process.exit(1);
+  case 'EADDRINUSE':
+    console.error(bind + ' is already in use');
+    process.exit(1);
+  default:
+    throw error;
   }
 }
 
 /**
  * Event listener for HTTP server "listening" event.
  */
-function onListening() {
+function onListening(): void {
   const addr = server.address();
   const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
@@ -95,7 +98,7 @@ function onListening() {
  * Event listener for IOSocket connection
  * @param {Socket} sock
  */
-function onIOConnection(sock: Socket) {
+function onIOConnection(sock: Socket): void {
 
   SocketManager.getInstance().socket(sock).service();
 

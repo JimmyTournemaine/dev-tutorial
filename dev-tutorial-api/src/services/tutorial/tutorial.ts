@@ -39,16 +39,18 @@ export class TutorialService {
       tutoDescSaved.push(...this.loadFrom(dir));
     }
 
-    return Promise.all(tutoDescSaved).then(() => { });
+    return Promise.all(tutoDescSaved).then(() => {
+      // return Promise<void> when all promises are resolved
+    });
   }
 
-  private loadFrom(basedir: string) {
+  private loadFrom(basedir: string): Promise<TutorialDescriptorDocument>[] {
     const files = fs.readdirSync(basedir, { withFileTypes: true });
     const tutoDescSaved = [];
     for (const dir of files) {
       if (dir.isDirectory()) {
         const content = fs.readFileSync(`${basedir}/${dir.name}/tutorial.json`);
-        let descriptors = JSON.parse(content.toString());
+        const descriptors = JSON.parse(content.toString());
         descriptors.dirname = `${basedir}/${dir.name}`;
         if(descriptors.icon.startsWith('public/')) {
           descriptors.icon = `/api/tuto/${descriptors.slug}/static/${descriptors.icon.slice(7)}`;
