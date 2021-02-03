@@ -18,7 +18,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TYPESCRIPT_ES_CONFIG_FILE: $GITHUB_WORKSPACE/dev-tutorial-api/.eslintrc.json
+          TYPESCRIPT_ES_CONFIG_FILE: ./dev-tutorial-api/.eslintrc.json
   test:
     runs-on: ubuntu-latest
     steps:
