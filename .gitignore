@@ -13,3 +13,7 @@ node_modules/
 
 # CLI Tools
 /dev-tutorial-cli
+
+# Ansible generated files
+Dockerfile
+.dockerignore

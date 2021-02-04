@@ -10,6 +10,19 @@
     - build
 
 # Generate Dockerfiles
+- name: Generate .dockerignore
+  copy:
+    dest: "{{ item }}"
+    content: |
+      # {{ ansible_managed }}
+      dist
+      node_modules
+      .editorconfig
+      yarn-error.log
+  loop:
+    - "{{ deployer_local_workspace }}/dev-tutorial-api/.dockerignore"
+    - "{{ deployer_local_workspace }}/dev-tutorial-app/.dockerignore"
+
 
 - name: Generate the backend Dockerfile
   template:
