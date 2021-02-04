@@ -1,0 +1,8 @@
+/* {{ ansible_managed }} */
+export const environment = {
+  production: {{ prepare_env_app_production | string | lower }},
+  apiHost: '{{ prepare_env_app_api_host }}',
+  apiEndpoint: '{{ prepare_env_app_api_endpoint }}',
+  socketEndpoint: '{{ prepare_env_app_socket_endpoint }}',
+  disableTerminal: {{ prepare_env_app_disable_terminal | string | lower }},
+};
