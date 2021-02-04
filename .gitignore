@@ -17,4 +17,4 @@ node_modules/
 # Ansible generated files
 Dockerfile
 .dockerignore
-src/environments
+/*/src/environments/
