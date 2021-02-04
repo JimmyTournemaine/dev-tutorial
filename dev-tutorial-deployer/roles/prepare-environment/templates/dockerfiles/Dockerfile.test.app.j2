@@ -1,11 +1,5 @@
-# Ansible managed
-FROM node:10
-WORKDIR /usr/src/app/app-ui
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install
-EXPOSE 4200
-CMD ["yarn", "start", "--host", "0.0.0.0", "--disableHostCheck"]RUN apt-get update \
+{% include 'Dockerfile.base.app.j2' %}
+RUN apt-get update \
 && apt-get install -y apt-transport-https \
 && sh -c 'echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list' \
 && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \

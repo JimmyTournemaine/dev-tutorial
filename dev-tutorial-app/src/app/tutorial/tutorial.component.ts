@@ -72,7 +72,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Switch terminal => editor on 'edit' command hook
     this.socket.on('edit-start', (info: any) => {
-      console.log('info', info);
       const chunks = [];
       this.socket.on('edit-content', (chunk: string) => chunks.push(chunk));
       this.socket.once('edit-error', (err: string) => console.error(err));

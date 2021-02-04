@@ -1,0 +1,26 @@
+---
+- name: Check docker host
+  wait_for:
+    host: "{{ deployer_host }}"
+    port: 2375
+    timeout: 1
+    msg: 'The host system has not enable Docker Engine API. Check your setup.'
+  when: "deployer_host_system != 'linux'"
+
+- name: Get info on docker host
+  docker_host_info:
+    containers: yes
+    containers_filters:
+      status: running
+      name: dev-tutorial-*
+  register: result
+
+- debug:
+    var: result.containers | map(attribute='Names') | flatten
+
+- name: Stop containers from others
+  docker_container:
+    name: "{{ item }}"
+    state: stopped
+  when: "not item | regex_search('.*-(' + inventory_hostname + '|deployer)')"
+  loop: "{{ result.containers | map(attribute='Names') | flatten }}"

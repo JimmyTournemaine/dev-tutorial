@@ -48,7 +48,7 @@ const randomizeInput = (input: string, callback: (chunk: string) => void): void 
   }
 };
 
-xdescribe('Server integration tests', function () {
+describe('Server integration tests', function () {
   it('should the server starts', () => {
     expect(server.listening).to.be.true;
   });
@@ -68,7 +68,7 @@ xdescribe('Server integration tests', function () {
       socket = io('http://localhost:3000');
     });
 
-    it('should attaching a socket to a docker container and get some commands results', function (done) {
+    xit('should attaching a socket to a docker container and get some commands results', function (done) {
       const part = partial(2, done);
       socket.on('show', (show: string) => {
         try {
@@ -88,7 +88,7 @@ xdescribe('Server integration tests', function () {
     });
 
 
-    it('should attaching a socket to a docker container and get some commands results after a reconnection', function (done) {
+    xit('should attaching a socket to a docker container and get some commands results after a reconnection', function (done) {
       const part = partial(2, done);
 
       socket.on('show', (show: string) => {
@@ -177,7 +177,7 @@ xdescribe('Server integration tests', function () {
       socket.emit('attach', 'not exist');
     });
 
-    it('should complete the demo tutorial', function (done) {
+    xit('should complete the demo tutorial', function (done) {
       socket.on('attached', () => {
         // Slide 2
         socket.once('next', () => {

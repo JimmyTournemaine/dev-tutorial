@@ -13,13 +13,24 @@ class PassThroughDemuxStream extends DemuxStream {
     const stdout = new PassThrough();
     const stderr = new PassThrough();
 
-    this.mainStream.pipe(stdout);
-    this.mainStream.on('close', () => {
-      stdout.end();
-      stderr.end();
-    });
+    this.mainStream
+      .pipe(stdout)
+      .on('end', () => {
+        stdout.end();
+        stderr.end();
+      });
+
     this.stdout = stdout;
     this.stderr = stderr;
+  }
+
+  /**
+   * @override PassThrough don't trigger close event
+   */
+  onClose(listener: () => void): this {
+    this.mainStream.on('finish', listener);
+
+    return this;
   }
 }
 
@@ -89,7 +100,6 @@ describe('Validation', function () {
       expect(validation).to.be.true;
     });
     it('should validate a file creation', async function () {
-
       const serviceStub = sinon.createStubInstance(SocketService);
       const dockerStub = sinon.createStubInstance(DockerService);
       dockerStub.exec.returns(new Promise(resolve => {
@@ -97,8 +107,7 @@ describe('Validation', function () {
         const stream = new PassThroughDemuxStream(stdout);
 
         setTimeout(() => {
-          stdout.write('OK');
-          stdout.end();
+          stdout.end('OK');
         }, 500);
 
         resolve(stream);
@@ -155,8 +164,8 @@ describe('Validation', function () {
 
       validators.validate(undefined, ttylogExample);
     });
-    it('should use the parser', function() {
-      const validator = new PreValidator({cmd: 'ls'});
+    it('should use the parser', function () {
+      const validator = new PreValidator({ cmd: 'ls' });
 
       validator.validate('ls -l  ');
       validator.validate(' git add  README.md ');

@@ -1,7 +1,0 @@
----
-- name: On verra
-  hosts: localhost
-  vars:
-    workspace: "{{ lookup('env', 'DEVTUTO_WORKSPACE') }}"
-  roles:
-    - prepare-environment

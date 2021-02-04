@@ -1,0 +1,5 @@
+---
+- name: Generate backend environment file
+  template:
+    src: environments/environment.ts.j2
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-api/src/environments/environment.ts"

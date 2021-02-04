@@ -1,0 +1,22 @@
+---
+# Force to rebuild image
+prepare_env_force: no
+prepare_env_force_api: "{{ prepare_env_force }}"
+prepare_env_force_app: "{{ prepare_env_force }}"
+
+# Expected state of the container : present or started
+prepare_env_containers_state: started
+
+# Should we wait for container initialization before moving to the next one
+prepare_env_wait_for_init: yes
+
+# Containers environment variables
+prepare_env_container_env_backend:
+  DEBUG: "app:server,app:access,app:socket"
+
+# Environment variables
+prepare_env_api_production: true
+prepare_env_api_docker: 
+  host: 'host.docker.internal'
+  port: 2375
+prepare_env_api_mongodb: 'mongodb://dev-tutorial-mongo-{{ inventory_hostname }}:27017/dev_tutorial_api'

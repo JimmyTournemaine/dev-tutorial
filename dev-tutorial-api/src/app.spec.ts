@@ -6,7 +6,7 @@ import { DemuxStream, DockerService } from './services/docker/docker';
 import { TutorialService } from './services/tutorial/tutorial';
 import { environment } from './environments/environment';
 
-xdescribe('REST API Tests', function () {
+describe('REST API Tests', function () {
 
   before('reinit defaults services values', function () {
     TutorialService.init();

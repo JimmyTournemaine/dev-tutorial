@@ -3,7 +3,11 @@
 
 import sys
 import os
+import threading
+import multiprocessing
 import getopt
+import signal
+from datetime import datetime
 
 _verbose = False
 
@@ -16,12 +20,40 @@ def dump_config(args):
     run('docker-compose ' + args + ' config')
 
 def build(args, services):
-    run('docker-compose ' + args + ' build --no-cache ' + ' '.join(services))
+    if 'darwin' == sys.platform:
+        run('docker run -d --name tcp-connect -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock alpine/socat tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock || docker start tcp-connect')
+    
+    host_workspace = os.path.dirname(os.path.realpath(__file__))
+    deployer_workspace = '/usr/src/dev-tutorial'
+
+    exit_code = os.system('docker build -t dev-tutorial-deployer ./dev-tutorial-deployer')
+    if(exit_code > 0):
+        sys.exit(exit_code)
+
+    # Run deployer
+    #exit_code = os.system('docker run --rm --name dev-tutorial-deployer -t -e HOST_SYSTEM='+sys.platform+' -e WORKSPACE_HOSTED='+host_workspace+' -e WORKSPACE_LOCAL='+deployer_workspace+' -v /var/run/docker.sock:/var/run/docker.sock -v '+host_workspace+'/dev-tutorial-deployer:/etc/ansible -v '+host_workspace+'/:'+deployer_workspace+' -v '+deployer_workspace+'/ansible dev-tutorial-deployer ansible-playbook playbooks/test.yml')
+    if(exit_code > 0):
+        sys.exit(exit_code)
+        
+    # Follow containers logs
+    threads = [
+        multiprocessing.Process(target=os.system, args=('docker logs -fn 0 dev-tutorial-api-test | sed -e \'s/^/\033[0;33mbackend\t| \033[0m/\'',)),
+        multiprocessing.Process(target=os.system, args=('docker logs -fn 0 dev-tutorial-app-test | sed -e \'s/^/\033[0;31mfrontend\t| \033[0m/\'',)),
+    ]
+    [t.start() for t in threads]
+    
+    # SIGINT handler
+    terminate = lambda sig, frame: [t.terminate() for t in threads]
+    signal.signal(signal.SIGINT, terminate)
+
+    # Wait for termination with SIGINT(^C)
+    [t.join() for t in threads]
+    print('\nStopping following logs but your containers are STILL RUNNING!')
+
 
 def up(args, services):
     if 'darwin' == sys.platform:
         run('docker run -d --name tcp-connect -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock alpine/socat tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock || docker start tcp-connect')
-
 
     run('docker-compose ' + args + ' up --remove-orphans ' + ' '.join(services))
 

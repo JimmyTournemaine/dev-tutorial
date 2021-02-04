@@ -311,10 +311,11 @@ abstract class DockerExecValidator<O extends DockerExecValidatorOptions> extends
 
   async validate(): Promise<boolean> {
     const stream = await this.getDockerService().exec(this.tutoId, this.command);
+    
     return new Promise((resolve) => {
       const buffers = [];
       stream.onErr((chunk) => console.error('exec err \'%s\'', chunk));
-      stream.onOut((chunk) => { buffers.push(chunk); });
+      stream.onOut((chunk) => buffers.push(chunk));
       stream.onClose(() => {
         const stdout = Buffer.concat(buffers).toString();
         resolve(this.isStdoutValid(stdout.trim()));

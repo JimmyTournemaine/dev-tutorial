@@ -25,6 +25,13 @@ For more information, run `./compose.py -h`
 ./compose.sh --up -e test
 ```
 
+# Troubleshooting
+
+* Error building *image*: no space left on device
+
+Solution: Remove any unnecessary Docker objects from you system.
+For instance, you could run `docker system prune -af`
+
 # Cheatsheet
 
 Retrieve `node_modules` generated in the docker containers :

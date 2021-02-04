@@ -1,0 +1,12 @@
+---
+- name: Requirements
+  import_tasks: requirements.yml
+
+- name: Prepare
+  import_tasks: prepare.yml
+
+- name: Build images
+  import_tasks: images.yml
+
+- name: Create containers
+  import_tasks: containers.yml

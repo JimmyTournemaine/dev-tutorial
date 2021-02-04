@@ -17,4 +17,5 @@ rules:
   quotes: [error, single]
   semi: [error, always]
   eol-last: [error, always]
+  no-console: [error, { allow: [warn, error] }]
   "@typescript-eslint/no-explicit-any": 0

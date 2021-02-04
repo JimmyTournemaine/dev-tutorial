@@ -1,0 +1,6 @@
+---
+- name: Pare the local development environment
+  hosts: test
+  roles:
+    - role: prepare-environment
+
