@@ -13,9 +13,16 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            artifact: dist/compose.exe
+          - os: ubuntu-latest
+            artifact: dist/compose
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - run: pip install pyinstaller
       - run: pyinstaller compose.py -y --onefile
-      - run: ls dist
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ${{ matrix.artifact }}
