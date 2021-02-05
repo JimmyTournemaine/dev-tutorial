@@ -9,7 +9,11 @@ on:
 jobs:
   bundle:
     name: Windows bundle
-    runs-on: windows-latest
+    runs-on: [ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v2
-      - run: python --version
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get required dependencies
+        run: pip install pyinstaller
+      - name: Compose bundle
+        run: pyinstaller compose.py -y --onefile
