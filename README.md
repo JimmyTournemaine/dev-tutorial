@@ -2,11 +2,16 @@
 
 ## Requirements
 
-* Python >= 2
+* Python >= 2 (or use the compose bundle)
 * Docker Engine API >= 1.40
 
 * MacOS: Uncomment "socat" part in docker-compose.yml and "socat" dependencies in the other services.
 * Others: make sure that the Docker Engine API is authorized using the setting: "Exposing Daemon on tcp://localhost:2375 without TLS".
+
+### Compose bundle (python required on host)
+
+pip install pyinstaller
+pyinstaller compose.py -y --onefile
 
 ## Build and run
 

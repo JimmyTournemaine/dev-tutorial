@@ -14,6 +14,12 @@ node_modules/
 # CLI Tools
 /dev-tutorial-cli
 
+# Python generated files
+/__pycache__
+/build
+/dist
+/compose.spec
+
 # Ansible generated files
 Dockerfile
 .dockerignore

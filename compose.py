@@ -48,6 +48,7 @@ class Compose:
         print('\nStopping following logs but your containers are STILL RUNNING!')
 
 def usage():
+    print(sys.argv)
     print('Usage: ' + sys.argv[0] + ' [options]')
     print('\t-h --help    : display this help')
     print('\t-v --verbose : increase verbosity')
