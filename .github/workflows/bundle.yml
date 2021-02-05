@@ -9,7 +9,12 @@ on:
 jobs:
   bundle:
     name: Package
-    runs-on: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+          - os: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: pip install pyinstaller
