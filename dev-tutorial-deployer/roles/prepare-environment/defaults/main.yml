@@ -22,6 +22,7 @@ prepare_env_api_docker:
 prepare_env_api_mongodb: 'mongodb://dev-tutorial-mongo-{{ inventory_hostname }}:27017/dev_tutorial_api'
 
 prepare_env_app_production: yes
+prepare_env_app_port: 4200
 prepare_env_app_api_host: 'http://dev-tutorial-api-{{ inventory_hostname }}:3000'
 prepare_env_app_api_endpoint: 'http://dev-tutorial-api-{{ inventory_hostname }}:3000/api'
 prepare_env_app_socket_endpoint: 'http://dev-tutorial-api-{{ inventory_hostname }}:3000'

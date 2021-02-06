@@ -70,7 +70,7 @@
       - "{{ deployer_hosted_workspace }}/dev-tutorial-app:/usr/src/app/app-ui"
       - "/usr/src/app/app-ui/node_modules"
     ports:
-      - "4200:4200"
+      - "4200:{{ prepare_env_app_port }}"
     networks:
       - name: "dev-tutorial-network-{{ inventory_hostname }}"
     networks_cli_compatible: no
