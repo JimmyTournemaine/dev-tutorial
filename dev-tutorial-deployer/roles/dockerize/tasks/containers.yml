@@ -1,10 +1,23 @@
 ---
 
-- name: Create the containers network
-  docker_network:
-    name: "dev-tutorial-network-{{ deployer_env }}"
+- name: Prepare the network
+  set_fact:
+    dockerize_networks:
+      - name: "dev-tutorial-network-{{ deployer_env }}"
+  when: "dockerize_containers_create_network"
   tags:
     - build
+    - api
+    - app
+
+- name: Create the containers network
+  docker_network:
+    name: "{{ item.name }}"
+  loop: "{{ dockerize_networks }}"
+  tags:
+    - build
+    - api
+    - app
 
 - name: Create the database container
   docker_container:
@@ -15,8 +28,7 @@
     log_driver: none
     ports:
       - "27017:27017"
-    networks:
-      - name: "dev-tutorial-network-{{ deployer_env }}"
+    networks: "{{ dockerize_networks | default(omit) }}"
     networks_cli_compatible: no
   register: db_cont_metadata
   tags:
@@ -35,8 +47,7 @@
       - "/usr/src/app/api/node_modules"
     ports:
       - "3000:3000"
-    networks:
-      - name: "dev-tutorial-network-{{ deployer_env }}"
+    networks: "{{ dockerize_networks | default(omit) }}"
     networks_cli_compatible: no
     env: "{{ dockerize_container_env_backend }}"
   register: backend_cont_metadata
@@ -71,8 +82,7 @@
       - "/usr/src/app/app-ui/node_modules"
     ports:
       - "4200:{{ dockerize_app_port }}"
-    networks:
-      - name: "dev-tutorial-network-{{ deployer_env }}"
+    networks: "{{ dockerize_networks | default(omit) }}"
     networks_cli_compatible: no
   register: frontend_cont_metadata
   tags:

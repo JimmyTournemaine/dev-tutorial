@@ -12,6 +12,7 @@ dockerize_force_app_container: "{{ dockerize_force_app }}"
 
 # Expected state of the container : present or started
 dockerize_containers_state: started
+dockerize_containers_create_network: yes
 
 # Should we wait for container initialization before moving to the next one
 dockerize_wait_for_init: yes
