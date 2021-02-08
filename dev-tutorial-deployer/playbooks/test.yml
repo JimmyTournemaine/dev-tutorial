@@ -7,7 +7,6 @@
       dockerize_backend_command: yarn test
       dockerize_frontend_command: yarn test --no-progress
       dockerize_wait_for_init: no
-      dockerize_containers_create_network: no
       dockerize_container_env_backend:
         DEBUG: "app:access,app:docker,test:*"
         DEV_API_EXTRA_TUTORIALS: "test/extra-tuto test/extra-tuto2"

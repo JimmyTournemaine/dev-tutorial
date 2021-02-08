@@ -72,7 +72,7 @@ class Dockerize:
 
         # Wait for termination with SIGINT(^C) or containers termination
         [t.join() for t in threads]
-
+        
     def _exec(self, cmd):
         if self.verbose or self.dry_run:
             print(cmd)

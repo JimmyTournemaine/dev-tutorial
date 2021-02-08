@@ -1,10 +1,7 @@
 name: Tests
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   lint:
@@ -34,7 +31,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - name: Run tests
-        run: ./compose.py dockerize ci -s api
+        run: ./compose.py dockerize ci -s api -v
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
