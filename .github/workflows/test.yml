@@ -16,11 +16,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.yml
-          VALIDATE_TYPESCRIPT_ES: true
           ANSIBLE_DIRECTORY: ./dev-tutorial-deployer
-          VALIDATE_ANSIBLE: true
-          VALIDATE_PYTHON: true
   test:
     #runs-on: ${{ matrix.os }}
     runs-on: ubuntu-latest
@@ -31,7 +27,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - name: Run tests
-        run: ./compose.py dockerize ci -s api -v
+        run: ./compose.py dockerize ci -s api
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
