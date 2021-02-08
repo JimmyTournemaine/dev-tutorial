@@ -54,7 +54,7 @@ class Dockerize:
 
         # Run deployer
         start_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%IZ")
-        self._exec('docker run --rm --name dev-tutorial-deployer -t -e HOST_SYSTEM='+sys.platform+' -e WORKSPACE_HOSTED='+host_workspace+' -e WORKSPACE_LOCAL='+deployer_workspace+' -v /var/run/docker.sock:/var/run/docker.sock -v '+host_workspace+'/dev-tutorial-deployer:/etc/ansible -v '+host_workspace+'/:'+deployer_workspace+' -v '+deployer_workspace+'/ansible dev-tutorial-deployer ansible-playbook ' + playbook + ' ' + ' '.join(playbook_args))
+        self._exec('docker run --rm --name dev-tutorial-deployer -t -e HOST_SYSTEM='+sys.platform+' -e WORKSPACE_HOSTED='+host_workspace+' -e WORKSPACE_LOCAL='+deployer_workspace+' -v /var/run/docker.sock:/var/run/docker.sock -v '+host_workspace+'/dev-tutorial-deployer:/etc/ansible -v '+host_workspace+'/:'+deployer_workspace+' dev-tutorial-deployer ansible-playbook ' + playbook + ' ' + ' '.join(playbook_args))
 
         #self._post_actions(self.environment)
 
