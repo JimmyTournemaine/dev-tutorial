@@ -32,6 +32,8 @@ jobs:
       - uses: actions/setup-python@v2
       - name: Run tests
         run: ./compose.py dockerize ci -s api
+      - name: find . -name '*.xml'
+      - name: find . -name '*report*'
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:

@@ -10,14 +10,6 @@ import webbrowser
 import subprocess
 from datetime import datetime
 
-class Bundle:
-
-
-    def run(self):
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pyinstaller'])
-        subprocess.check_call([sys.executable, '-m', 'PyInstaller', 'compose.py', '-y', '--onefile', '--distpath', './'])
-
-
 class Dockerize:
 
 
@@ -121,9 +113,6 @@ def main(argv):
     dockerize_parser.add_argument('-a', '--ansible-vars', nargs='+', default=[], help='additional ansible variables (default: %(default)s)', metavar='ansible_vars')
     dockerize_parser.add_argument('-d', '--dry-run', action='store_true', help='output every action but don\'t run them')
     dockerize_parser.add_argument('-v', '--verbose', action='store_true', help='make actions more verbose')
-
-    bundle_parser = subparsers.add_parser('bundle')
-    bundle_parser.set_defaults(func=lambda args: Bundle().run())
 
     args = parser.parse_args()
     

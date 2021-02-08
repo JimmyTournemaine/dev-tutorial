@@ -20,7 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - run: ./compose.py bundle
+      - run: pip install pyinstaller
+      - run: pyinstaller compose.py -y --onefile --distpath .
       - uses: actions/upload-artifact@v2
         with:
           path: ${{ matrix.artifact }}
