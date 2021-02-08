@@ -1,6 +1,6 @@
 {
-  "threshold": 5,
-  "reporters": ["console", "badge"],
+  "threshold": 10,
+  "reporters": ["console"],
   "ignore": ["**/*.spec.ts"],
   "absolute": true
 }

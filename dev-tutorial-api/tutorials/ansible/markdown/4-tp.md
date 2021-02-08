@@ -1,8 +1,8 @@
 # Ansible - TP
 Nous avons vu les principaux concepts d'Ansible. Il en reste de nombreux autres que vous pourrez decouvrir par vous-meme dans la documentation en fonction de vos besoins, je pense notamment aux [filtres](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#filters), aux [lookups](https://docs.ansible.com/ansible/2.9/plugins/lookup.html) ou a des commandes comme `ansible-inventory` ou `ansible-lint`.
- 
+
 Cependant, vous devriez avoir suffisamment de concepts en tête afin de réaliser le TP qui vous est proposé.
- 
+
 ## C'est à vous!
 L'objectif est de déployer un serveur Tomcat. Afin de protéger un minimum le serveur, nous allons créer un utilisateur et un groupe dédié pour exécuter le service. A noter également que l'exécution de Tomcat requiert l'installation de Java.
 Nous allons donc rédiger les tâches de notre rôle afin d'effectuer les actions suivantes :
@@ -25,7 +25,7 @@ Vous devriez avoir toutes les bases qui permettent de développer ce rôle.
 N'oubliez pas que lorsque vous ne savez pas quel module utiliser pour une action donnée, il suffit de la rechercher dans la documentation Ansible !
 A vous de jouer !
 ## Solution
- 
+
 <details>
 <summary>Afficher la solution</summary>
  Il y a de nombreuses façons d'aborder les différentes problématiques de l'installation d'un tel composant.
@@ -114,4 +114,3 @@ listen: "restart tomcat"
 ```
 </details>
 </details>
- 

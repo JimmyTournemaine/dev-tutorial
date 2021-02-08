@@ -1,8 +1,8 @@
 # Dev' Tutorial
 
-## Bienvenue !
+## Bienvenue!
 
-**Bienvenue sur Dev' Tutorial !**
+**Bienvenue sur Dev' Tutorial!**
 
 Ce premier tutoriel à pour objectif de te présenter l'ensemble des outils,
 mis à ta disposition pour dérouler les différents tutoriels.

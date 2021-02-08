@@ -12,18 +12,18 @@ type Editor = monaco.editor.IStandaloneCodeEditor; // | monaco.editor.IStandalon
 export class EditorComponent implements OnChanges {
 
   private static readonly LANG_MAP = {
-    "js": "javascript",
-    "java": "java",
-    "ts": "typescript",
-    "css": "css",
-    "html": "html",
-    "sh": "bash",
-    "xml": "xml",
-    "yml": "yml",
+    'js': 'javascript',
+    'java': 'java',
+    'ts': 'typescript',
+    'css': 'css',
+    'html': 'html',
+    'sh': 'bash',
+    'xml': 'xml',
+    'yml': 'yml',
   };
   private static readonly LANG_FALLBACK = 'plaintext';
 
-  content: string = '';
+  content = '';
   options = {};
 
   @Input()
@@ -36,7 +36,6 @@ export class EditorComponent implements OnChanges {
   quit = new EventEmitter<void>();
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes', changes);
     if (changes.model) {
       this.content = changes.model.currentValue.value;
 
@@ -55,9 +54,7 @@ export class EditorComponent implements OnChanges {
     }
   }
 
-  onEditorInit(editor: Editor) {
-    console.log(this.model);
-
+  onEditorInit(editor: Editor): void {
     editor.focus();
     editor.addAction({
       id: 'quit',

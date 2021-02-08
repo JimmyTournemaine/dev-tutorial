@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
-import os
-import multiprocessing
 import argparse
+import multiprocessing
+import os
 import signal
-import webbrowser
 import subprocess
+import sys
+import webbrowser
 from datetime import datetime
+
 
 class Dockerize:
 
@@ -22,11 +23,11 @@ class Dockerize:
 
 
     def run(self):
-        if 'darwin' == sys.platform:
-            self._exec('docker run -d --name tcp-connect -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock alpine/socat tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock || docker start tcp-connect')
-        
+        if "darwin" == sys.platform:
+            self._exec("docker run -d --name tcp-connect -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock alpine/socat tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock || docker start tcp-connect")
+
         host_workspace = os.path.dirname(os.path.realpath(__file__))
-        if 'win32' == sys.platform:
+        if "win32" == sys.platform:
             host_workspace = '/' + host_workspace.replace('\\', '/').replace(':', '').lower()
 
         deployer_workspace = '/usr/src/dev-tutorial'

@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - run: npm install eslint-config-eslint 
+      #- run: npm install eslint-config-eslint 
       - uses: github/super-linter@v3
         env:
           #VALIDATE_ALL_CODEBASE: false
@@ -21,6 +21,7 @@ jobs:
           ANSIBLE_DIRECTORY: ./dev-tutorial-deployer
           VALIDATE_JAVASCRIPT_STANDARD: false
           VALIDATE_TYPESCRIPT_STANDARD: false
+          VALIDATE_PYTHON_BLACK: false
   test:
     #runs-on: ${{ matrix.os }}
     runs-on: ubuntu-latest
