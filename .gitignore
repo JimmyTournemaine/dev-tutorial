@@ -21,6 +21,7 @@ node_modules/
 /compose.spec
 
 # Ansible generated files
-Dockerfile
 .dockerignore
+Dockerfile.*
+!/dev-tutorial-deployer/**/Dockerfile.*
 /*/src/environments/

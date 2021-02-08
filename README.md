@@ -2,33 +2,17 @@
 
 ## Requirements
 
-* Python >= 2 (or use the compose bundle)
+* Python >= 2 (or using the compose bundle)
 * Docker Engine API >= 1.40
 
-* MacOS: Uncomment "socat" part in docker-compose.yml and "socat" dependencies in the other services.
-* Others: make sure that the Docker Engine API is authorized using the setting: "Exposing Daemon on tcp://localhost:2375 without TLS".
-
-### Compose bundle (python required on host)
-
-pip install pyinstaller
-pyinstaller compose.py -y --onefile
+* MacOS: a socat container will automatically start to expose the Docker daemon on port 2375
+* Windows: make sure that the Docker Engine API is authorized using the setting: "Exposing Daemon on tcp://localhost:2375 without TLS".
 
 ## Build and run
 
 You can compose you environment easily using the provided script.
-For more information, run `./compose.py -h`
+For more information, run `compose.sh -h` or `compose.ps1 -h`
 
-```bash
-# Build and start
-./compose.py --build --up
-
-# Only build or start
-./compose.sh --build
-./compose.sh --up
-
-# For testing purpose
-./compose.sh --up -e test
-```
 
 # Troubleshooting
 
@@ -36,6 +20,10 @@ For more information, run `./compose.py -h`
 
 Solution: Remove any unnecessary Docker objects from you system.
 For instance, you could run `docker system prune -af`
+
+* Error creating container: UnixHTTPConnectionPool(host='localhost', port=None): Read timed out
+
+Solution: Restart docker
 
 # Cheatsheet
 

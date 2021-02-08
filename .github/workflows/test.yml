@@ -19,15 +19,17 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
           LINTER_RULES_PATH: ./dev-tutorial-api
           TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.yml
           VALIDATE_TYPESCRIPT_ES: true
   test:
+    #runs-on: ${{ matrix.os }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2
-      - name: Build test images
-        run: ./compose.py -e ci --build
+      - uses: actions/setup-python@v2
       - name: Run tests
-        run: ./compose.py -e ci --up -s api
+        run: ./compose.py dockerize ci -s api

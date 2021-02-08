@@ -1,0 +1,126 @@
+---
+
+# Pull standard images
+
+- name: Pull the database image
+  docker_image:
+    name: mongo
+    source: pull
+  tags:
+    - build
+
+# Generate Dockerfiles
+
+- name: Generate .dockerignore
+  template:
+    src: "dockerfiles/.dockerignore.j2"
+    dest: "{{ item }}"
+  loop:
+    - "{{ deployer_local_workspace }}/dev-tutorial-api/.dockerignore"
+    - "{{ deployer_local_workspace }}/dev-tutorial-app/.dockerignore"
+  tags:
+    - build
+
+- name: Get the backend Dockerfile template
+  set_fact:
+    dockerize_backend_dockerfile_type: "{{ item | basename | regex_replace('Dockerfile\\.([a-z]+)\\..+', '\\1') }}"
+  with_first_found:
+    - "{{ role_path }}/templates/dockerfiles/Dockerfile.{{ deployer_env }}.api.j2"
+    - "{{ role_path }}/templates/dockerfiles/Dockerfile.base.api.j2"
+  tags:
+    - build
+    - api
+
+- name: Get the frontend Dockerfile template
+  set_fact:
+    dockerize_frontend_dockerfile_type: "{{ item | basename | regex_replace('Dockerfile\\.([a-z]+)\\..+', '\\1') }}"
+  with_first_found:
+    - "{{ role_path }}/templates/dockerfiles/Dockerfile.{{ deployer_env }}.app.j2"
+    - "{{ role_path }}/templates/dockerfiles/Dockerfile.base.app.j2"
+  tags:
+    - build
+    - app
+
+- name: Generate the backend Dockerfile
+  template:
+    src: "dockerfiles/Dockerfile.{{ dockerize_backend_dockerfile_type }}.api.j2"
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-api/Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+  register: backend_dockerfile
+  tags:
+    - build
+    - api
+
+- name: Generate the frontend Dockerfile
+  template:
+    src: "dockerfiles/Dockerfile.{{ dockerize_frontend_dockerfile_type }}.api.j2"
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+  register: frontend_dockerfile
+  tags:
+    - build
+    - app
+
+# Build images from generated Dockerfiles
+
+- name: Build the backend image
+  docker_image:
+    name: "dev-tutorial-api-{{ dockerize_backend_dockerfile_type }}"
+    build:
+      dockerfile: "Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+      path: "{{ deployer_local_workspace }}/dev-tutorial-api"
+      pull: "{{ rebuild }}"
+      rm: yes
+      nocache: "{{ rebuild }}"
+    state: present
+    source: build
+    force_source: "{{ rebuild }}"
+  vars:
+    rebuild: "{{ dockerize_force_api_image or backend_dockerfile is changed }}"
+  tags:
+    - build
+    - api
+
+- name: Build the frontend image
+  docker_image:
+    name: "dev-tutorial-app-{{ dockerize_backend_dockerfile_type }}"
+    build:
+      dockerfile: "Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+      path: "{{ deployer_local_workspace }}/dev-tutorial-app"
+      pull: "{{ rebuild }}"
+      rm: yes
+      nocache: "{{ rebuild }}"
+    state: present
+    source: build
+    force_source: "{{ rebuild }}"
+  vars:
+    rebuild: "{{ dockerize_force_app_image or frontend_dockerfile is changed }}"
+  tags:
+    - build
+    - app
+
+- name: Find the tutorials directories
+  find:
+    paths: "{{ deployer_local_workspace }}/dev-tutorial-api/tutorials"
+    recurse: no
+    file_type: directory
+  register: tutorial_directories
+  tags:
+    - build
+    - tutorials
+
+- name: Build the tutorials images
+  docker_image:
+    name: "{{ item | basename }}"
+    build:
+      path: "{{ item | dirname }}"
+      pull: "{{ dockerize_force }}"
+      rm: yes
+      nocache: "{{ dockerize_force }}"
+    state: present
+    source: build
+    force_source: "{{ dockerize_force }}"
+  loop: "{{ tutorial_directories.files | map(attribute='path') | list }}"
+  loop_control:
+    label: "{{ item | basename }}"
+  tags:
+    - build
+    - tutorials

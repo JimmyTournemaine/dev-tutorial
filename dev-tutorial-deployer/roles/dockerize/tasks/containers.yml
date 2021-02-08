@@ -1,0 +1,94 @@
+---
+
+- name: Create the containers network
+  docker_network:
+    name: "dev-tutorial-network-{{ deployer_env }}"
+  tags:
+    - build
+
+- name: Create the database container
+  docker_container:
+    name: "dev-tutorial-mongo-{{ deployer_env }}"
+    image: mongo
+    state: "{{ dockerize_containers_state }}"
+    restart: "{{ dockerize_containers_state == 'started' and dockerize_force }}"
+    log_driver: none
+    ports:
+      - "27017:27017"
+    networks:
+      - name: "dev-tutorial-network-{{ deployer_env }}"
+    networks_cli_compatible: no
+  register: db_cont_metadata
+  tags:
+    - build
+
+- name: Create the backend container
+  docker_container:
+    name: "dev-tutorial-api-{{ deployer_env }}"
+    image: "dev-tutorial-api-{{ dockerize_backend_dockerfile_type }}"
+    state: "{{ dockerize_containers_state }}"
+    restart: "{{ dockerize_containers_state == 'started' and dockerize_force_api_container }}"
+    command: "{{ dockerize_backend_command | default(omit) }}"
+    tty: yes
+    volumes:
+      - "{{ deployer_hosted_workspace }}/dev-tutorial-api:/usr/src/app/api"
+      - "/usr/src/app/api/node_modules"
+    ports:
+      - "3000:3000"
+    networks:
+      - name: "dev-tutorial-network-{{ deployer_env }}"
+    networks_cli_compatible: no
+    env: "{{ dockerize_container_env_backend }}"
+  register: backend_cont_metadata
+  tags:
+    - build
+    - api
+
+- name: Wait for backend inititalization
+  uri:
+    url: http://{{ dockerize_host }}:3000/api/tuto
+  register: _result
+  until: _result.status == 200
+  retries: 10
+  delay: 5
+  when:
+    - "dockerize_containers_state == 'started'"
+    - "dockerize_wait_for_init"
+  tags:
+    - build
+    - api
+
+- name: Create the frontend container
+  docker_container:
+    name: "dev-tutorial-app-{{ deployer_env }}"
+    image: "dev-tutorial-app-{{ dockerize_backend_dockerfile_type }}"
+    state: "{{ dockerize_containers_state }}"
+    restart: "{{ dockerize_containers_state == 'started' and dockerize_force_app_container }}"
+    command: "{{ dockerize_frontend_command | default(omit) }}"
+    tty: yes
+    volumes:
+      - "{{ deployer_hosted_workspace }}/dev-tutorial-app:/usr/src/app/app-ui"
+      - "/usr/src/app/app-ui/node_modules"
+    ports:
+      - "4200:{{ dockerize_app_port }}"
+    networks:
+      - name: "dev-tutorial-network-{{ deployer_env }}"
+    networks_cli_compatible: no
+  register: frontend_cont_metadata
+  tags:
+    - build
+    - app
+
+- name: Wait for frontend inititalization
+  uri:
+    url: http://{{ dockerize_host }}:4200
+  register: _result
+  until: _result.status == 200
+  retries: 10
+  delay: 30
+  when: 
+    - "dockerize_containers_state == 'started'"
+    - "dockerize_wait_for_init"
+  tags:
+    - build
+    - app

@@ -6,4 +6,4 @@ RUN apt-get update \
 && apt-get update \
 && apt-get install -y google-chrome-stable
 EXPOSE 9876
-CMD ["yarn", "test"]
+CMD ["yarn", "test", "--no-progress"]

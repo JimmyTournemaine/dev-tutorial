@@ -2,9 +2,8 @@ name: Compose bundle
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    paths:
+      - 'compose.py'
 
 jobs:
   bundle:

@@ -7,7 +7,7 @@
     "lint": "eslint 'src/**/*.ts'",
     "serve": "nodemon -e ts --exec ts-node src/server.ts",
     "test": "nodemon -e ts --exec \"mocha -r ts-node/register src/**/*.spec.ts --require choma --trace-warnings \"",
-    "test-ci": "mocha dist/**/*.spec.js --require choma --trace-warnings --exit"
+    "test-ci": "mocha -r ts-node/register src/**/*.spec.ts --require choma --trace-warnings --reporter mocha-junit-reporter --exit"
   },
   "dependencies": {
     "async": "^3.2.0",
@@ -49,6 +49,7 @@
     "eslint": "^7.15.0",
     "eslint-config-google": "^0.14.0",
     "mocha": "^8.2.1",
+    "mocha-junit-reporter": "^2.0.0",
     "nodemon": "^2.0.3",
     "sinon": "^9.2.1",
     "socket.io-client": "^2.3.0",
