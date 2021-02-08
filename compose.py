@@ -10,6 +10,7 @@ import signal
 import argparse
 import webbrowser
 import subprocess
+from datetime import datetime
 
 class Bundle:
 
@@ -52,14 +53,15 @@ class Dockerize:
         self._exec('docker build -t dev-tutorial-deployer ./dev-tutorial-deployer')
 
         # Run deployer
+        start_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%IZ")
         self._exec('docker run --rm --name dev-tutorial-deployer -t -e HOST_SYSTEM='+sys.platform+' -e WORKSPACE_HOSTED='+host_workspace+' -e WORKSPACE_LOCAL='+deployer_workspace+' -v /var/run/docker.sock:/var/run/docker.sock -v '+host_workspace+'/dev-tutorial-deployer:/etc/ansible -v '+host_workspace+'/:'+deployer_workspace+' -v '+deployer_workspace+'/ansible dev-tutorial-deployer ansible-playbook ' + playbook + ' ' + ' '.join(playbook_args))
 
         #self._post_actions(self.environment)
 
         # Follow containers logs
         threads = [
-            multiprocessing.Process(target=self._exec, args=(self._log_transform('docker logs --follow --tail 0 dev-tutorial-api-'+self.environment, 'api'),)),
-            multiprocessing.Process(target=self._exec, args=(self._log_transform('docker logs --follow --tail 0 dev-tutorial-app-'+self.environment, 'app'),)),
+            multiprocessing.Process(target=self._exec, args=(self._log_transform('docker logs --follow --since '+start_time+' dev-tutorial-api-'+self.environment, 'api'),)),
+            multiprocessing.Process(target=self._exec, args=(self._log_transform('docker logs --follow --since '+start_time+' dev-tutorial-app-'+self.environment, 'app'),)),
         ]
         [t.start() for t in threads]
         
@@ -68,9 +70,8 @@ class Dockerize:
         terminate = lambda sig, frame: [t.terminate() for t in threads]
         signal.signal(signal.SIGINT, terminate)
 
-        # Wait for termination with SIGINT(^C) or containers stopped
+        # Wait for termination with SIGINT(^C) or containers termination
         [t.join() for t in threads]
-        print('\nStopping following logs')
 
     def _exec(self, cmd):
         if self.verbose or self.dry_run:

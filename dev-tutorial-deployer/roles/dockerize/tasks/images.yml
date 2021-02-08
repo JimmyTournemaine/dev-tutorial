@@ -8,6 +8,7 @@
     source: pull
   tags:
     - build
+    - api
 
 # Generate Dockerfiles
 
