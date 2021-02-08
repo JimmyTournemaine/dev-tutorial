@@ -1,6 +1,8 @@
-# Getting Started
+# Dev' Tutorial
 
-## Requirements
+## Getting started
+
+### Requirements
 
 * Python >= 2 (or using the compose bundle)
 * Docker Engine API >= 1.40
@@ -8,13 +10,13 @@
 * MacOS: a socat container will automatically start to expose the Docker daemon on port 2375
 * Windows: make sure that the Docker Engine API is authorized using the setting: "Exposing Daemon on tcp://localhost:2375 without TLS".
 
-## Build and run
+### Build and run
 
 You can compose you environment easily using the provided script.
 For more information, run `compose.sh -h` or `compose.ps1 -h`
 
 
-# Troubleshooting
+## Troubleshooting
 
 * Error building *image*: no space left on device
 
@@ -25,7 +27,7 @@ For instance, you could run `docker system prune -af`
 
 Solution: Restart docker
 
-# Cheatsheet
+## Cheatsheet
 
 Retrieve `node_modules` generated in the docker containers :
 

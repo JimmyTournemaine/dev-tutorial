@@ -36,11 +36,11 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   socket: SocketIOClient.Socket;
 
   terminal: TerminalComponent;
-  ready: boolean = false;
-  disabled: boolean = false;
+  ready = false;
+  disabled = false;
 
   editor: EditorComponent;
-  editMode: boolean = false;
+  editMode = false;
   model: NgxEditorModel;
 
   constructor(
@@ -82,7 +82,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Extra logging reconnect_attempt
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', (reason: string) => {
       console.log('socket disconnected', reason);
       this.socket.connect();
     });
@@ -107,21 +107,21 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
    * Edit a file (trigerred by edit hook command)
    * @param info The file path and the content of the file
    */
-  editFile(info: { path: string, content: string; }) {
+  editFile(info: { path: string, content: string; }): void {
     this.model = { uri: info.path, value: info.content };
     this.editMode = true;
   }
 
-  onEditorSave(value: string) {
+  onEditorSave(value: string): void {
     this.ws.edit(this.tutoId, this.model.uri, value)
       .subscribe(() => console.log('written'), console.error);
   }
 
-  onEditorQuit() {
+  onEditorQuit(): void {
     this.editMode = false;
   }
 
-  attachTerminal(terminal: TerminalComponent) {
+  attachTerminal(terminal: TerminalComponent): void {
     if (!environment.disableTerminal) {
       terminal.attach(this.socket);
     }
@@ -129,7 +129,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     this.socket.emit('attach', this.tutoId);
   }
 
-  onTutorialCompleted() {
+  onTutorialCompleted(): void {
     const dialogRef = this.dialog.open(TutorialCompletedDialogComponent);
 
     dialogRef.afterClosed().subscribe((result: 'stay'|'leave') => {
@@ -148,14 +148,14 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * FIXME: debugging purpose only
    */
-  toggleEditMode() {
+  toggleEditMode(): void {
     this.editMode = !this.editMode;
   }
 
   /**
    * FIXME: debugging purpose only
    */
-  nextSlide() {
+  nextSlide(): void {
     this.slideshow.nextSlide();
   }
 

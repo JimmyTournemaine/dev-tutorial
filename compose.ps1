@@ -16,9 +16,9 @@ $GitHubUri = "$RepoUri/actions?query=workflow%3A%22$WorkflowEncoded%22+is%3Asucc
 function dowload {
     New-Item -Name "dist" -ItemType "directory" -Force | Out-Null
 
-    Write-Host 'Missing executable, please download the latest artifact to the ./dist folder'
-    Write-Host 'Please select the last build and download the artifact in the "Artifacts" section at the bottom of the page'        
-    Write-Host 'Your web browser will open in a few seconds'
+    Write-Output 'Missing executable, please download the latest artifact to the ./dist folder'
+    Write-Output 'Please select the last build and download the artifact in the "Artifacts" section at the bottom of the page'
+    Write-Output 'Your web browser will open in a few seconds'
 
     Start-Sleep 3
     start $GitHubUri
@@ -34,4 +34,4 @@ if($exe) {
 }
 
 # Run
-Invoke-Expression "$exe $($args -Join ' ')"
+& "$exe $($args -Join ' ')"

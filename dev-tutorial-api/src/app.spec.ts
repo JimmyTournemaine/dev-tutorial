@@ -8,6 +8,14 @@ import { environment } from './environments/environment';
 
 describe('REST API Tests', function () {
 
+  function validateTuto(tuto: unknown) {
+    expect(tuto).to.have.property('name');
+    expect(tuto).to.have.property('resume');
+    expect(tuto).to.have.property('slug');
+    expect(tuto).to.have.property('description');
+    expect(tuto).to.have.property('slides');
+  }
+
   before('reinit defaults services values', function () {
     TutorialService.init();
     DockerService.connect(environment.docker);
@@ -31,13 +39,7 @@ describe('REST API Tests', function () {
     expect(res.body).to.be.an('Array');
     expect(res.body).to.have.lengthOf(3);
 
-    res.body.forEach((tuto: unknown) => {
-      expect(tuto).to.have.property('name');
-      expect(tuto).to.have.property('resume');
-      expect(tuto).to.have.property('slug');
-      expect(tuto).to.have.property('description');
-      expect(tuto).to.have.property('slides');
-    });
+    res.body.forEach((tuto: unknown) => validateTuto(tuto));
   });
 
   it('should list matching tutorials', async function () {
@@ -48,13 +50,7 @@ describe('REST API Tests', function () {
     expect(res.body).to.be.an('Array');
     expect(res.body).to.have.lengthOf(2);
 
-    res.body.forEach((tuto: unknown) => {
-      expect(tuto).to.have.property('name');
-      expect(tuto).to.have.property('resume');
-      expect(tuto).to.have.property('slug');
-      expect(tuto).to.have.property('description');
-      expect(tuto).to.have.property('slides');
-    });
+    res.body.forEach((tuto: unknown) => validateTuto(tuto));
   });
 
   it('should get a tutorial slides content', async function () {

@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 
-check() {
-    python --version
-    if [ $? -gt 0 ]; then
-        echo 'Python is already installed. Please use compose.py instead'
-        exit 1
-    fi
-}
-
-compose(argv) {
+compose() {
 
     # Check compose executable
     EXE='dist\compose'
@@ -18,5 +10,6 @@ compose(argv) {
     $EXE $exeargs
 }
 
-check
-compose "$@"
+if python --version; then
+    ./compose.py "$@"
+fi

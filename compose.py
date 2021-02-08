@@ -3,22 +3,23 @@
 
 import sys
 import os
-import threading
 import multiprocessing
 import argparse
 import signal
-import argparse
 import webbrowser
 import subprocess
 from datetime import datetime
 
 class Bundle:
 
+
     def run(self):
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pyinstaller'])
-        subprocess.check_call([sys.executable, '-m', 'PyInstaller', 'compose.py', '-y', '--onefile'])
+        subprocess.check_call([sys.executable, '-m', 'PyInstaller', 'compose.py', '-y', '--onefile', '--distpath', './'])
+
 
 class Dockerize:
+
 
     def __init__(self, args):
         self.environment = args.environment
@@ -26,6 +27,7 @@ class Dockerize:
         self.dry_run = args.dry_run
         self.services = args.services
         self.ansible_vars = args.ansible_vars
+
 
     def run(self):
         if 'darwin' == sys.platform:
@@ -72,7 +74,8 @@ class Dockerize:
 
         # Wait for termination with SIGINT(^C) or containers termination
         [t.join() for t in threads]
-        
+
+
     def _exec(self, cmd):
         if self.verbose or self.dry_run:
             print(cmd)
@@ -80,6 +83,7 @@ class Dockerize:
             exit_code = os.system(cmd)
             if(exit_code > 0):
                 sys.exit(exit_code)
+
 
     def _log_transform(self, logCommand, container):
         if container == 'api':
@@ -105,10 +109,12 @@ class Dockerize:
 
 def main(argv):
 
-    parser = argparse.ArgumentParser()    
+    parser = argparse.ArgumentParser()  
+    parser.set_defaults(func=lambda args: parser.print_help())
+
     subparsers = parser.add_subparsers()
 
-    dockerize_parser = subparsers.add_parser('dockerize', aliases=['c'])
+    dockerize_parser = subparsers.add_parser('dockerize')
     dockerize_parser.set_defaults(func=lambda args: Dockerize(args).run())
     dockerize_parser.add_argument('environment', choices=['dev', 'test', 'ci', 'prod'], default='dev', help='select the environment, allowed values are %(choices)s (default: %(default)s)', metavar='environment')
     dockerize_parser.add_argument('-s', '--services', choices=['api', 'app'], nargs='+', default=[], help='select the services to run, allowed values are %(choices)s (default: %(default)s)', metavar='services')
@@ -116,11 +122,11 @@ def main(argv):
     dockerize_parser.add_argument('-d', '--dry-run', action='store_true', help='output every action but don\'t run them')
     dockerize_parser.add_argument('-v', '--verbose', action='store_true', help='make actions more verbose')
 
-    bundle_parser = subparsers.add_parser('bundle', aliases=['b'])
+    bundle_parser = subparsers.add_parser('bundle')
     bundle_parser.set_defaults(func=lambda args: Bundle().run())
 
     args = parser.parse_args()
-    #print(args)
+    
     args.func(args)
 
 if __name__ == "__main__":

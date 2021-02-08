@@ -16,7 +16,10 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILTER_REGEX_INCLUDE: .*/.*.j2
           ANSIBLE_DIRECTORY: ./dev-tutorial-deployer
+          VALIDATE_JAVASCRIPT_STANDARD: false
+          VALIDATE_TYPESCRIPT_STANDARD: false
   test:
     #runs-on: ${{ matrix.os }}
     runs-on: ubuntu-latest
@@ -28,7 +31,8 @@ jobs:
       - uses: actions/setup-python@v2
       - name: Run tests
         run: ./compose.py dockerize ci -s api
-      - name: Publish Test Report
+      - run: ./compose.py dockerize ci -s api
+      - name: ls *.xml
         uses: mikepenz/action-junit-report@v1
         with:
           report_paths: '**/test-results.xml'
