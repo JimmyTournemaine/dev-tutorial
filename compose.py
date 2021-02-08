@@ -10,6 +10,29 @@ import sys
 import webbrowser
 from datetime import datetime
 
+class Lint:
+
+
+    def __init__(self, args):
+        self.debug = args.debug
+
+    def run(self):
+        cmd = ' '.join([
+            'docker', 'run',
+            '-e', 'RUN_LOCAL=true',
+            '-e', 'VALIDATE_ALL_CODEBASE=true',
+            '-e', 'FILTER_REGEX_EXCLUDE=\'.*/.*.j2\'',
+            '-e', 'VALIDATE_JAVASCRIPT_STANDARD=false',
+            '-e', 'VALIDATE_TYPESCRIPT_STANDARD=false',
+            '-e', 'VALIDATE_JAVASCRIPT_STANDARD=false',
+            '-e', 'ANSIBLE_DIRECTORY=\'dev-tutorial-deployer\'',
+            '-e', 'OUTPUT_FOLDER=\'build/super-linter.report\'',
+            '-e', 'ACTIONS_RUNNER_DEBUG=' + str(self.debug).lower(),
+            '-v', '$(pwd):/tmp/lint',
+            'github/super-linter'
+        ])
+        print(cmd)
+        os.system(cmd)
 
 class Dockerize:
 
@@ -114,6 +137,10 @@ def main(argv):
     dockerize_parser.add_argument('-a', '--ansible-vars', nargs='+', default=[], help='additional ansible variables (default: %(default)s)', metavar='ansible_vars')
     dockerize_parser.add_argument('-d', '--dry-run', action='store_true', help='output every action but don\'t run them')
     dockerize_parser.add_argument('-v', '--verbose', action='store_true', help='make actions more verbose')
+
+    lint_parser = subparsers.add_parser('lint')
+    lint_parser.set_defaults(func=lambda args: Lint(args).run())
+    lint_parser.add_argument('--debug', action='store_true')
 
     args = parser.parse_args()
     
