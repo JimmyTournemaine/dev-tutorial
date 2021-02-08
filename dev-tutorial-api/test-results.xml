@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="55.3410" tests="47" failures="1" skipped="4">
+  <testsuite name="Root Suite" timestamp="2021-02-08T09:59:47" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Validation" timestamp="2021-02-08T09:59:47" tests="0" file="/usr/src/app/api/src/services/socket/validators/validator.spec.ts" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Post-Validation" timestamp="2021-02-08T09:59:47" tests="2" file="/usr/src/app/api/src/services/socket/validators/validator.spec.ts" time="0.5270" failures="0">
+    <testcase name="Validation Post-Validation should validate command exit code" time="0.0040" classname="should validate command exit code">
+    </testcase>
+    <testcase name="Validation Post-Validation should validate a file creation" time="0.5230" classname="should validate a file creation">
+    </testcase>
+  </testsuite>
+  <testsuite name="Validation parser" timestamp="2021-02-08T09:59:48" tests="3" file="/usr/src/app/api/src/services/socket/validators/validator.spec.ts" time="0.0080" failures="0">
+    <testcase name="Validation Validation parser should use the parser" time="0.0010" classname="should use the parser">
+    </testcase>
+    <testcase name="Validation Validation parser should parse validator successfully without waiting" time="0.0060" classname="should parse validator successfully without waiting">
+    </testcase>
+    <testcase name="Validation Validation parser should parse validator successfully" time="0.0010" classname="should parse validator successfully">
+    </testcase>
+  </testsuite>
+  <testsuite name="Pre-Validation" timestamp="2021-02-08T09:59:48" tests="3" file="/usr/src/app/api/src/services/socket/validators/validator.spec.ts" time="0.0000" failures="0">
+    <testcase name="Validation Pre-Validation should pre-validate a command with too much blanks" time="0.0000" classname="should pre-validate a command with too much blanks">
+    </testcase>
+    <testcase name="Validation Pre-Validation should pre-validate a command" time="0.0000" classname="should pre-validate a command">
+    </testcase>
+    <testcase name="Validation Pre-Validation should not pre-validate a not matching command" time="0.0000" classname="should not pre-validate a not matching command">
+    </testcase>
+  </testsuite>
+  <testsuite name="Server integration tests" timestamp="2021-02-08T09:59:48" tests="1" file="/usr/src/app/api/src/server.spec.ts" time="0.0010" failures="0">
+    <testcase name="Server integration tests should the server starts" time="0.0010" classname="should the server starts">
+    </testcase>
+  </testsuite>
+  <testsuite name="Socket integration" timestamp="2021-02-08T09:59:48" tests="6" file="/usr/src/app/api/src/server.spec.ts" time="10.4680" failures="1">
+    <testcase name="Server integration tests Socket integration should attaching a socket to a docker container and test &apos;edit&apos; hook error handling" time="10.0060" classname="should attaching a socket to a docker container and test &apos;edit&apos; hook error handling">
+      <failure message="Timeout of 10000ms exceeded. For async tests and hooks, ensure &quot;done()&quot; is called; if returning a Promise, ensure it resolves. (/usr/src/app/api/src/server.spec.ts)" type="Error"><![CDATA[Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/usr/src/app/api/src/server.spec.ts)]]></failure>
+    </testcase>
+    <testcase name="Server integration tests Socket integration should send an error when trying to attach a socket to a non existent docker container" time="0.0450" classname="should send an error when trying to attach a socket to a non existent docker container">
+    </testcase>
+    <testcase name="Server integration tests Socket integration should attaching a socket to a docker container and test &apos;edit&apos; hook" time="0.4170" classname="should attaching a socket to a docker container and test &apos;edit&apos; hook">
+    </testcase>
+  </testsuite>
+  <testsuite name="REST API Tests" timestamp="2021-02-08T10:00:10" tests="13" file="/usr/src/app/api/src/app.spec.ts" time="32.7110" failures="0">
+    <testcase name="REST API Tests should start the given tutorial docker container" time="12.1470" classname="should start the given tutorial docker container">
+    </testcase>
+    <testcase name="REST API Tests should get a tutorial slides content" time="0.0260" classname="should get a tutorial slides content">
+    </testcase>
+    <testcase name="REST API Tests should list matching tutorials" time="0.0730" classname="should list matching tutorials">
+    </testcase>
+    <testcase name="REST API Tests should write a file in a docker container" time="20.3170" classname="should write a file in a docker container">
+    </testcase>
+    <testcase name="REST API Tests should get a tutorial slide content" time="0.0220" classname="should get a tutorial slide content">
+    </testcase>
+    <testcase name="REST API Tests should get 404 on non existing path" time="0.0090" classname="should get 404 on non existing path">
+    </testcase>
+    <testcase name="REST API Tests should got an error trying to write a file in a docker container that is not started (= not currently used)" time="0.0310" classname="should got an error trying to write a file in a docker container that is not started (= not currently used)">
+    </testcase>
+    <testcase name="REST API Tests should respond 404 on unknown tutorial" time="0.0070" classname="should respond 404 on unknown tutorial">
+    </testcase>
+    <testcase name="REST API Tests should list all tutorials" time="0.0280" classname="should list all tutorials">
+    </testcase>
+    <testcase name="REST API Tests should get 404 on unknown slide id of a tutorial" time="0.0130" classname="should get 404 on unknown slide id of a tutorial">
+    </testcase>
+    <testcase name="REST API Tests should get a public asset from a tutorial" time="0.0260" classname="should get a public asset from a tutorial">
+    </testcase>
+    <testcase name="REST API Tests should respond 404 on unknown tutorial" time="0.0120" classname="should respond 404 on unknown tutorial">
+    </testcase>
+  </testsuite>
+  <testsuite name="Docker Service" timestamp="2021-02-08T10:00:43" tests="0" file="/usr/src/app/api/src/services/docker/docker.spec.ts" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Docker service initialization" timestamp="2021-02-08T10:00:43" tests="2" file="/usr/src/app/api/src/services/docker/docker.spec.ts" time="0.0000" failures="0">
+    <testcase name="Docker Service Docker service initialization should the docker service works and be unique" time="0.0000" classname="should the docker service works and be unique">
+    </testcase>
+    <testcase name="Docker Service Docker service initialization should the docker service throw error without connection" time="0.0000" classname="should the docker service throw error without connection">
+    </testcase>
+  </testsuite>
+  <testsuite name="Docker basic container features" timestamp="2021-02-08T10:00:43" tests="1" file="/usr/src/app/api/src/services/docker/docker.spec.ts" time="11.0840" failures="0">
+    <testcase name="Docker Service Docker basic container features should start a tutorial container, then stop and remove it" time="11.0840" classname="should start a tutorial container, then stop and remove it">
+    </testcase>
+  </testsuite>
+  <testsuite name="Docker advanced container features" timestamp="2021-02-08T10:01:04" tests="1" file="/usr/src/app/api/src/services/docker/docker.spec.ts" time="0.2810" failures="0">
+    <testcase name="Docker Service Docker advanced container features should write a file in the container" time="0.2810" classname="should write a file in the container">
+    </testcase>
+  </testsuite>
+  <testsuite name="Command Parser" timestamp="2021-02-08T10:01:05" tests="10" file="/usr/src/app/api/src/services/socket/validators/command-parser.spec.ts" time="0.0670" failures="0">
+    <testcase name="Command Parser should parse a simple command with args" time="0.0350" classname="should parse a simple command with args">
+    </testcase>
+    <testcase name="Command Parser should handle pipes" time="0.0040" classname="should handle pipes">
+    </testcase>
+    <testcase name="Command Parser should parse a simple command" time="0.0020" classname="should parse a simple command">
+    </testcase>
+    <testcase name="Command Parser should throw a parse error on blank command" time="0.0000" classname="should throw a parse error on blank command">
+    </testcase>
+    <testcase name="Command Parser should get an option value" time="0.0050" classname="should get an option value">
+    </testcase>
+    <testcase name="Command Parser should parse a simple command with args" time="0.0020" classname="should parse a simple command with args">
+    </testcase>
+    <testcase name="Command Parser should get a long option value" time="0.0070" classname="should get a long option value">
+    </testcase>
+    <testcase name="Command Parser should allow any order" time="0.0030" classname="should allow any order">
+    </testcase>
+    <testcase name="Command Parser should get an option value when command as multiple options as one" time="0.0020" classname="should get an option value when command as multiple options as one">
+    </testcase>
+    <testcase name="Command Parser should handle redirections" time="0.0070" classname="should handle redirections">
+    </testcase>
+  </testsuite>
+  <testsuite name="Tutorial Service Testing" timestamp="2021-02-08T10:01:05" tests="0" file="/usr/src/app/api/src/services/tutorial/tutorial.spec.ts" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Tutorial Service Features" timestamp="2021-02-08T10:01:05" tests="3" file="/usr/src/app/api/src/services/tutorial/tutorial.spec.ts" time="0.0400" failures="0">
+    <testcase name="Tutorial Service Testing Tutorial Service Features should get a list of tutorial descriptions (using callback)" time="0.0000" classname="should get a list of tutorial descriptions (using callback)">
+    </testcase>
+    <testcase name="Tutorial Service Testing Tutorial Service Features should get a list of tutorial descriptions" time="0.0120" classname="should get a list of tutorial descriptions">
+    </testcase>
+    <testcase name="Tutorial Service Testing Tutorial Service Features should get a list of tutorial with a fuzzy search" time="0.0280" classname="should get a list of tutorial with a fuzzy search">
+    </testcase>
+  </testsuite>
+  <testsuite name="Tutorial Service Initialization" timestamp="2021-02-08T10:01:05" tests="2" file="/usr/src/app/api/src/services/tutorial/tutorial.spec.ts" time="0.1540" failures="0">
+    <testcase name="Tutorial Service Testing Tutorial Service Initialization should the tutorial initialize with extra tutorial directories to load" time="0.1020" classname="should the tutorial initialize with extra tutorial directories to load">
+    </testcase>
+    <testcase name="Tutorial Service Testing Tutorial Service Initialization should the tutorial initialize" time="0.0520" classname="should the tutorial initialize">
+    </testcase>
+  </testsuite>
+</testsuites>
