@@ -2,9 +2,10 @@
 
 - name: Prepare the network
   set_fact:
-    dockerize_networks:
+    dockerize_networks: "{{ dockerize_containers_create_network |ternary(networks, []) }}"
+  vars:
+    networks: 
       - name: "dev-tutorial-network-{{ deployer_env }}"
-  when: "dockerize_containers_create_network"
   tags:
     - build
     - api
