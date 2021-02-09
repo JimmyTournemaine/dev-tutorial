@@ -11,7 +11,7 @@ jobs:
         with:
           fetch-depth: 0
       #- run: npm install eslint-config-eslint 
-      uses: nvuillam/mega-linter@v4
+      - uses: nvuillam/mega-linter@v4
   test:
     #runs-on: ${{ matrix.os }}
     runs-on: ubuntu-latest
