@@ -77,10 +77,10 @@ A l'issue de ce chapitre, nous avons vu comment rendre nos tâche réutilisables
 Nous souhaitons déployer 3 applications sur deux serveurs Tomcat :
 
 | Serveur | Application |
-| --------|:-----------:|
-|    S1   | A1          |
-|    S1   | A2          |
-|    S2   | A3          |
+|---------|:-----------:|
+| S1      |     A1      |
+| S1      |     A2      |
+| S2      |     A3      |
 
 Dans ce cas d'exemple, les applications A1 et A2 sont toutes les deux déployées sur un serveur S1. L'application A3 est quant-à-elle déployée sur un second serveur.
 Il serait possible de déployer une telle configuration avec les *playbooks* et beaucoup de conditions. Cependant, pour répondre à de tels cas d'usage, Ansible introduit ce que l'on appelle des **rôles**.

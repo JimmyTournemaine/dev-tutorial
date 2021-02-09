@@ -12,16 +12,18 @@ test-results.xml
 # VSCode
 .editorconfig
 
-# CLI Tools
+# CLI Tools (WIP: out of git)
 /dev-tutorial-cli
 
-# Python generated files
+# Generated files
+## Mega-Linter
+/report
+## Python
 /__pycache__
 /build
 /dist
 /compose.spec
-
-# Ansible generated files
+## Ansible
 .dockerignore
 Dockerfile.*
 !/dev-tutorial-deployer/**/Dockerfile.*

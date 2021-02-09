@@ -89,7 +89,7 @@
   until: _result.status == 200
   retries: 10
   delay: 30
-  when: 
+  when:
     - "dockerize_containers_state == 'started'"
     - "dockerize_wait_for_init"
   tags:

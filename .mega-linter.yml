@@ -1,0 +1,17 @@
+# Configuration file for Mega-Linter
+# See all available variables at https://nvuillam.github.io/mega-linter/configuration/ and in linters documentation
+
+# Main
+DEFAULT_BRANCH: main
+APPLY_FIXES: none
+DISABLE:
+  - SPELL_MISSPELL # no french
+FLAVOR_SUGGESTIONS: false
+PRINT_ALPACA: false
+
+# Reporters
+UPDATED_SOURCES_REPORTER: false
+
+# Linter specific
+ANSIBLE_DIRECTORY: dev-tutorial-deployer
+SPELL_CSPELL_ARGUMENTS: --local "en,fr"

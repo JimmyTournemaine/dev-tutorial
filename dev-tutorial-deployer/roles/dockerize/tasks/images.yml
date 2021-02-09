@@ -16,6 +16,7 @@
   template:
     src: "dockerfiles/.dockerignore.j2"
     dest: "{{ item }}"
+    mode: 0644
   loop:
     - "{{ deployer_local_workspace }}/dev-tutorial-api/.dockerignore"
     - "{{ deployer_local_workspace }}/dev-tutorial-app/.dockerignore"
@@ -46,6 +47,7 @@
   template:
     src: "dockerfiles/Dockerfile.{{ dockerize_backend_dockerfile_type }}.api.j2"
     dest: "{{ deployer_local_workspace }}/dev-tutorial-api/Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+    mode: 0644
   register: backend_dockerfile
   tags:
     - build
@@ -55,6 +57,7 @@
   template:
     src: "dockerfiles/Dockerfile.{{ dockerize_frontend_dockerfile_type }}.api.j2"
     dest: "{{ deployer_local_workspace }}/dev-tutorial-app/Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+    mode: 0644
   register: frontend_dockerfile
   tags:
     - build

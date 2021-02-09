@@ -3,6 +3,6 @@
   "rules": {
     "no-empty-source": null,
     "selector-type-no-unknown": [true, { "ignoreTypes": ["/^mat-/", "/^ngx-/", "/^app-/", "markdown"] }],
-    "selector-pseudo-element-no-unknown": [true, { "ignorePseudoElements": ["::ng-deep"] }]
+    "selector-pseudo-element-no-unknown": [true, { "ignorePseudoElements": ["ng-deep"] }]
   }
 }

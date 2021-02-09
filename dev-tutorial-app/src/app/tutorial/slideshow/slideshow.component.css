@@ -5,7 +5,7 @@ markdown ::ng-deep a:visited {
 }
 
 markdown ::ng-deep a::after {
-  font-family: 'Material Icons' serif;
+  font-family: 'Material Icons', sans-serif;
   content: "exit_to_app";
   padding-left: 5px;
   line-height: 10px;

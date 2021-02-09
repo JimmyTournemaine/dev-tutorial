@@ -1,6 +1,5 @@
 FROM centos:7
-RUN yum -y update \
-  && yum -y install epel-release-7 \
+RUN yum -y install epel-release-7 \
   && yum -y install ansible-2.9.16 sudo-1.8.23 \
   && yum clean all \
   && adduser -m -s /bin/bash -U ansible \

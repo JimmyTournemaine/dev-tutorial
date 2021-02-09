@@ -172,7 +172,9 @@ Maintenant il suffit de variabiliser la configuration par rapport aux variables 
 </Directory>
 ```
 
-Rien d'impressionnant, nous avons juste remplacé les valeurs en dur par des variables de substitution. A noter cependant la première ligne du fichier `{{ ansible_managed | comment }}` qui permet d'indiquer en commentaire un texte configurable globalement dans Ansible. Considéré comme un bonne pratique, il permet d'indiquer aux administrateurs du serveur que le fichier est géré par Ansible et que toute modification qu'ils effectuaient à la main serait perdue lors du prochain déploiement via Ansible.
+Rien d'impressionnant, nous avons juste remplacé les valeurs en dur par des variables de substitution.
+A noter cependant la première ligne du fichier `{{ ansible_managed | comment }}` qui permet d'indiquer en commentaire un texte configurable globalement dans Ansible.
+Considéré comme un bonne pratique, il permet d'indiquer aux administrateurs du serveur que le fichier est géré par Ansible et que toute modification qu'ils effectuaient à la main serait perdue lors du prochain déploiement via Ansible.
 
 </details>
 

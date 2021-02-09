@@ -1,6 +1,6 @@
 # Dev' Tutorial
 
-## Bienvenue!
+## Bienvenue
 
 **Bienvenue sur Dev' Tutorial!**
 

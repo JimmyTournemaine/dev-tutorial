@@ -10,29 +10,6 @@ import sys
 import webbrowser
 from datetime import datetime
 
-class Lint:
-
-
-    def __init__(self, args):
-        self.debug = args.debug
-
-    def run(self):
-        cmd = ' '.join([
-            'docker', 'run',
-            '-e', 'RUN_LOCAL=true',
-            '-e', 'VALIDATE_ALL_CODEBASE=true',
-            '-e', 'FILTER_REGEX_EXCLUDE=\'.*/.*.j2\'',
-            '-e', 'VALIDATE_JAVASCRIPT_STANDARD=false',
-            '-e', 'VALIDATE_TYPESCRIPT_STANDARD=false',
-            '-e', 'VALIDATE_JAVASCRIPT_STANDARD=false',
-            '-e', 'ANSIBLE_DIRECTORY=\'dev-tutorial-deployer\'',
-            '-e', 'OUTPUT_FOLDER=\'build/super-linter.report\'',
-            '-e', 'ACTIONS_RUNNER_DEBUG=' + str(self.debug).lower(),
-            '-v', '$(pwd):/tmp/lint',
-            'github/super-linter'
-        ])
-        print(cmd)
-        os.system(cmd)
 
 class Dockerize:
 
@@ -123,6 +100,45 @@ class Dockerize:
             webbrowser.open('http://localhost:4200/')
 
 
+class Lint:
+
+
+    def __init__(self, args):
+        self.verbose = args.verbose
+        self.debug = args.debug
+        self.fix = args.fix
+        self.linters = args.linters
+
+
+    def run(self):
+        cmd = 'docker run {} -v $(pwd):/tmp/lint nvuillam/mega-linter:v4'
+        args = list()
+        if self.fix:
+            args.append('-e APPLY_FIXES=all')
+
+        if self.debug:
+            args.append('-e LOG_LEVEL=DEBUG')
+
+        if len(self.linters) > 0:
+            args.append('-e ENABLE=' + ','.join(self.linters))
+
+        if self.verbose:
+            print(cmd.format(' '.join(args)))
+
+        os.system(cmd.format(' '.join(args)))
+
+
+class Prune:
+
+
+    def __init__(self, args):
+        pass
+
+
+    def run(self):
+        os.system('docker system prune -af')
+
+
 def main(argv):
 
     parser = argparse.ArgumentParser()  
@@ -130,7 +146,7 @@ def main(argv):
 
     subparsers = parser.add_subparsers()
 
-    dockerize_parser = subparsers.add_parser('dockerize')
+    dockerize_parser = subparsers.add_parser('dockerize', help='dockerize the apps to build a ready-to-use environment')
     dockerize_parser.set_defaults(func=lambda args: Dockerize(args).run())
     dockerize_parser.add_argument('environment', choices=['dev', 'test', 'ci', 'prod'], default='dev', help='select the environment, allowed values are %(choices)s (default: %(default)s)', metavar='environment')
     dockerize_parser.add_argument('-s', '--services', choices=['api', 'app'], nargs='+', default=[], help='select the services to run, allowed values are %(choices)s (default: %(default)s)', metavar='services')
@@ -138,9 +154,15 @@ def main(argv):
     dockerize_parser.add_argument('-d', '--dry-run', action='store_true', help='output every action but don\'t run them')
     dockerize_parser.add_argument('-v', '--verbose', action='store_true', help='make actions more verbose')
 
-    lint_parser = subparsers.add_parser('lint')
+    lint_parser = subparsers.add_parser('lint', help='run the MegaLinter over all the source code')
     lint_parser.set_defaults(func=lambda args: Lint(args).run())
-    lint_parser.add_argument('--debug', action='store_true')
+    lint_parser.add_argument('-v', '--verbose', action='store_true')
+    lint_parser.add_argument('-d', '--debug', action='store_true')
+    lint_parser.add_argument('-f', '--fix', action='store_true', help='fix issues that can be automatically fixed')
+    lint_parser.add_argument('-l', '--linters', nargs='+', default=[], help='linters to use (default: from .mega-linter.yml)')
+
+    prune_parser = subparsers.add_parser('prune', help='prune your docker system')
+    prune_parser.set_defaults(func=lambda args: Prune(args).run())
 
     args = parser.parse_args()
     
