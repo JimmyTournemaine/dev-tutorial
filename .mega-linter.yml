@@ -5,7 +5,8 @@
 DEFAULT_BRANCH: main
 APPLY_FIXES: none
 DISABLE:
-  - SPELL_MISSPELL # no french
+  - HTML # wait new version (.htmlintrc not functional)
+  - SPELL
 FLAVOR_SUGGESTIONS: false
 PRINT_ALPACA: false
 
@@ -15,3 +16,7 @@ UPDATED_SOURCES_REPORTER: false
 # Linter specific
 ANSIBLE_DIRECTORY: dev-tutorial-deployer
 SPELL_CSPELL_ARGUMENTS: --local "en,fr"
+SPELL_MISSPELL_FILTER_REGEX_EXCLUDE: '.*\.fr\..*'
+YAML_V8R_FILTER_REGEX_EXCLUDE: '.mega-linter.yml' # https://github.com/nvuillam/mega-linter/issues/321
+TYPESCRIPT_ES_RULES_PATH: /tmp/lint/.github/linters
+TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.yml

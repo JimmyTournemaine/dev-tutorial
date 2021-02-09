@@ -2,7 +2,7 @@
 
 Nous avons vu les principaux concepts d'Ansible.
 Il en reste de nombreux autres que vous pourrez decouvrir par vous-meme dans la documentation en fonction de vos besoins.
-Je pense notamment aux [filtres](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#filters), aux [lookups](https://docs.ansible.com/ansible/2.9/plugins/lookup.html) ou a des commandes comme `ansible-inventory` ou `ansible-lint`.
+Je pense notamment aux [filtres](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#filters), aux [lookups](https://docs.ansible.com/ansible/2.9/plugins/lookup.html) ou a des commands comme `ansible-inventory` ou `ansible-lint`.
 
 Cependant, vous devriez avoir suffisamment de concepts en tête afin de réaliser le TP qui vous est proposé.
 
@@ -20,7 +20,7 @@ Nous allons donc rédiger les tâches de notre rôle afin d'effectuer les action
 Il existe des modules `command` ou encore `shell` qui permettent d'exécuter n'importe quelle ligne de commande.
 En revanche, il est fortement déconseillé de les utiliser car ils ne respectent pas les principes d'Ansible (particulièrement l'idempotence).
 Il existe une [multitude de modules](https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html) qui peuvent être utilisés et il est fortemment probable qu'un module existe pour votre besoin.
-Notre rôle sera appelé par le point d'entrée des exécutions Ansible... un *playbook* dont voici un exemple.
+Notre rôle sera appelé par le point d'entrée des exécutions Ansible... un *playbook* dont voici un example.
 
 ```yaml
 # playbooks/tomcat.yml
@@ -40,7 +40,7 @@ A vous de jouer!
 <details>
 <summary>Afficher la solution</summary>
  Il y a de nombreuses façons d'aborder les différentes problématiques de l'installation d'un tel composant.
-Voici un exemple de solution qui permet l'installation d'un serveur Tomcat en respectant les taches de la consigne.
+Voici un example de solution qui permet l'installation d'un serveur Tomcat en respectant les taches de la consigne.
 <details>
   <summary>playbooks/tomcat.yml</summary>
 ```yaml

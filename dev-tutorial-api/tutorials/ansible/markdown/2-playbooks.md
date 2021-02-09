@@ -21,21 +21,21 @@ Nous pouvons désormais exécuter le playbook a l'aide de la commande suivante `
 
 Dans les logs de résultats, plusieurs éléments sont à noter :
 * PLAY: le nom du playbook exécuté, il permettra de suivre l'enchaînement de l'exécution des playbooks dans le cas ou plusieurs playbooks seraient appelés.
-* TASK: le nom de la tâche exécutée. Nous observons que nos deux tâches sont exécutés, ainsi qu'un première tâche que nous n'avons pas défini qui indique *Gathering Facts*. Comme son nom l'indique, cette tâche collecte les informations du serveur cible avant d'exécuter les tâches de notre playbook.
-* PLAY RECAP: le récapitulatif des tâches qui ont été exécutées. Vous devriez avoir 3 tâches en **ok** (nos 2 tâches définies ainsi que le gathering fact). Différents statuts sont en effet possibles pour chaque tâche :
+* TASK: le nom de la tâche exécutée. Nous observons que nos deux tâches sont exécutés, ainsi qu'un première tâche que nous n'avons pas défini qui indique *Gathering Facts*. Comme son nom l'indique, cette tâche collective les informations du serveur cible avant d'exécuter les tâches de notre playbook.
+* PLAY RECAP: le récapitulatif des tâches qui ont été exécutées. Vous devriez avoir 3 tâches en **ok** (nos 2 tâches définies ainsi que le gathering fact). Différents statutes sont en effet possibles pour chaque tâche :
 
   * ok: la tâche a été effectuée mais n'a pas apporté de modification sur le serveur.
   * changed: la tâche a été effectuée et a apporté une modification sur le serveur.
   * Unreachable: le serveur cible n'a pas pu être joint.
-  * failed: la tâche n'a pas pu être effectuée, si ce cas ce produit vous aurez des détails concernant l'erreur dans les logs de la tâche concernée. Par défaut, lorsqu'une erreur est détectée, les playbook s'arrête automatiquement pour le serveur concerné (en cas d'exécution multi-noeud, les tâches continuent pour les serveurs qui n'ont pas rencontré d'erreur sur la tâche).
+  * failed: la tâche n'a pas pu être effectuée, si ce cas ce produit vous aurez des détails concernant l'erreur dans les logs de la tâche concernée. Par défaut, lorsqu'une erreur est détectée, les playbook s'arrête automatiquement pour le serveur concerné (en cas d'exécution multi-noeud, les tâches contingent pour les serveurs qui n'ont pas rencontré d'erreur sur la tâche).
   * rescued et ignored ne seront pas détaillés car leur utilisation relève généralement de mauvaises pratiques.
   * skipped: indique que la tâche n'a pas été exécutée car une condition n'a pas été vérifiée.
 
-L'existence des différents statuts `changed` et `ok` permet de mettre en emphase un principe fondamental de la configuration via Ansible: **l'idempotence**.
+L'existence des différents statutes `changed` et `ok` permet de mettre en emphase un principe fondamental de la configuration via Ansible: **l'idempotence**.
 
 ## Idempotence
 
-En mathématiques et en informatique, l'idempotence signifie qu'une opération a le même effet qu'on l'applique une ou plusieurs fois. L'exemple le plus simple en mathématique est la fonction absolue : *abs(abs(x)) = abs(x)*.
+En mathématiques et en informatique, l'idempotence signifie qu'une opération a le même effet qu'on l'applique une ou plusieurs fois. L'exemple le plus simple en mathématique est la fonction absolute : *abs(abs(x)) = abs(x)*.
 Ainsi, dans Ansible, les modules respectent l'idempotence, donc lorsqu'on applique avec les mêmes paramètres une tâche qui a déjà été exécutée précédemment, le résultat est le même et la tâche a le statut `ok`, autrement, elle est notée `changed`.
 
 ## Conditions
@@ -56,7 +56,7 @@ En exécutant à nouveau le playbook, nous observerons que notre deuxième tâch
 
 ## Boucles
 
-Les boucles permettent d'étirer sur listes. Vous savez déjà ce qu'est une boucle, alors voici un exemple d'utilisation avec Ansible.
+Les boucles permettent d'étirer sur listes. Vous savez déjà ce qu'est une boucle, alors voici un example d'utilisation avec Ansible.
 
 ```yaml
 - name: Ajouté 2 utilisateurs

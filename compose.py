@@ -4,16 +4,14 @@
 import argparse
 import multiprocessing
 import os
+import shutil
 import signal
-import subprocess
 import sys
 import webbrowser
 from datetime import datetime
 
 
 class Dockerize:
-
-
     def __init__(self, args):
         self.environment = args.environment
         self.verbose = args.verbose
@@ -21,152 +19,253 @@ class Dockerize:
         self.services = args.services
         self.ansible_vars = args.ansible_vars
 
-
     def run(self):
         if "darwin" == sys.platform:
-            self._exec("docker run -d --name tcp-connect -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock alpine/socat tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock || docker start tcp-connect")
+            self._exec(
+                "docker run -d --name tcp-connect -p 2375:2375"
+                + " -v /var/run/docker.sock:/var/run/docker.sock alpine/socat"
+                + " tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock"
+                + " || docker start tcp-connect"
+            )
 
         host_workspace = os.path.dirname(os.path.realpath(__file__))
         if "win32" == sys.platform:
-            host_workspace = '/' + host_workspace.replace('\\', '/').replace(':', '').lower()
+            host_workspace = (
+                "/" + host_workspace.replace("\\", "/").replace(":", "").lower()
+            )
 
-        deployer_workspace = '/usr/src/dev-tutorial'
+        deployer_workspace = "/usr/src/dev-tutorial"
 
-        playbook = 'playbooks/'+self.environment+'.yml'
+        playbook = "playbooks/" + self.environment + ".yml"
         playbook_args = list()
-        if(self.verbose):
-            playbook_args.append('--verbose')
-        if(self.dry_run):
-            playbook_args.append('--check')
-        if(len(self.services) > 0):
-            playbook_args.append('--tags=' + ','.join(self.services))
-        if(len(self.ansible_vars) > 0):
+        if self.verbose:
+            playbook_args.append("--verbose")
+        if self.dry_run:
+            playbook_args.append("--check")
+        if len(self.services) > 0:
+            playbook_args.append("--tags=" + ",".join(self.services))
+        if len(self.ansible_vars) > 0:
             for ansible_var in self.ansible_vars:
-                playbook_args.append('-e '+ansible_var)
+                playbook_args.append("-e " + ansible_var)
 
         # Build deployer
-        self._exec('docker build -t dev-tutorial-deployer ./dev-tutorial-deployer')
+        self._exec("docker build -t dev-tutorial-deployer ./dev-tutorial-deployer")
 
         # Run deployer
         start_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%IZ")
-        self._exec('docker run --rm --name dev-tutorial-deployer -t -e HOST_SYSTEM='+sys.platform+' -e WORKSPACE_HOSTED='+host_workspace+' -e WORKSPACE_LOCAL='+deployer_workspace+' -v /var/run/docker.sock:/var/run/docker.sock -v '+host_workspace+'/dev-tutorial-deployer:/etc/ansible -v '+host_workspace+'/:'+deployer_workspace+' dev-tutorial-deployer ansible-playbook ' + playbook + ' ' + ' '.join(playbook_args))
+        self._exec(
+            "docker run --rm --name dev-tutorial-deployer -t -e HOST_SYSTEM="
+            + sys.platform
+            + " -e WORKSPACE_HOSTED="
+            + host_workspace
+            + " -e WORKSPACE_LOCAL="
+            + deployer_workspace
+            + " -v /var/run/docker.sock:/var/run/docker.sock -v "
+            + host_workspace
+            + "/dev-tutorial-deployer:/etc/ansible -v "
+            + host_workspace
+            + "/:"
+            + deployer_workspace
+            + " dev-tutorial-deployer ansible-playbook "
+            + playbook
+            + " "
+            + " ".join(playbook_args)
+        )
 
-        #self._post_actions(self.environment)
+        # self._post_actions(self.environment)
 
         # Follow containers logs
         threads = [
-            multiprocessing.Process(target=self._exec, args=(self._log_transform('docker logs --follow --since '+start_time+' dev-tutorial-api-'+self.environment, 'api'),)),
-            multiprocessing.Process(target=self._exec, args=(self._log_transform('docker logs --follow --since '+start_time+' dev-tutorial-app-'+self.environment, 'app'),)),
+            multiprocessing.Process(
+                target=self._exec,
+                args=(
+                    self._log_transform(
+                        "docker logs --follow --since "
+                        + start_time
+                        + " dev-tutorial-api-"
+                        + self.environment,
+                        "api",
+                    ),
+                ),
+            ),
+            multiprocessing.Process(
+                target=self._exec,
+                args=(
+                    self._log_transform(
+                        "docker logs --follow --since "
+                        + start_time
+                        + " dev-tutorial-app-"
+                        + self.environment,
+                        "app",
+                    ),
+                ),
+            ),
         ]
         [t.start() for t in threads]
-        
 
         # SIGINT handler
-        terminate = lambda sig, frame: [t.terminate() for t in threads]
-        signal.signal(signal.SIGINT, terminate)
+        signal.signal(
+            signal.SIGINT, lambda sig, frame: [t.terminate() for t in threads]
+        )
 
         # Wait for termination with SIGINT(^C) or containers termination
         [t.join() for t in threads]
-
 
     def _exec(self, cmd):
         if self.verbose or self.dry_run:
             print(cmd)
         if not self.dry_run:
             exit_code = os.system(cmd)
-            if(exit_code > 0):
+            if exit_code > 0:
                 sys.exit(exit_code)
 
-
     def _log_transform(self, logCommand, container):
-        if container == 'api':
-            label = 'backend '
-            color = '33'
-            win_color = 'Yellow'
+        if container == "api":
+            label = "backend "
+            color = "33"
+            win_color = "Yellow"
         else:
-            label = 'frontend'
-            color = '32'
-            win_color = 'Orange'
+            label = "frontend"
+            color = "32"
+            win_color = "Orange"
 
-        if 'win32' == sys.platform:
-            log_transform = 'powershell "{} | % {{ Write-Host -NoNewline -ForegroundColor {} \'{} | \'; Write-Host $_ }}"'.format(logCommand, win_color, label)
+        if "win32" == sys.platform:
+            log_transform = (
+                'powershell "{}"'
+                + " | % {{ Write-Host -NoNewline -ForegroundColor {} '{} | '; Write-Host $_ }}\""
+            ).format(logCommand, win_color, label)
         else:
-            log_transform = '{} | sed -e \'s/^/\033[0;{}m{} | \033[0m/\''.format(logCommand, color, label)
+            log_transform = "{} | sed -e 's/^/\033[0;{}m{} | \033[0m/'".format(
+                logCommand, color, label
+            )
 
         return log_transform
 
     def _post_actions(self, environment):
         if not self.dry_run:
-            webbrowser.open('http://localhost:4200/')
+            webbrowser.open("http://localhost:4200/")
 
 
 class Lint:
-
-
     def __init__(self, args):
         self.verbose = args.verbose
         self.debug = args.debug
         self.fix = args.fix
         self.linters = args.linters
-
+        self.languages = args.languages
 
     def run(self):
-        cmd = 'docker run {} -v $(pwd):/tmp/lint nvuillam/mega-linter:v4'
+        # Remove previous reports
+        if os.path.exists('./report'):
+            shutil.rmtree('./report')
+
+        # Run Mega-Linter
+        cmd = "docker run --rm --name mega-linter {} -v $(pwd):/tmp/lint nvuillam/mega-linter:v4"
         args = list()
         if self.fix:
-            args.append('-e APPLY_FIXES=all')
+            args.append("-e APPLY_FIXES=all")
 
         if self.debug:
-            args.append('-e LOG_LEVEL=DEBUG')
+            args.append("-e LOG_LEVEL=DEBUG")
 
         if len(self.linters) > 0:
-            args.append('-e ENABLE=' + ','.join(self.linters))
+            args.append("-e ENABLE_LINTERS=" + ",".join(self.linters))
+
+        if len(self.languages) > 0:
+            args.append("-e ENABLE=" + ",".join(self.languages))
 
         if self.verbose:
-            print(cmd.format(' '.join(args)))
+            print(cmd.format(" ".join(args)))
 
-        os.system(cmd.format(' '.join(args)))
+        os.system(cmd.format(" ".join(args)))
 
 
 class Prune:
-
-
     def __init__(self, args):
         pass
 
-
     def run(self):
-        os.system('docker system prune -af')
+        os.system("docker system prune -af")
 
 
 def main(argv):
 
-    parser = argparse.ArgumentParser()  
+    parser = argparse.ArgumentParser()
     parser.set_defaults(func=lambda args: parser.print_help())
 
     subparsers = parser.add_subparsers()
 
-    dockerize_parser = subparsers.add_parser('dockerize', help='dockerize the apps to build a ready-to-use environment')
+    dockerize_parser = subparsers.add_parser(
+        "dockerize", help="dockerize the apps to build a ready-to-use environment"
+    )
     dockerize_parser.set_defaults(func=lambda args: Dockerize(args).run())
-    dockerize_parser.add_argument('environment', choices=['dev', 'test', 'ci', 'prod'], default='dev', help='select the environment, allowed values are %(choices)s (default: %(default)s)', metavar='environment')
-    dockerize_parser.add_argument('-s', '--services', choices=['api', 'app'], nargs='+', default=[], help='select the services to run, allowed values are %(choices)s (default: %(default)s)', metavar='services')
-    dockerize_parser.add_argument('-a', '--ansible-vars', nargs='+', default=[], help='additional ansible variables (default: %(default)s)', metavar='ansible_vars')
-    dockerize_parser.add_argument('-d', '--dry-run', action='store_true', help='output every action but don\'t run them')
-    dockerize_parser.add_argument('-v', '--verbose', action='store_true', help='make actions more verbose')
+    dockerize_parser.add_argument(
+        "environment",
+        choices=["dev", "test", "ci", "prod"],
+        default="dev",
+        help="select the environment, allowed values are %(choices)s (default: %(default)s)",
+        metavar="environment",
+    )
+    dockerize_parser.add_argument(
+        "-s",
+        "--services",
+        choices=["api", "app"],
+        nargs="+",
+        default=[],
+        help="select the services to run, allowed values are %(choices)s (default: %(default)s)",
+        metavar="services",
+    )
+    dockerize_parser.add_argument(
+        "-a",
+        "--ansible-vars",
+        nargs="+",
+        default=[],
+        help="additional ansible variables (default: %(default)s)",
+        metavar="ansible_vars",
+    )
+    dockerize_parser.add_argument(
+        "-d",
+        "--dry-run",
+        action="store_true",
+        help="output every action but don't run them",
+    )
+    dockerize_parser.add_argument(
+        "-v", "--verbose", action="store_true", help="make actions more verbose"
+    )
 
-    lint_parser = subparsers.add_parser('lint', help='run the MegaLinter over all the source code')
+    lint_parser = subparsers.add_parser(
+        "lint", help="run the MegaLinter over all the source code"
+    )
     lint_parser.set_defaults(func=lambda args: Lint(args).run())
-    lint_parser.add_argument('-v', '--verbose', action='store_true')
-    lint_parser.add_argument('-d', '--debug', action='store_true')
-    lint_parser.add_argument('-f', '--fix', action='store_true', help='fix issues that can be automatically fixed')
-    lint_parser.add_argument('-l', '--linters', nargs='+', default=[], help='linters to use (default: from .mega-linter.yml)')
+    lint_parser.add_argument("-v", "--verbose", action="store_true")
+    lint_parser.add_argument("-d", "--debug", action="store_true")
+    lint_parser.add_argument(
+        "-f",
+        "--fix",
+        action="store_true",
+        help="fix issues that can be automatically fixed",
+    )
+    lint_parser.add_argument(
+        "--languages",
+        nargs="+",
+        default=[],
+        help="linters to use (default: from .mega-linter.yml)",
+    )
+    lint_parser.add_argument(
+        "-l",
+        "--linters",
+        nargs="+",
+        default=[],
+        help="linters to use (default: from .mega-linter.yml)",
+    )
 
-    prune_parser = subparsers.add_parser('prune', help='prune your docker system')
+    prune_parser = subparsers.add_parser("prune", help="prune your docker system")
     prune_parser.set_defaults(func=lambda args: Prune(args).run())
 
     args = parser.parse_args()
-    
+
     args.func(args)
+
 
 if __name__ == "__main__":
     main(sys.argv)

@@ -1,12 +1,12 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { TutorialController } from '../controllers/tutorial';
+import { Router, Request, Response, NextFunction } from 'express'
+import { TutorialController } from '../controllers/tutorial'
 
-const router = Router();
+const router = Router()
 
 /**
  * A handler wrapper that will call next on async request handler error.
- * 
- * @deprecated Will be handled automatically in ExpressJS 5 
+ *
+ * @deprecated Will be handled automatically in ExpressJS 5
  * @link https://expressjs.com/en/guide/error-handling.html
  */
 class PromiseHandler {
@@ -14,15 +14,15 @@ class PromiseHandler {
    * Bind the original handler
    * @parameter {RequestHandler} An async request handler
    */
-  constructor(public originalHandler: (req: Request, res: Response) => Promise<Response<any>>) {
+  constructor (public originalHandler: (req: Request, res: Response) => Promise<Response<any>>) {
   }
 
   public handler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      return await this.originalHandler(req, res);
+      return await this.originalHandler(req, res)
     } catch (err) {
-      console.error('gotcha', err);
-      return next(err);
+      console.error('gotcha', err)
+      return next(err)
     }
   };
 }
@@ -35,14 +35,14 @@ class PromiseHandler {
 // router.get('/tuto', TutorialController.index);
 
 // Is valid ExpressJS 4
-router.post('/tuto/:slug/stop', new PromiseHandler(TutorialController.stop).handler);
-router.post('/tuto/:slug/start', new PromiseHandler(TutorialController.start).handler);
-router.get('/tuto/:slug/status', TutorialController.status);
-router.post('/tuto/:slug/write', TutorialController.write);
-router.get('/tuto/:slug/slides/:id(\\d+)', new PromiseHandler(TutorialController.slide).handler);
-router.get('/tuto/:slug/static/:path', new PromiseHandler(TutorialController.static).handler);
-router.get('/tuto/:slug', new PromiseHandler(TutorialController.content).handler);
-router.post('/tuto/search', TutorialController.search);
-router.get('/tuto', TutorialController.index);
+router.post('/tuto/:slug/stop', new PromiseHandler(TutorialController.stop).handler)
+router.post('/tuto/:slug/start', new PromiseHandler(TutorialController.start).handler)
+router.get('/tuto/:slug/status', TutorialController.status)
+router.post('/tuto/:slug/write', TutorialController.write)
+router.get('/tuto/:slug/slides/:id(\\d+)', new PromiseHandler(TutorialController.slide).handler)
+router.get('/tuto/:slug/static/:path', new PromiseHandler(TutorialController.static).handler)
+router.get('/tuto/:slug', new PromiseHandler(TutorialController.content).handler)
+router.post('/tuto/search', TutorialController.search)
+router.get('/tuto', TutorialController.index)
 
-export { router as tutoRouter };
+export { router as tutoRouter }

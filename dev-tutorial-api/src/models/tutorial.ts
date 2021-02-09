@@ -1,5 +1,5 @@
-import * as mongoose from 'mongoose';
-import * as mongooseFuzzy from 'mongoose-fuzzy-searching';
+import * as mongoose from 'mongoose'
+import * as mongooseFuzzy from 'mongoose-fuzzy-searching'
 
 /**
  * Slide model type
@@ -42,49 +42,49 @@ interface TutorialDescriptorModelInterface extends mongoose.Model<TutorialDescri
 const slideSchema = new mongoose.Schema({
   src: {
     type: String,
-    required: true,
+    required: true
   },
   validators: {
     type: Object,
-    required: true,
-  },
-});
+    required: true
+  }
+})
 
 const tutorialSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: true
   },
   resume: {
     type: String,
-    required: true,
+    required: true
   },
   slug: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   description: {
     type: String,
-    required: true,
+    required: true
   },
   icon: {
     type: String,
-    required: true,
+    required: true
   },
   slides: {
-    type: [slideSchema],
+    type: [slideSchema]
   },
   dirname: {
     type: String,
-    required: true,
+    required: true
   }
-});
+})
 tutorialSchema.statics.build = (attr: ITutorialDescriptor): any => {
-  return new TutorialDescriptor(attr);
-};
-tutorialSchema.plugin(mongooseFuzzy, { fields: ['name', 'resume'] });
+  return new TutorialDescriptor(attr)
+}
+tutorialSchema.plugin(mongooseFuzzy, { fields: ['name', 'resume'] })
 
-const TutorialDescriptor = mongoose.model<any, TutorialDescriptorModelInterface>('TutorialDescriptor', tutorialSchema);
+const TutorialDescriptor = mongoose.model<any, TutorialDescriptorModelInterface>('TutorialDescriptor', tutorialSchema)
 
-export { TutorialDescriptor, TutorialDescriptorDocument };
+export { TutorialDescriptor, TutorialDescriptorDocument }

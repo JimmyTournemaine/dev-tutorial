@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
-import { Tutorial } from '../tutorial/tutorial';
-import { Router } from '@angular/router';
-import { TutorialsWebServices } from '../webservices/tutorials.webservices.service';
-import { Observable } from 'rxjs';
-import { debounceTime, startWith, defaultIfEmpty, switchMap, filter } from 'rxjs/operators';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnInit, Input, AfterViewInit } from '@angular/core'
+import { Tutorial } from '../tutorial/tutorial'
+import { Router } from '@angular/router'
+import { TutorialsWebServices } from '../webservices/tutorials.webservices.service'
+import { Observable } from 'rxjs'
+import { debounceTime, startWith, defaultIfEmpty, switchMap, filter } from 'rxjs/operators'
+import { FormBuilder, FormGroup } from '@angular/forms'
 
 @Component({
   selector: 'app-tutorials-panel',
@@ -12,32 +12,30 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   styleUrls: ['./tutorials-panel.component.css']
 })
 export class TutorialsPanelComponent implements OnInit, AfterViewInit {
-
   tutorials: Observable<Tutorial[]>;
   searchForm: FormGroup;
 
-  constructor(private router: Router, private ws: TutorialsWebServices, private fb: FormBuilder) {
-    this.searchForm = this.fb.group({ searchInput: null });
+  constructor (private router: Router, private ws: TutorialsWebServices, private fb: FormBuilder) {
+    this.searchForm = this.fb.group({ searchInput: null })
   }
 
-  ngOnInit(): void {
+  ngOnInit (): void {
     this.tutorials = this.searchForm
       .get('searchInput')
-      .valueChanges      
+      .valueChanges
       .pipe(
         startWith(''),
         debounceTime(300),
         filter((value) => value.length === 0 || value.length > 2),
-        switchMap(value => this.ws.search({ search: value })),
+        switchMap(value => this.ws.search({ search: value }))
       )
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit (): void {
   }
 
-  startTutorial(slug: string): void {
+  startTutorial (slug: string): void {
     // Navigate
-    this.router.navigateByUrl(`tutorial/${slug}`);
+    this.router.navigateByUrl(`tutorial/${slug}`)
   }
-
 }

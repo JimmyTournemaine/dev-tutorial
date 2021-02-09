@@ -1,23 +1,23 @@
-import { Socket } from 'socket.io';
-import { DockerService, TtyLog } from '../docker/docker';
-import * as debug from 'debug';
-import { Hook, HookFactory } from './hook';
-import { ValidatorDescriptorsParser, Validators } from './validators/validator';
-import { TutorialService } from '../tutorial/tutorial';
-import { TutorialDescriptorDocument } from '../../models/tutorial';
-import { AsyncWorker, ErrorCallback, queue, QueueObject } from 'async';
+import { Socket } from 'socket.io'
+import { DockerService, TtyLog } from '../docker/docker'
+import * as debug from 'debug'
+import { Hook, HookFactory } from './hook'
+import { ValidatorDescriptorsParser, Validators } from './validators/validator'
+import { TutorialService } from '../tutorial/tutorial'
+import { TutorialDescriptorDocument } from '../../models/tutorial'
+import { AsyncWorker, ErrorCallback, queue, QueueObject } from 'async'
 
-const logger = debug('app:socket');
-const batchLog = debug('app:socket-validation');
-const hookLog = debug('app:hook');
+const logger = debug('app:socket')
+const batchLog = debug('app:socket-validation')
+const hookLog = debug('app:hook')
 
 class ValidationBatch {
   output = '';
   ttylog: TtyLog;
 
-  async validate(validators: Validators) {
+  async validate (validators: Validators) {
     if (this.ttylog && validators.preValidate(this.ttylog.cmd)) {
-      await validators.validate(this.output, this.ttylog);
+      await validators.validate(this.output, this.ttylog)
     }
   }
 }
@@ -29,34 +29,35 @@ class Validation {
   private worker: AsyncWorker<ValidationBatch, Error>;
   private queue: QueueObject<ValidationBatch>;
 
-  constructor() {
-    this.worker = async (batch: ValidationBatch, callback: ErrorCallback<Error>) => await this.validateBatch(batch, callback);
-    this.queue = queue(this.worker, 1);
+  constructor () {
+    this.worker = async (batch: ValidationBatch, callback: ErrorCallback<Error>) => await this.validateBatch(batch, callback)
+    this.queue = queue(this.worker, 1)
   }
 
-  async validateBatch(batch: ValidationBatch, callback: ErrorCallback<Error>) {
-    batchLog('validate', batch.ttylog);
-    await batch.validate(this._validators);
-    callback();
+  async validateBatch (batch: ValidationBatch, callback: ErrorCallback<Error>) {
+    batchLog('validate', batch.ttylog)
+    await batch.validate(this._validators)
+    callback()
   }
 
-  validators(validators: Validators) {
-    batchLog('set validators');
-    this._validators = validators;
+  validators (validators: Validators) {
+    batchLog('set validators')
+    this._validators = validators
   }
 
-  output(data: string) {
-    this.batch.output += data;
+  output (data: string) {
+    this.batch.output += data
   }
 
-  ttylog(ttylog: TtyLog) {
-    batchLog('ttylog', ttylog);
-    this.batch.ttylog = ttylog;
-    this.end();
+  ttylog (ttylog: TtyLog) {
+    batchLog('ttylog', ttylog)
+    this.batch.ttylog = ttylog
+    this.end()
   }
-  end() {
-    this.queue.push(this.batch);
-    this.batch = new ValidationBatch();
+
+  end () {
+    this.queue.push(this.batch)
+    this.batch = new ValidationBatch()
   }
 }
 
@@ -93,58 +94,58 @@ export class SocketManager implements ISocketManager {
   private listeners: Map<string | symbol, SocketEventListener[]>;
   private _socket: Socket;
 
-  private constructor() {
-    this.listeners = new Map();
+  private constructor () {
+    this.listeners = new Map()
   }
 
-  service(): void {
+  service (): void {
     if (!this._service) {
-      logger('New socket service');
-      this._service = new SocketService(this);
+      logger('New socket service')
+      this._service = new SocketService(this)
     } else {
-      logger('Socket service already running');
+      logger('Socket service already running')
     }
   }
 
-  socket(socket: Socket): this {
+  socket (socket: Socket): this {
     if (this._socket) {
-      this._socket.disconnect();
+      this._socket.disconnect()
     }
-    this._socket = socket;
+    this._socket = socket
 
     for (const entry of this.listeners.entries()) {
-      const event = entry[0];
+      const event = entry[0]
       for (const listener of entry[1]) {
-        this._socket.on(event, listener);
+        this._socket.on(event, listener)
       }
     }
 
-    return this;
+    return this
   }
 
-  on(event: string | symbol, listener: SocketEventListener): this {
-    this._socket.on(event, listener);
+  on (event: string | symbol, listener: SocketEventListener): this {
+    this._socket.on(event, listener)
 
-    const listeners = this.listeners.has(event) ? this.listeners.get(event) : new Array<SocketEventListener>();
-    listeners.push(listener);
-    this.listeners.set(event, listeners);
+    const listeners = this.listeners.has(event) ? this.listeners.get(event) : new Array<SocketEventListener>()
+    listeners.push(listener)
+    this.listeners.set(event, listeners)
 
-    return this;
+    return this
   }
 
-  emit(event: string | symbol, ...args: any[]): boolean {
-    return this._socket.emit(event, ...args);
+  emit (event: string | symbol, ...args: any[]): boolean {
+    return this._socket.emit(event, ...args)
   }
 
-  static getInstance(): ISocketManager {
+  static getInstance (): ISocketManager {
     if (this.instance == null) {
-      this.instance = new SocketManager();
+      this.instance = new SocketManager()
     }
-    return this.instance;
+    return this.instance
   }
 
-  static destroy(): void {
-    delete this.instance;
+  static destroy (): void {
+    delete this.instance
   }
 }
 
@@ -162,60 +163,58 @@ export class SocketService implements ISocketService {
   /**
    * Initialize the object
    */
-  constructor(public socket: ISocketManager) {
-    this.hooks = HookFactory.createHooks(this);
-    this.validation = new Validation();
+  constructor (public socket: ISocketManager) {
+    this.hooks = HookFactory.createHooks(this)
+    this.validation = new Validation()
 
     this.socket.on('attach', async (tutoId: string) => {
-      this.tutoId = tutoId;
+      this.tutoId = tutoId
 
       TutorialService.getInstance().getTutorial(tutoId).then((tuto: TutorialDescriptorDocument) => {
         // Load all validators
-        const validators: Validators[] = [];
+        const validators: Validators[] = []
         for (const slide of tuto.slides) {
-          validators.push(ValidatorDescriptorsParser.create(this, slide.validators));
+          validators.push(ValidatorDescriptorsParser.create(this, slide.validators))
         }
 
         // When validator are done, emit next and set next validator (next slide)
-        this.validation.validators(validators[0]);
+        this.validation.validators(validators[0])
         for (let i = 0; i < validators.length - 1; i++) {
           validators[i].once('valid', () => {
-            logger('next');
-            this.validation.validators(validators[i + 1]);
-            this.socket.emit('next');
-          });
+            logger('next')
+            this.validation.validators(validators[i + 1])
+            this.socket.emit('next')
+          })
         }
         // the last validator send 'completed' instead of next
         validators[validators.length - 1].on('valid', () => {
-          logger('completed');
-          this.socket.emit('completed');
-        });
-      });
+          logger('completed')
+          this.socket.emit('completed')
+        })
+      })
 
       // Get docker handler
       DockerService.getInstance().attach(tutoId)
         .then((handler) => {
-
-          handler.on('attached', () => socket.emit('attached', tutoId));
-          handler.on('show', (data: string) => { this.validation.output(data); socket.emit('show', data); });
+          handler.on('attached', () => socket.emit('attached', tutoId))
+          handler.on('show', (data: string) => { this.validation.output(data); socket.emit('show', data) })
           handler.on('ttylog', (ttylog: TtyLog) => {
-            this.wd = ttylog.workdir;
-            const clear = this.hook(ttylog.cmd);
+            this.wd = ttylog.workdir
+            const clear = this.hook(ttylog.cmd)
             if (clear) {
-              handler.write('\x0C');
+              handler.write('\x0C')
             }
-            this.validation.ttylog(ttylog);
-          });
-          //handler.on('ttylog', (ttylog: TtyLog) => socket.emit('ttylog', ttylog));
+            this.validation.ttylog(ttylog)
+          })
+          // handler.on('ttylog', (ttylog: TtyLog) => socket.emit('ttylog', ttylog));
 
-          this.socket.on('resize', (size: { h: number, w: number; }) => handler.resize(size));
-          this.socket.on('cmd', (chunk: string) => handler.write(chunk));
+          this.socket.on('resize', (size: { h: number, w: number; }) => handler.resize(size))
+          this.socket.on('cmd', (chunk: string) => handler.write(chunk))
 
-          handler.attach();
+          handler.attach()
         })
-        .catch((err: Error) => this.socket.emit('err', { name: err.name, message: err.message }));
-    });
-
+        .catch((err: Error) => this.socket.emit('err', { name: err.name, message: err.message }))
+    })
   }
 
   /**
@@ -224,15 +223,15 @@ export class SocketService implements ISocketService {
    * @param {string} cmd The command to run
    * @return {boolean} Should the command be ignored.
    */
-  hook(cmd: string): boolean {
+  hook (cmd: string): boolean {
     for (const hook of this.hooks) {
       if (hook.test(cmd)) {
         hook.process(cmd).catch((reason) => {
-          hookLog('hook processing error', reason);
-        });
-        return hook.shouldCancel();
+          hookLog('hook processing error', reason)
+        })
+        return hook.shouldCancel()
       }
     }
-    return false;
+    return false
   }
 }

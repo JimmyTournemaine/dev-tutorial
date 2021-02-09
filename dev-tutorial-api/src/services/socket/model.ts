@@ -1,7 +1,7 @@
-import { TutorialDescriptorDocument } from '../../models/tutorial';
-import { TutorialService } from '../tutorial/tutorial';
-import { ISocketService } from './socket';
-import { ValidatorDescriptorsParser, Validators } from './validators/validator';
+import { TutorialDescriptorDocument } from '../../models/tutorial'
+import { TutorialService } from '../tutorial/tutorial'
+import { ISocketService } from './socket'
+import { ValidatorDescriptorsParser, Validators } from './validators/validator'
 
 /**
  * The tutorial model
@@ -15,28 +15,28 @@ export class Tutorial {
    * @param {string} container The container
    * @param {Docker} docker The docker service.
    */
-  constructor(public tutoId: string, service: ISocketService) {
+  constructor (public tutoId: string, service: ISocketService) {
     TutorialService.getInstance().getTutorial(this.tutoId).then((tuto: TutorialDescriptorDocument) => {
-      this.slides = [];
+      this.slides = []
       for (const slide of tuto.slides) {
-        this.slides.push(new Slide(ValidatorDescriptorsParser.create(service, slide.validators)));
+        this.slides.push(new Slide(ValidatorDescriptorsParser.create(service, slide.validators)))
       }
-    });
+    })
   }
 
   /**
    * Get the current slide
    * @return {Slide} The current slide
    */
-  public current(): Slide {
-    return this.slides[this.currentSlide];
+  public current (): Slide {
+    return this.slides[this.currentSlide]
   }
 
   /**
    * Switch to the next slide.
    */
-  public next(): void {
-    this.currentSlide++;
+  public next (): void {
+    this.currentSlide++
   }
 }
 
@@ -44,11 +44,10 @@ export class Tutorial {
  * A slide of the tutorial
  */
 export class Slide {
-
   /**
    * @param {Validators} validators The slide validators
    */
-  constructor(private validators: Validators) {
+  constructor (private validators: Validators) {
 
   }
 
@@ -74,4 +73,3 @@ export class Slide {
   //   return this.postValidated;
   // }
 }
-

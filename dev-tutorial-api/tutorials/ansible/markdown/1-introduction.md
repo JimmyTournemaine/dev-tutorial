@@ -8,8 +8,8 @@ Ces playbooks seront exécutés sur un ou plusieurs serveurs organisés en group
 Mais commençons par le commencement, votre environnement devrait etre monte désormais et vous devriez vous situer dans `/etc/ansible`.
 Toute la configuration d’Ansible se trouvera dans cette hiérarchie qui est sommaire pour le moment.
 
-Pour commencer vérifions que ansible fonctionne correctement en utilisant quelques commandes ad-hoc en local.
-Les commandes ad-hoc sont appelées avec la commande `ansible`.
+Pour commencer vérifions que ansible fonctionne correctement en utilisant quelques commands ad-hoc en local.
+Les commands ad-hoc sont appelées avec la commande `ansible`.
 
 La syntaxe simplifiée utilisée pour appeler une commande ad-hoc est la suivante :
 ```bash

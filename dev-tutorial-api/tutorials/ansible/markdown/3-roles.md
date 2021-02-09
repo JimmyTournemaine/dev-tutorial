@@ -43,7 +43,7 @@ Afin de réaliser notre objectif, nous allons tout d'abord devoir installer le s
 
 Relançons le *playbook* afin de vérifier que cette première tâche s'exécute correctement.
 Malheureusement pour nous, le service ne peut pas être installé. En effet seul l'utilisateur root peut effectuer des installations de services et notre utilisateur `ansible` n'a pas de telles permissions.
-Cependant, notre utilisateur est *sudo* c'est-à-dire qu'il a l'autorisation d'exécuter des commandes en tant que root en préfixant les commandes avec `sudo`.
+Cependant, notre utilisateur est *sudo* c'est-à-dire qu'il a l'autorisation d'exécuter des commands en tant que root en préfixant les commands avec `sudo`.
 Dans nos fichiers Ansible, cette élévation des permissions est également possible en utilisant `become: yes`.
 `become` peut être ajouté à plusieurs niveaux. Dans notre cas, nous allons le définir au niveau de notre playbook pour que `become` soit effectif sur l'ensemble de notre exécution.
 
@@ -59,7 +59,7 @@ Dans nos fichiers Ansible, cette élévation des permissions est également poss
 
 Exécutons à nouveau le playbook qui va nous permettre d'installer le serveur.
 
-## Démarrage du serveur
+## Démarriage du serveur
 
 Nous souhaitons maintenant démarrer le service afin de vérifier que le serveur se lance correctement.
 
@@ -182,8 +182,8 @@ Considéré comme un bonne pratique, il permet d'indiquer aux administrateurs du
 
 Un peu plus tôt dans ce chapitre, nous avons introduit la notion de handlers. Ce sont des tâches qui sont déclenchées à la fin d'un playbook lorsque l'événement écouté a été déclenché précédemment.
 
-Actuellement, notre serveur redémarre toujours à la fin du rôle ce qui permet de mettre à jour sa configuration. Cependant, ce comportement ne respecte pas le principe d'**idempotence**.
-Si vous avez joué plusieurs fois le *playbook*, vous avez dû vous apercevoir que le résultat de la tâche de redémarrage est toujours a `changed`. Hors, si votre configuration n'est pas modifiée, il n'y a aucune raison de redémarrer notre serveur.
+Actuellement, notre serveur redémarre toujours à la fin du rôle ce qui permet de mettre à jour sa configuration. Cependant, ce comportement ne respective pas le principe d'**idempotence**.
+Si vous avez joué plusieurs fois le *playbook*, vous avez dû vous apercevoir que le résultat de la tâche de redémarriage est toujours a `changed`. Hors, si votre configuration n'est pas modifiée, il n'y a aucune raison de redémarrer notre serveur.
 Nous allons donc nous appuyer sur un *handler* pour redémarrer le serveur uniquement si sa configuration est modifiée.
 
 ```yaml

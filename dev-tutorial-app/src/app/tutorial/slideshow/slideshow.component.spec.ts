@@ -1,14 +1,14 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MarkdownModule, MarkdownService } from 'ngx-markdown';
+import { HttpClient } from '@angular/common/http'
+import { HttpClientTestingModule } from '@angular/common/http/testing'
+import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { MarkdownModule, MarkdownService } from 'ngx-markdown'
 
-import { SlideshowComponent } from './slideshow.component';
+import { SlideshowComponent } from './slideshow.component'
 
 describe('SlideshowComponent', () => {
-  let component: SlideshowComponent;
-  let fixture: ComponentFixture<SlideshowComponent>;
+  let component: SlideshowComponent
+  let fixture: ComponentFixture<SlideshowComponent>
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -16,16 +16,16 @@ describe('SlideshowComponent', () => {
       providers: [MarkdownService],
       declarations: [SlideshowComponent]
     })
-      .compileComponents();
-  }));
+      .compileComponents()
+  }))
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SlideshowComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    fixture = TestBed.createComponent(SlideshowComponent)
+    component = fixture.componentInstance
+    fixture.detectChanges()
+  })
 
   it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+    expect(component).toBeTruthy()
+  })
+})
