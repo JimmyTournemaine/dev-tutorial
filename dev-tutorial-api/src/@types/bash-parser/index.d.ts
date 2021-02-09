@@ -1,6 +1,6 @@
 declare module 'bash-parser' {
 
-  const parse: parse.Parse & { parse: parse.Parse; default: parse.Parse }
+  const parse: parse.Parse & { parse: parse.Parse; default: parse.Parse };
   export = parse;
 
   namespace parse {

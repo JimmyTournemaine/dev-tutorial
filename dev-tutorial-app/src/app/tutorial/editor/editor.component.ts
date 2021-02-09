@@ -1,6 +1,6 @@
-import { EventEmitter, Input, OnChanges, Output, SimpleChanges, Component } from '@angular/core'
+import { EventEmitter, Input, OnChanges, Output, SimpleChanges, Component } from '@angular/core';
 
-import { NgxEditorModel } from 'ngx-monaco-editor'
+import { NgxEditorModel } from 'ngx-monaco-editor';
 
 type Editor = monaco.editor.IStandaloneCodeEditor; // | monaco.editor.IStandaloneDiffEditor
 
@@ -35,27 +35,27 @@ export class EditorComponent implements OnChanges {
   @Output()
   quit = new EventEmitter<void>();
 
-  ngOnChanges (changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.model) {
-      this.content = changes.model.currentValue.value
+      this.content = changes.model.currentValue.value;
 
-      let lang = changes.model.currentValue.language
+      let lang = changes.model.currentValue.language;
       if (!lang) {
-        lang = EditorComponent.LANG_FALLBACK
+        lang = EditorComponent.LANG_FALLBACK;
         if (changes.model.currentValue.uri) {
-          const ext = changes.model.currentValue.uri.split('.').pop()
-          const found = EditorComponent.LANG_MAP[ext]
+          const ext = changes.model.currentValue.uri.split('.').pop();
+          const found = EditorComponent.LANG_MAP[ext];
           if (found) {
-            lang = found
+            lang = found;
           }
         }
       }
-      this.options = Object.assign({}, this.options, { language: lang })
+      this.options = Object.assign({}, this.options, { language: lang });
     }
   }
 
-  onEditorInit (editor: Editor): void {
-    editor.focus()
+  onEditorInit(editor: Editor): void {
+    editor.focus();
     editor.addAction({
       id: 'quit',
       label: 'Quit without saving',
@@ -68,9 +68,9 @@ export class EditorComponent implements OnChanges {
       contextMenuOrder: 1.6,
 
       run: () => {
-        this.quit.emit()
+        this.quit.emit();
       }
-    })
+    });
     editor.addAction({
       id: 'save-and-quit',
       label: 'Save and quit',
@@ -83,9 +83,9 @@ export class EditorComponent implements OnChanges {
       contextMenuOrder: 1.5,
 
       run: () => {
-        this.save.emit(editor.getValue())
-        this.quit.emit()
+        this.save.emit(editor.getValue());
+        this.quit.emit();
       }
-    })
+    });
   }
 }

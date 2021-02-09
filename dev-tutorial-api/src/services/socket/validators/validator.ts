@@ -1,9 +1,9 @@
-import { EventEmitter } from 'events'
-import { DockerService, IDockerService, TtyLog } from '../../docker/docker'
-import { ISocketService } from '../socket'
-import * as debug from 'debug'
+import { EventEmitter } from 'events';
+import { DockerService, IDockerService, TtyLog } from '../../docker/docker';
+import { ISocketService } from '../socket';
+import * as debug from 'debug';
 
-const logger = debug('app:validator')
+const logger = debug('app:validator');
 
 /*
 
@@ -15,28 +15,29 @@ const logger = debug('app:validator')
 /**
  * Any validator should inherit validator
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface Validator<O> {
   injectService(service: Readonly<ISocketService>): void;
   validate(...arg: any[]): any;
 }
 
 export abstract class Validator<O> {
-  constructor (protected options: O) { }
+  constructor(protected options: O) { }
 }
 
 export abstract class PostValidator<O> extends Validator<O> {
   protected willValidate = true;
 
-  async isValid (output: string, ttylog: TtyLog): Promise<boolean> {
-    const isvalid = await this.validate(output, ttylog)
+  async isValid(output: string, ttylog: TtyLog): Promise<boolean> {
+    const isvalid = await this.validate(output, ttylog);
     if (isvalid) {
-      this.willValidate = false // when completed once
+      this.willValidate = false; // when completed once
     }
-    return isvalid
+    return isvalid;
   }
 
-  canValidate (): boolean {
-    return this.willValidate
+  canValidate(): boolean {
+    return this.willValidate;
   }
 
   abstract validate(output: string, ttylog: TtyLog): Promise<boolean>;
@@ -50,9 +51,9 @@ interface PreValidatorOptions {
  * Prevalidator: others validators will listen only after the command prevalidation.
  */
 export class PreValidator extends Validator<PreValidatorOptions> {
-  validate (cmd: string): boolean {
+  validate(cmd: string): boolean {
     if (cmd === undefined || cmd.trim().length === 0) {
-      return false
+      return false;
     }
 
     // TODO do something
@@ -60,16 +61,16 @@ export class PreValidator extends Validator<PreValidatorOptions> {
 
     // Start with validation
     if (cmd.startsWith(this.options.cmd)) {
-      return true
+      return true;
     }
 
     // Trim, etc. to validate the command with eventually some typos
-    const expected = this.options.cmd.split(' ').filter((v) => v)
-    const given = cmd.split(' ').filter((v) => v)
+    const expected = this.options.cmd.split(' ').filter((v) => v);
+    const given = cmd.split(' ').filter((v) => v);
 
     return expected.every((value: string, index: number) => {
-      return value == given[index]
-    })
+      return value == given[index];
+    });
   }
 }
 
@@ -99,24 +100,24 @@ export class Validators extends EventEmitter {
   private sequence: ValidatorSequence;
   private current: ValidatorSet;
 
-  constructor (sequence: ValidatorSequence) {
-    super()
-    this.sequence = sequence
-    this.current = sequence.get()
+  constructor(sequence: ValidatorSequence) {
+    super();
+    this.sequence = sequence;
+    this.current = sequence.get();
   }
 
-  preValidate (cmd: string): boolean {
-    return this.current.prevalidate(cmd)
+  preValidate(cmd: string): boolean {
+    return this.current.prevalidate(cmd);
   }
 
-  async validate (output: string, ttylog: TtyLog): Promise<void> {
-    await this.current.validate(output, ttylog)
+  async validate(output: string, ttylog: TtyLog): Promise<void> {
+    await this.current.validate(output, ttylog);
 
     if (this.current.isValid()) {
       if (this.sequence.hasNext()) {
-        this.current = this.sequence.next()
+        this.current = this.sequence.next();
       } else {
-        this.emit('valid')
+        this.emit('valid');
       }
     }
   }
@@ -126,20 +127,20 @@ class ValidatorSequence {
   validators: ValidatorSet[];
   private currentIndex = 0;
 
-  constructor (validators: ValidatorSet[]) {
-    this.validators = validators
+  constructor(validators: ValidatorSet[]) {
+    this.validators = validators;
   }
 
-  get (): ValidatorSet {
-    return this.validators[this.currentIndex]
+  get(): ValidatorSet {
+    return this.validators[this.currentIndex];
   }
 
-  next (): ValidatorSet {
-    return this.validators[++this.currentIndex]
+  next(): ValidatorSet {
+    return this.validators[++this.currentIndex];
   }
 
-  hasNext (): boolean {
-    return this.currentIndex + 1 < this.validators.length
+  hasNext(): boolean {
+    return this.currentIndex + 1 < this.validators.length;
   }
 }
 
@@ -150,58 +151,58 @@ class ValidatorSet {
   validators: PostValidator<unknown>[];
   validated = 0;
 
-  constructor (prevalidator: PreValidator, validators: PostValidator<unknown>[]) {
-    this.prevalidator = prevalidator
-    this.validators = validators
+  constructor(prevalidator: PreValidator, validators: PostValidator<unknown>[]) {
+    this.prevalidator = prevalidator;
+    this.validators = validators;
   }
 
-  prevalidate (cmd: string): boolean {
-    logger('prevalidation started', cmd)
+  prevalidate(cmd: string): boolean {
+    logger('prevalidation started', cmd);
 
     // optionnal prevalidation (but preferrable)
-    this.prevalidated = this.prevalidator ? this.prevalidator.validate(cmd) : true
+    this.prevalidated = this.prevalidator ? this.prevalidator.validate(cmd) : true;
 
-    logger('prevalidation completed', this.prevalidated)
+    logger('prevalidation completed', this.prevalidated);
 
-    return this.prevalidated
+    return this.prevalidated;
   }
 
   /**
    *
    * @param arg The validation arg
    */
-  async validate (output: string, ttylog: TtyLog): Promise<void> {
+  async validate(output: string, ttylog: TtyLog): Promise<void> {
     if (this.prevalidated) {
-      logger('validation started')
-      await this._validate(output, ttylog)
+      logger('validation started');
+      await this._validate(output, ttylog);
     } else {
-      logger('validation skipped')
+      logger('validation skipped');
     }
   }
 
-  private _validate (output: string, ttylog: TtyLog): Promise<boolean[]> {
-    const validatorsInProcess = []
+  private _validate(output: string, ttylog: TtyLog): Promise<boolean[]> {
+    const validatorsInProcess = [];
     for (const validator of this.validators) {
       if (validator.canValidate()) {
         const process = Promise.resolve(validator.isValid(output, ttylog)).then((valid) => {
           if (valid) {
-            this.validated++
-            logger('%s is valid (validated=%d/%s)', validator.constructor.name, this.validated, this.validators.length)
+            this.validated++;
+            logger('%s is valid (validated=%d/%s)', validator.constructor.name, this.validated, this.validators.length);
           } else {
-            logger('%s is NOT valid (validated=%d/%s)', validator.constructor.name, this.validated, this.validators.length)
+            logger('%s is NOT valid (validated=%d/%s)', validator.constructor.name, this.validated, this.validators.length);
           }
-          return valid
-        })
-        validatorsInProcess.push(process)
+          return valid;
+        });
+        validatorsInProcess.push(process);
       }
     }
 
-    return Promise.all(validatorsInProcess)
+    return Promise.all(validatorsInProcess);
   }
 
-  isValid (): boolean {
-    logger('is valid ? pre=%s, post=%s/%s', this.prevalidated, this.validated, this.validators.length)
-    return this.prevalidated && this.validated == this.validators.length
+  isValid(): boolean {
+    logger('is valid ? pre=%s, post=%s/%s', this.prevalidated, this.validated, this.validators.length);
+    return this.prevalidated && this.validated == this.validators.length;
   }
 }
 
@@ -213,12 +214,12 @@ class ValidatorSet {
  */
 export type ValidatorConstructor<O, T> = { new(options: O): T; };
 export class ValidatorFactory {
-  static create<O, T extends Validator<O>> (type: ValidatorConstructor<O, T>, options: O, service?: ISocketService): T {
-    const instance = new type(options)
+  static create<O, T extends Validator<O>>(type: ValidatorConstructor<O, T>, options: O, service?: ISocketService): T {
+    const instance = new type(options);
     if (service && instance.injectService) {
-      instance.injectService(service)
+      instance.injectService(service);
     }
-    return instance
+    return instance;
   }
 }
 
@@ -234,31 +235,31 @@ export class ValidatorDescriptorsParser {
    * @param service The SocketService
    * @param descriptor A slide validators descriptor
    */
-  static create (service: ISocketService, descriptor: Array<unknown>): Validators {
-    const validationSeq = []
+  static create(service: ISocketService, descriptor: Array<unknown>): Validators {
+    const validationSeq = [];
     for (const validationSet of descriptor) {
-      let prevalidator: PreValidator
-      const validators = []
+      let prevalidator: PreValidator;
+      const validators = [];
       for (const desc of Object.keys(validationSet)) {
-        const mapping = descriptorMapping[desc]
+        const mapping = descriptorMapping[desc];
         if (mapping === undefined) {
-          throw new Error(`Unknown validator type ${desc}`)
+          throw new Error(`Unknown validator type ${desc}`);
         }
-        const validator = ValidatorFactory.create(mapping.type, validationSet[desc], mapping.useService ? service : undefined)
+        const validator = ValidatorFactory.create(mapping.type, validationSet[desc], mapping.useService ? service : undefined);
         if (mapping.prevalidate) {
           if (prevalidator) {
-            throw new Error('You must use only one prevalidator')
+            throw new Error('You must use only one prevalidator');
           }
-          prevalidator = validator
-          logger('prevalidator: %s (from %s)', validator.constructor.name, desc)
+          prevalidator = validator;
+          logger('prevalidator: %s (from %s)', validator.constructor.name, desc);
         } else {
-          validators.push(validator)
-          logger('validator: %s (from %s)', validator.constructor.name, desc)
+          validators.push(validator);
+          logger('validator: %s (from %s)', validator.constructor.name, desc);
         }
       }
-      validationSeq.push(new ValidatorSet(prevalidator, validators))
+      validationSeq.push(new ValidatorSet(prevalidator, validators));
     }
-    return new Validators(new ValidatorSequence(validationSeq))
+    return new Validators(new ValidatorSequence(validationSeq));
   }
 }
 
@@ -270,12 +271,12 @@ export interface ExitCodeValidatorOptions {
   exitCode: number;
 }
 export class ExitCodeValidator extends PostValidator<ExitCodeValidatorOptions> {
-  constructor (options: ExitCodeValidatorOptions) {
-    super(options)
+  constructor(options: ExitCodeValidatorOptions) {
+    super(options);
   }
 
-  async validate (_output: string, ttylog: TtyLog): Promise<boolean> {
-    return ttylog.exitCode == this.options.exitCode
+  async validate(_output: string, ttylog: TtyLog): Promise<boolean> {
+    return ttylog.exitCode == this.options.exitCode;
   }
 }
 
@@ -294,35 +295,35 @@ abstract class DockerExecValidator<O extends DockerExecValidatorOptions> extends
   private tutoId: string;
   private docker: IDockerService;
 
-  constructor (command: string, options: O) {
-    super(options)
-    this.command = command
+  constructor(command: string, options: O) {
+    super(options);
+    this.command = command;
   }
 
-  setDockerService (docker: IDockerService): void {
-    this.docker = docker
+  setDockerService(docker: IDockerService): void {
+    this.docker = docker;
   }
 
-  getDockerService (): IDockerService {
-    return (this.docker) ? this.docker : DockerService.getInstance()
+  getDockerService(): IDockerService {
+    return (this.docker) ? this.docker : DockerService.getInstance();
   }
 
-  injectService (service: Readonly<ISocketService>): void {
-    this.tutoId = service.tutoId
+  injectService(service: Readonly<ISocketService>): void {
+    this.tutoId = service.tutoId;
   }
 
-  async validate (): Promise<boolean> {
-    const stream = await this.getDockerService().exec(this.tutoId, this.command)
+  async validate(): Promise<boolean> {
+    const stream = await this.getDockerService().exec(this.tutoId, this.command);
 
     return new Promise((resolve) => {
-      const buffers = []
-      stream.onErr((chunk) => console.error('exec err \'%s\'', chunk))
-      stream.onOut((chunk) => buffers.push(chunk))
+      const buffers = [];
+      stream.onErr((chunk) => console.error('exec err \'%s\'', chunk));
+      stream.onOut((chunk) => buffers.push(chunk));
       stream.onClose(() => {
-        const stdout = Buffer.concat(buffers).toString()
-        resolve(this.isStdoutValid(stdout.trim()))
-      })
-    })
+        const stdout = Buffer.concat(buffers).toString();
+        resolve(this.isStdoutValid(stdout.trim()));
+      });
+    });
   }
 
   protected abstract isStdoutValid(stdout: string): Promise<boolean>;
@@ -351,24 +352,24 @@ export class CreatesValidator extends DockerExecValidator<CreatesValidatorOption
     absent: '! -e'
   };
 
-  constructor (options: CreatesValidatorOptions) {
-    let command = `[[ ${CreatesValidator.cmdArgs[options.type]} ${options.path} ]]`
+  constructor(options: CreatesValidatorOptions) {
+    let command = `[[ ${CreatesValidator.cmdArgs[options.type]} ${options.path} ]]`;
     if (options.type == 'file' && options.minLength) {
-      command += ` && [[ $(stat -c%s ${options.path}) -ge ${options.minLength} ]]`
+      command += ` && [[ $(stat -c%s ${options.path}) -ge ${options.minLength} ]]`;
     }
     if (options.type == 'file' && options.maxLength) {
-      command += ` && [[ $(stat -c%s ${options.path}) -le ${options.minLength} ]]`
+      command += ` && [[ $(stat -c%s ${options.path}) -le ${options.minLength} ]]`;
     }
-    super(command + ' && echo \'OK\' || echo \'KO\'', options)
+    super(command + ' && echo \'OK\' || echo \'KO\'', options);
   }
 
-  protected async isStdoutValid (stdout: string): Promise<boolean> {
+  protected async isStdoutValid(stdout: string): Promise<boolean> {
     if (stdout == 'OK') {
-      return true
+      return true;
     } else if (stdout == 'KO') {
-      return false
+      return false;
     } else {
-      throw new Error(`Unexpected output: "${stdout}"`)
+      throw new Error(`Unexpected output: "${stdout}"`);
     }
   }
 }
@@ -398,4 +399,4 @@ const descriptorMapping: Record<DescriptorKey, DescriptorMapping> = {
   rc: { type: ExitCodeValidator, useService: false, prevalidate: false },
   exitCode: { type: ExitCodeValidator, useService: false, prevalidate: false },
   creates: { type: CreatesValidator, useService: true, prevalidate: false }
-}
+};

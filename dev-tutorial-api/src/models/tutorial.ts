@@ -1,5 +1,5 @@
-import * as mongoose from 'mongoose'
-import * as mongooseFuzzy from 'mongoose-fuzzy-searching'
+import * as mongoose from 'mongoose';
+import * as mongooseFuzzy from 'mongoose-fuzzy-searching';
 
 /**
  * Slide model type
@@ -48,7 +48,7 @@ const slideSchema = new mongoose.Schema({
     type: Object,
     required: true
   }
-})
+});
 
 const tutorialSchema = new mongoose.Schema({
   name: {
@@ -79,12 +79,12 @@ const tutorialSchema = new mongoose.Schema({
     type: String,
     required: true
   }
-})
+});
 tutorialSchema.statics.build = (attr: ITutorialDescriptor): any => {
-  return new TutorialDescriptor(attr)
-}
-tutorialSchema.plugin(mongooseFuzzy, { fields: ['name', 'resume'] })
+  return new TutorialDescriptor(attr);
+};
+tutorialSchema.plugin(mongooseFuzzy, { fields: ['name', 'resume'] });
 
-const TutorialDescriptor = mongoose.model<any, TutorialDescriptorModelInterface>('TutorialDescriptor', tutorialSchema)
+const TutorialDescriptor = mongoose.model<any, TutorialDescriptorModelInterface>('TutorialDescriptor', tutorialSchema);
 
-export { TutorialDescriptor, TutorialDescriptorDocument }
+export { TutorialDescriptor, TutorialDescriptorDocument };

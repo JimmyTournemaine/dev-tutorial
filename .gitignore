@@ -18,6 +18,7 @@ test-results.xml
 # Generated files
 ## Mega-Linter
 /report
+/.eslintrc.*
 ## Python
 /__pycache__
 /build
