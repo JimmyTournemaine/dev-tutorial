@@ -9,6 +9,7 @@ import signal
 import sys
 import webbrowser
 from datetime import datetime
+from pathlib import Path
 
 
 class Dockerize:
@@ -17,12 +18,13 @@ class Dockerize:
         self.verbose = args.verbose
         self.dry_run = args.dry_run
         self.services = args.services
+        self.tags = args.tags
         self.ansible_vars = args.ansible_vars
 
     def run(self):
         if "darwin" == sys.platform:
             self._exec(
-                "docker run -d --name tcp-connect -p 2375:2375"
+                "docker run --rm -d --name tcp-connect -p 2375:2375"
                 + " -v /var/run/docker.sock:/var/run/docker.sock alpine/socat"
                 + " tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock"
                 + " || docker start tcp-connect"
@@ -37,13 +39,14 @@ class Dockerize:
         deployer_workspace = "/usr/src/dev-tutorial"
 
         playbook = "playbooks/" + self.environment + ".yml"
+        tags = self.tags + self.services
         playbook_args = list()
         if self.verbose:
             playbook_args.append("--verbose")
         if self.dry_run:
             playbook_args.append("--check")
-        if len(self.services) > 0:
-            playbook_args.append("--tags=" + ",".join(self.services))
+        if len(tags) > 0:
+            playbook_args.append("--tags=" + ",".join(tags))
         if len(self.ansible_vars) > 0:
             for ansible_var in self.ansible_vars:
                 playbook_args.append("-e " + ansible_var)
@@ -72,10 +75,9 @@ class Dockerize:
             + " ".join(playbook_args)
         )
 
-        # self._post_actions(self.environment)
-
         # Follow containers logs
         threads = [
+            multiprocessing.Process(target=self._post_actions),
             multiprocessing.Process(
                 target=self._exec,
                 args=(
@@ -100,6 +102,18 @@ class Dockerize:
                     ),
                 ),
             ),
+            # multiprocessing.Process(
+            #     target=self._exec,
+            #     args=(
+            #         self._log_transform(
+            #             "docker logs --follow --since "
+            #             + start_time
+            #             + " dev-tutorial-mongo-"
+            #             + self.environment,
+            #             "mongo",
+            #         ),
+            #     ),
+            # ),
         ]
         [t.start() for t in threads]
 
@@ -110,6 +124,32 @@ class Dockerize:
 
         # Wait for termination with SIGINT(^C) or containers termination
         [t.join() for t in threads]
+
+    def _post_actions(self):
+
+        if "dev" == self.environment:
+            if not self.dry_run:
+                webbrowser.open("http://localhost:4200/")
+                copies = (
+                    multiprocessing.Process(
+                        target=self._exec,
+                        args=(
+                            "docker cp "
+                            + f"dev-tutorial-api-{self.environment}:/usr/src/app/api/node_modules"
+                            + " ./dev-tutorial-api/",
+                        ),
+                    ),
+                    multiprocessing.Process(
+                        target=self._exec,
+                        args=(
+                            "docker cp "
+                            + f"dev-tutorial-app-{self.environment}:/usr/src/app/app-ui/node_modules"
+                            + " ./dev-tutorial-app/",
+                        ),
+                    ),
+                )
+                [t.start() for t in copies]
+                [t.join() for t in copies]
 
     def _exec(self, cmd):
         if self.verbose or self.dry_run:
@@ -124,10 +164,14 @@ class Dockerize:
             label = "backend "
             color = "33"
             win_color = "Yellow"
-        else:
+        elif container == "app":
             label = "frontend"
             color = "32"
             win_color = "Orange"
+        else:
+            label = "others  "
+            color = "31"
+            win_color = "Red"
 
         if "win32" == sys.platform:
             log_transform = (
@@ -141,32 +185,30 @@ class Dockerize:
 
         return log_transform
 
-    def _post_actions(self, environment):
-        if not self.dry_run:
-            webbrowser.open("http://localhost:4200/")
-
 
 class Lint:
     def __init__(self, args):
         self.verbose = args.verbose
-        self.debug = args.debug
         self.fix = args.fix
         self.linters = args.linters
         self.languages = args.languages
 
     def run(self):
         # Remove previous reports
-        if os.path.exists('./report'):
-            shutil.rmtree('./report')
+        if os.path.exists("./report"):
+            shutil.rmtree("./report")
+
+        # Touch .eslintrc to activate TYPESCRIPT_ES linter
+        Path(".eslintrc.json").touch()
+        eslintroot = open(".eslintrc.json", "w")
+        eslintroot.write("{}")
+        eslintroot.close()
 
         # Run Mega-Linter
         cmd = "docker run --rm --name mega-linter {} -v $(pwd):/tmp/lint nvuillam/mega-linter:v4"
         args = list()
         if self.fix:
             args.append("-e APPLY_FIXES=all")
-
-        if self.debug:
-            args.append("-e LOG_LEVEL=DEBUG")
 
         if len(self.linters) > 0:
             args.append("-e ENABLE_LINTERS=" + ",".join(self.linters))
@@ -175,17 +217,29 @@ class Lint:
             args.append("-e ENABLE=" + ",".join(self.languages))
 
         if self.verbose:
+            args.append("-e LOG_LEVEL=DEBUG")
             print(cmd.format(" ".join(args)))
 
+        signal.signal(
+            signal.SIGINT,
+            lambda sig, frame: os.system("docker container stop mega-linter"),
+        )
+
         os.system(cmd.format(" ".join(args)))
+
+        # Cleaning
+        os.remove(".eslintrc.json")
 
 
 class Prune:
     def __init__(self, args):
-        pass
+        self.force = args.force
 
     def run(self):
-        os.system("docker system prune -af")
+        cmd = "docker system prune --all --volumes"
+        if self.force:
+            cmd += " --force"
+        os.system(cmd)
 
 
 def main(argv):
@@ -216,6 +270,14 @@ def main(argv):
         metavar="services",
     )
     dockerize_parser.add_argument(
+        "-t",
+        "--tags",
+        nargs="+",
+        default=[],
+        help="select tags to pass to the deployer",
+        metavar="tags",
+    )
+    dockerize_parser.add_argument(
         "-a",
         "--ansible-vars",
         nargs="+",
@@ -238,7 +300,6 @@ def main(argv):
     )
     lint_parser.set_defaults(func=lambda args: Lint(args).run())
     lint_parser.add_argument("-v", "--verbose", action="store_true")
-    lint_parser.add_argument("-d", "--debug", action="store_true")
     lint_parser.add_argument(
         "-f",
         "--fix",
@@ -259,8 +320,17 @@ def main(argv):
         help="linters to use (default: from .mega-linter.yml)",
     )
 
-    prune_parser = subparsers.add_parser("prune", help="prune your docker system")
+    prune_parser = subparsers.add_parser(
+        "prune",
+        help="Remove all unused images , networks, containers, volumes and build caches from your docker system",
+    )
     prune_parser.set_defaults(func=lambda args: Prune(args).run())
+    prune_parser.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="Do not prompt for confirmation",
+    )
 
     args = parser.parse_args()
 

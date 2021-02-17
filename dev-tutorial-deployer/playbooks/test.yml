@@ -8,8 +8,7 @@
       dockerize_frontend_command: yarn test --no-progress
       dockerize_wait_for_init: no
       dockerize_container_env_backend:
-        DEBUG: "app:access,app:docker,test:*"
+        DEBUG: "app:server,app:access,app:docker,test:*"
         DEV_API_EXTRA_TUTORIALS: "test/extra-tuto test/extra-tuto2"
-        CHOMA_SEED: ""
+        CHOMA_SEED: "HDI6Xxc9xc"
       dockerize_app_port: 9876
-

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { TutorialDescriptor, TutorialDescriptorDocument } from '../../models/tutorial';
+import { ITutorialDescriptor, TutorialDescriptor, TutorialDescriptorDocument } from '../../models/tutorial';
 
 /**
  * Socket service to use terminal
@@ -10,31 +10,36 @@ export class TutorialService {
   static instance: TutorialService;
 
   private loaded: Promise<void>;
+
   private directories: string[] = [this.DEFAULT_DIR];
 
   /**
    * Trigger the filesystem loading
+   *
+   * @param extraTutorialDirs A list of directories containing tutorials to add the the default one.
    */
   private constructor(extraTutorialDirs: string[] = []) {
-    this.loaded = this.load(extraTutorialDirs);
+    this.loaded = TutorialService.load(extraTutorialDirs);
     this.directories.push(...extraTutorialDirs);
   }
 
   /**
    * Load filesystem information to mongodb database.
-   * @return {Promise} A promise of all tutorials are loaded in the database.
+   *
+   * @param extraTutorialDirs A list of directories containing tutorials to add the the default one.
+   * @returns {Promise} A promise of all tutorials are loaded in the database.
    */
-  private async load(extraTutorialDirs: string[]): Promise<void> {
+  private static async load(extraTutorialDirs: string[]): Promise<void> {
     // Clean data
-    await TutorialDescriptor.deleteMany({});
+    await TutorialDescriptor.deleteMany({}).exec();
 
     // Load filesystem descriptors to load them in database
     let dir = 'tutorials';
-    const tutoDescSaved = this.loadFrom(dir);
+    const tutoDescSaved = TutorialService.loadFrom(dir);
 
     // Load extra tutorials
     for (dir of extraTutorialDirs) {
-      tutoDescSaved.push(...this.loadFrom(dir));
+      tutoDescSaved.push(...TutorialService.loadFrom(dir));
     }
 
     return Promise.all(tutoDescSaved).then(() => {
@@ -42,13 +47,13 @@ export class TutorialService {
     });
   }
 
-  private loadFrom(basedir: string): Promise<TutorialDescriptorDocument>[] {
+  private static loadFrom(basedir: string): Promise<TutorialDescriptorDocument>[] {
     const files = fs.readdirSync(basedir, { withFileTypes: true });
-    const tutoDescSaved = [];
+    const tutoDescSaved = new Array<Promise<TutorialDescriptorDocument>>();
     for (const dir of files) {
       if (dir.isDirectory()) {
         const content = fs.readFileSync(`${basedir}/${dir.name}/tutorial.json`);
-        const descriptors = JSON.parse(content.toString());
+        const descriptors = JSON.parse(content.toString()) as ITutorialDescriptor;
         descriptors.dirname = `${basedir}/${dir.name}`;
         if (descriptors.icon.startsWith('public/')) {
           descriptors.icon = `/api/tuto/${descriptors.slug}/static/${descriptors.icon.slice(7)}`;
@@ -61,7 +66,9 @@ export class TutorialService {
 
   /**
    * Initialize the service
-   * @return {TutorialService} The initializing service.
+   *
+   * @param extraTutorialDirs A list of directories containing tutorials to add the the default one.
+   * @returns The initializing service.
    */
   public static init(...extraTutorialDirs: string[]): Promise<void> {
     this.instance = new TutorialService(extraTutorialDirs);
@@ -70,7 +77,8 @@ export class TutorialService {
 
   /**
    * This service is a singleton.
-   * @return {TutorialService} The singleton instance
+   *
+   * @returns {TutorialService} The singleton instance
    */
   public static getInstance(): TutorialService {
     if (!this.instance) {
@@ -81,10 +89,15 @@ export class TutorialService {
 
   /**
    * Get all the tutorials descriptions.
-   * @param {Callback} callback
-   * @return {Promise} promise
+   *
+   * @param search The text to search in tutorials properties.
+   * @param callback An optional callback when search is completed
+   * @returns A promise that the matching tutorials will be returned.
    */
-  public async getTutorials(search?: string, callback?: (err: NodeJS.ErrnoException | null, tutorials: TutorialDescriptorDocument[]) => void): Promise<TutorialDescriptorDocument[]> {
+  public async getTutorials(
+    search?: string,
+    callback?: (err: NodeJS.ErrnoException | null, tutorials: TutorialDescriptorDocument[]) => void
+  ): Promise<TutorialDescriptorDocument[]> {
     return this.loaded.then(() => {
       if (search) {
         return TutorialDescriptor.fuzzySearch(search, (err, tutos) => {
@@ -92,35 +105,39 @@ export class TutorialService {
             callback(err, tutos);
           }
         });
-      } else {
-        return TutorialDescriptor.find({}, (err, tutos) => {
-          if (callback) {
-            callback(err, tutos);
-          }
-        });
       }
-    });
-  }
-
-  /**
-   * Get a tutorial descriptions.
-   * @param {string} tutoId The tutorial identifier
-   * @param {Callback} callback
-   * @return {Promise} promise
-   */
-  public async getTutorial(tutoId: string, callback?: (err: NodeJS.ErrnoException | null, tutorial: TutorialDescriptorDocument) => void): Promise<TutorialDescriptorDocument> {
-    return this.loaded.then(() => {
-      return TutorialDescriptor.findOne({ slug: tutoId }, (err, tuto) => {
+      return TutorialDescriptor.find({}, (err, tutos) => {
         if (callback) {
-          callback(err, tuto);
+          callback(err, tutos);
         }
       });
     });
   }
 
+  /**
+   * Get a tutorial.
+   *
+   * @param tutoId The tutorial identifier.
+   * @param callback An optional callback when search is completed.
+   * @returns promise A promise that return the tutorial if it exists.
+   */
+  public async getTutorial(
+    tutoId: string,
+    callback?: (err: NodeJS.ErrnoException | null, tutorial: TutorialDescriptorDocument) => void
+  ): Promise<TutorialDescriptorDocument> {
+    return this.loaded.then(() => TutorialDescriptor.findOne({ slug: tutoId }, (err: Error, tuto: TutorialDescriptorDocument) => {
+      if (callback) {
+        callback(err, tuto);
+      }
+    }));
+  }
+
+  /**
+   * List all known tutorial directories
+   *
+   * @returns A promise that directories will be returned
+   */
   public async listDirectories(): Promise<string[]> {
-    return this.loaded.then(() => {
-      return this.directories;
-    });
+    return this.loaded.then(() => this.directories);
   }
 }

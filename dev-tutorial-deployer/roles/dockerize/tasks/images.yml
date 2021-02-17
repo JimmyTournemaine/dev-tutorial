@@ -1,5 +1,4 @@
 ---
-
 # Pull standard images
 
 - name: Pull the database image
@@ -22,6 +21,9 @@
     - "{{ deployer_local_workspace }}/dev-tutorial-app/.dockerignore"
   tags:
     - build
+    - api
+    - app
+    - dockerfiles
 
 - name: Get the backend Dockerfile template
   set_fact:
@@ -32,6 +34,7 @@
   tags:
     - build
     - api
+    - dockerfiles
 
 - name: Get the frontend Dockerfile template
   set_fact:
@@ -42,6 +45,7 @@
   tags:
     - build
     - app
+    - dockerfiles
 
 - name: Generate the backend Dockerfile
   template:
@@ -52,16 +56,18 @@
   tags:
     - build
     - api
+    - dockerfiles
 
 - name: Generate the frontend Dockerfile
   template:
-    src: "dockerfiles/Dockerfile.{{ dockerize_frontend_dockerfile_type }}.api.j2"
-    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+    src: "dockerfiles/Dockerfile.{{ dockerize_frontend_dockerfile_type }}.app.j2"
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/Dockerfile.{{ dockerize_frontend_dockerfile_type }}"
     mode: 0644
   register: frontend_dockerfile
   tags:
     - build
     - app
+    - dockerfiles
 
 # Build images from generated Dockerfiles
 
@@ -78,16 +84,19 @@
     source: build
     force_source: "{{ rebuild }}"
   vars:
-    rebuild: "{{ dockerize_force_api_image or backend_dockerfile is changed }}"
+    rebuild: "{{ True in rebuild_conditions }}"
+    rebuild_conditions:
+      - "{{ dockerize_force_api_image | bool }}"
+      - "{{ backend_dockerfile is changed }}"
   tags:
     - build
     - api
 
 - name: Build the frontend image
   docker_image:
-    name: "dev-tutorial-app-{{ dockerize_backend_dockerfile_type }}"
+    name: "dev-tutorial-app-{{ dockerize_frontend_dockerfile_type }}"
     build:
-      dockerfile: "Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+      dockerfile: "Dockerfile.{{ dockerize_frontend_dockerfile_type }}"
       path: "{{ deployer_local_workspace }}/dev-tutorial-app"
       pull: "{{ rebuild }}"
       rm: yes
@@ -96,7 +105,10 @@
     source: build
     force_source: "{{ rebuild }}"
   vars:
-    rebuild: "{{ dockerize_force_app_image or frontend_dockerfile is changed }}"
+    rebuild: "{{ True in rebuild_conditions }}"
+    rebuild_conditions:
+      - "{{ dockerize_force_app_image | bool }}"
+      - "{{ frontend_dockerfile is changed }}"
   tags:
     - build
     - app

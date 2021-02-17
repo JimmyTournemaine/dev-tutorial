@@ -1,0 +1,16 @@
+/* {{ ansible_managed }} */
+const PROXY_CONFIG = [
+  {
+    context: ['/api'],
+    target: '{{ dockerize_app_api_host }}:{{ dockerize_app_api_port }}',
+    secure: false,
+  },
+  {
+    context: ['/socket.io'],
+    target: '{{ dockerize_app_api_host }}:{{ dockerize_app_socket_port }}',
+    secure: false,
+    ws: true,
+  },
+];
+
+module.exports = PROXY_CONFIG;

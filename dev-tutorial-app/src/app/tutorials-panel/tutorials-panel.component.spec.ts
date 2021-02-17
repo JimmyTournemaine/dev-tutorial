@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -23,20 +23,19 @@ describe('TutorialsPanelComponent', () => {
   };
   let mockWs: jasmine.SpyObj<TutorialsWebServices>;
 
-  beforeEach(async(() => {
-    mockWs = jasmine.createSpyObj('TutorialsWebServices', ['findAll']);
+  beforeEach(async () => {
+    mockWs = jasmine.createSpyObj<TutorialsWebServices>('TutorialsWebServices', ['findAll']);
     mockWs.findAll.and.returnValue(new Observable(observer => {
       observer.next([mockTutorial]);
       observer.complete();
     }));
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [RouterTestingModule, MatGridListModule, MatCardModule, ReactiveFormsModule],
       providers: [{ provide: TutorialsWebServices, useValue: mockWs }],
       declarations: [TutorialsPanelComponent]
-    })
-      .compileComponents();
-  }));
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TutorialsPanelComponent);

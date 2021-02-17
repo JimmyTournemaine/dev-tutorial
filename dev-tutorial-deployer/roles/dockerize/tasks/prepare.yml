@@ -1,7 +1,7 @@
 ---
 - name: Get the docker host setup if not set (linux)
   set_fact:
-    dockerize_api_docker: { socketPath: '/var/run/docker.sock' }
+    dockerize_api_docker: { socketPath: "/var/run/docker.sock" }
   when:
     - "dockerize_api_docker is none"
     - "'linux' == deployer_host_system"
@@ -9,7 +9,7 @@
 
 - name: Get the docker host setup if not set (non-linux)
   set_fact:
-    dockerize_api_docker: { host: 'host.docker.internal', port: 2375 }
+    dockerize_api_docker: { host: "host.docker.internal", port: 2375 }
   when:
     - "dockerize_api_docker is none"
     - "'linux' != deployer_host_system"
@@ -20,17 +20,27 @@
     src: environments/environment.api.ts.j2
     dest: "{{ deployer_local_workspace }}/dev-tutorial-api/src/environments/environment.ts"
     mode: 0644
+  register: backend_env
   tags:
     - build
     - api
-    - app
 
 - name: Generate frontend environment file
   template:
     src: environments/environment.app.ts.j2
     dest: "{{ deployer_local_workspace }}/dev-tutorial-app/src/environments/environment.ts"
     mode: 0644
+  register: frontend_env
   tags:
     - build
-    - api
+    - app
+
+- name: Generate frontend proxy settings
+  template:
+    src: environments/proxy.conf.js.j2
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/src/proxy.conf.js"
+    mode: 0644
+  register: frontend_proxy
+  tags:
+    - build
     - app

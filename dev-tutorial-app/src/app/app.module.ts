@@ -10,33 +10,35 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { TutorialCompletedDialogComponent, TutorialComponent } from './tutorial/tutorial.component';
 import { MatCardModule } from '@angular/material/card';
-import { TutorialsPanelComponent } from './tutorials-panel/tutorials-panel.component';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
+import { MatDialogModule } from '@angular/material/dialog';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { TutorialCompletedDialogComponent, TutorialComponent } from './tutorial/tutorial.component';
+import { TutorialsPanelComponent } from './tutorials-panel/tutorials-panel.component';
 import { TerminalComponent } from './tutorial/terminal/terminal.component';
 import { EditorComponent } from './tutorial/editor/editor.component';
 import { SlideshowComponent } from './tutorial/slideshow/slideshow.component';
 
-import { MatDialogModule } from '@angular/material/dialog';
 
 const monacoConfig: NgxMonacoEditorConfig = {
   defaultOptions: { theme: 'vs-dark' }
 };
 
-function markedOptionsFactory(): MarkedOptions {
+const markedOptionsFactory = () => {
   const renderer = new MarkedRenderer();
-  const linkRenderer = renderer.link;
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const linkRenderer: (href: string, title: string, text: string) => string = renderer.link;
 
-  renderer.link = (href, title, text) => {
-    const html = linkRenderer.call(renderer, href, title, text);
+  renderer.link = (href: string, title: string, text: string): string => {
+    const html = linkRenderer.call(renderer, href, title, text) as string;
     return html.replace(/^<a /, '<a role="link" tabindex="0" target="_blank" rel="nofollow noopener noreferrer" ');
   };
 
@@ -48,7 +50,7 @@ function markedOptionsFactory(): MarkedOptions {
     smartLists: true,
     smartypants: false
   };
-}
+};
 
 @NgModule({
   declarations: [
@@ -85,9 +87,10 @@ function markedOptionsFactory(): MarkedOptions {
     MatGridListModule,
     MatProgressBarModule,
     MatDialogModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
     FormsModule,
-    MonacoEditorModule.forRoot(monacoConfig)
+    MonacoEditorModule.forRoot(monacoConfig),
   ],
   providers: [
   ],

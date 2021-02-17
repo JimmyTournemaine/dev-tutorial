@@ -10,7 +10,7 @@ type Editor = monaco.editor.IStandaloneCodeEditor; // | monaco.editor.IStandalon
   styleUrls: ['./editor.component.css']
 })
 export class EditorComponent implements OnChanges {
-  private static readonly LANG_MAP = {
+  private static readonly langMap: Record<string, string> = {
     js: 'javascript',
     java: 'java',
     ts: 'typescript',
@@ -21,10 +21,7 @@ export class EditorComponent implements OnChanges {
     yml: 'yml'
   };
 
-  private static readonly LANG_FALLBACK = 'plaintext';
-
-  content = '';
-  options = {};
+  private static readonly langFormat = 'plaintext';
 
   @Input()
   model: NgxEditorModel;
@@ -35,22 +32,26 @@ export class EditorComponent implements OnChanges {
   @Output()
   quit = new EventEmitter<void>();
 
+  content = '';
+
+  options = {};
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.model) {
-      this.content = changes.model.currentValue.value;
-
-      let lang = changes.model.currentValue.language;
+      const currentValue = changes.model.currentValue as NgxEditorModel;
+      let lang = currentValue.language;
+      const uri = currentValue.uri as string;
       if (!lang) {
-        lang = EditorComponent.LANG_FALLBACK;
-        if (changes.model.currentValue.uri) {
-          const ext = changes.model.currentValue.uri.split('.').pop();
-          const found = EditorComponent.LANG_MAP[ext];
+        lang = EditorComponent.langFormat;
+        if (currentValue.uri) {
+          const ext = uri.split('.').pop();
+          const found = EditorComponent.langMap[ext];
           if (found) {
             lang = found;
           }
         }
       }
-      this.options = Object.assign({}, this.options, { language: lang });
+      this.options = { ...this.options, language: lang };
     }
   }
 
@@ -60,6 +61,7 @@ export class EditorComponent implements OnChanges {
       id: 'quit',
       label: 'Quit without saving',
       keybindings: [
+        /* eslint-disable-next-line no-bitwise */
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_Q
       ],
       precondition: null,
@@ -75,6 +77,7 @@ export class EditorComponent implements OnChanges {
       id: 'save-and-quit',
       label: 'Save and quit',
       keybindings: [
+        /* eslint-disable-next-line no-bitwise */
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S
       ],
       precondition: null,

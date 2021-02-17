@@ -1,4 +1,6 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import {
+  Router, Request, Response, NextFunction,
+} from 'express';
 import { TutorialController } from '../controllers/tutorial';
 
 const router = Router();
@@ -6,22 +8,22 @@ const router = Router();
 /**
  * A handler wrapper that will call next on async request handler error.
  *
- * @deprecated Will be handled automatically in ExpressJS 5
- * @link https://expressjs.com/en/guide/error-handling.html
+ * @deprecated Will be handled automatically in ExpressJS 5 : {@link https://expressjs.com/en/guide/error-handling.html}.
  */
 class PromiseHandler {
   /**
    * Bind the original handler
-   * @parameter {RequestHandler} An async request handler
+   *
+   * @param originalHandler An async request handler
+   * @returns The handler response.
    */
-  constructor(public originalHandler: (req: Request, res: Response) => Promise<Response<any>>) {
+  constructor(private originalHandler: (req: Request, res: Response) => Promise<void|Response<unknown>>) {
   }
 
-  public handler = async(req: Request, res: Response, next: NextFunction) => {
+  public handler = async (req: Request, res: Response, next: NextFunction) => {
     try {
       return await this.originalHandler(req, res);
     } catch (err) {
-      console.error('gotcha', err);
       return next(err);
     }
   };
@@ -34,15 +36,24 @@ class PromiseHandler {
 // router.get('/tuto/:slug', TutorialController.content);
 // router.get('/tuto', TutorialController.index);
 
-// Is valid ExpressJS 4
+// Works for ExpressJS 4. FIXME with ExpressJS 5 (code above).
+// eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
 router.post('/tuto/:slug/stop', new PromiseHandler(TutorialController.stop).handler);
+// eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
 router.post('/tuto/:slug/start', new PromiseHandler(TutorialController.start).handler);
-router.get('/tuto/:slug/status', TutorialController.status);
-router.post('/tuto/:slug/write', TutorialController.write);
+// eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
+router.get('/tuto/:slug/status', new PromiseHandler(TutorialController.status).handler);
+// eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
+router.post('/tuto/:slug/write', new PromiseHandler(TutorialController.write).handler);
+// eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
 router.get('/tuto/:slug/slides/:id(\\d+)', new PromiseHandler(TutorialController.slide).handler);
+// eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
 router.get('/tuto/:slug/static/:path', new PromiseHandler(TutorialController.static).handler);
+// eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
 router.get('/tuto/:slug', new PromiseHandler(TutorialController.content).handler);
+// eslint-disable-next-line @typescript-eslint/unbound-method
 router.post('/tuto/search', TutorialController.search);
+// eslint-disable-next-line @typescript-eslint/unbound-method
 router.get('/tuto', TutorialController.index);
 
 export { router as tutoRouter };

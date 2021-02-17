@@ -1,5 +1,4 @@
 ---
-
 - name: Create the containers network
   docker_network:
     name: "dev-tutorial-network-{{ deployer_env }}"
@@ -14,7 +13,8 @@
     image: mongo
     state: "{{ dockerize_containers_state }}"
     restart: "{{ dockerize_containers_state == 'started' and dockerize_force }}"
-    log_driver: none
+    auto_remove: "{{ dockerize_containers_autoremove }}"
+    #log_driver: none
     ports:
       - "27017:27017"
     networks:
@@ -30,7 +30,8 @@
     name: "dev-tutorial-api-{{ deployer_env }}"
     image: "dev-tutorial-api-{{ dockerize_backend_dockerfile_type }}"
     state: "{{ dockerize_containers_state }}"
-    restart: "{{ dockerize_containers_state == 'started' and dockerize_force_api_container }}"
+    restart: "{{ True in restart_conditions }}"
+    auto_remove: "{{ dockerize_containers_autoremove }}"
     command: "{{ dockerize_backend_command | default(omit) }}"
     tty: yes
     volumes:
@@ -38,10 +39,16 @@
       - "/usr/src/app/api/node_modules"
     ports:
       - "3000:3000"
+      - "3001:3001"
     networks:
       - name: "dev-tutorial-network-{{ deployer_env }}"
     networks_cli_compatible: no
     env: "{{ dockerize_container_env_backend }}"
+  vars:
+    restart_conditions:
+      - "{{ dockerize_containers_state == 'restarted' }}"
+      - "{{ dockerize_force_api_container }}"
+      - "{{ backend_env is changed }}"
   register: backend_cont_metadata
   tags:
     - build
@@ -64,9 +71,10 @@
 - name: Create the frontend container
   docker_container:
     name: "dev-tutorial-app-{{ deployer_env }}"
-    image: "dev-tutorial-app-{{ dockerize_backend_dockerfile_type }}"
+    image: "dev-tutorial-app-{{ dockerize_frontend_dockerfile_type }}"
     state: "{{ dockerize_containers_state }}"
-    restart: "{{ dockerize_containers_state == 'started' and dockerize_force_app_container }}"
+    restart: "{{ True in restart_conditions }}"
+    auto_remove: "{{ dockerize_containers_autoremove }}"
     command: "{{ dockerize_frontend_command | default(omit) }}"
     tty: yes
     volumes:
@@ -77,6 +85,12 @@
     networks:
       - name: "dev-tutorial-network-{{ deployer_env }}"
     networks_cli_compatible: no
+  vars:
+    restart_conditions:
+      - "{{ dockerize_containers_state == 'started' }}"
+      - "{{ dockerize_force_app_container }}"
+      - "{{ frontend_env is changed }}"
+      - "{{ frontend_proxy is changed }}"
   register: frontend_cont_metadata
   tags:
     - build

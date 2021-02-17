@@ -29,3 +29,4 @@ test-results.xml
 Dockerfile.*
 !/dev-tutorial-deployer/**/Dockerfile.*
 /*/src/environments/
+/dev-tutorial-app/src/proxy.conf.json"

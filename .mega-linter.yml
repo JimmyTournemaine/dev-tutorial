@@ -1,3 +1,4 @@
+---
 # Configuration file for Mega-Linter
 # See all available variables at https://nvuillam.github.io/mega-linter/configuration/ and in linters documentation
 
@@ -7,6 +8,7 @@ APPLY_FIXES: none
 DISABLE:
   - HTML # wait new version (.htmlintrc not functional)
   - SPELL
+  - JAVASCRIPT # Only typescript is used
 DISABLE_LINTERS:
   - TYPESCRIPT_STANDARD # TYPESCRIPT_ES is preferred
 FLAVOR_SUGGESTIONS: false
@@ -19,4 +21,5 @@ UPDATED_SOURCES_REPORTER: false
 ANSIBLE_DIRECTORY: dev-tutorial-deployer
 SPELL_CSPELL_ARGUMENTS: --local "en,fr"
 SPELL_MISSPELL_FILTER_REGEX_EXCLUDE: '.*\.fr\..*'
-YAML_V8R_FILTER_REGEX_EXCLUDE: '.mega-linter.yml' # https://github.com/nvuillam/mega-linter/issues/321
+TYPESCRIPT_ES_CONFIG_FILE: LINTER_DEFAULT
+YAML_V8R_FILTER_REGEX_EXCLUDE: ".mega-linter.yml" # https://github.com/nvuillam/mega-linter/issues/321

@@ -1,15 +1,14 @@
-/* eslint-disable no-invalid-this */
 import { expect } from 'chai';
-import { server } from './server';
-import { DockerService, TtyLog } from './services/docker/docker';
 import { agent as request } from 'supertest';
-import { environment } from './environments/environment';
-import { app } from './app';
 import * as io from 'socket.io-client';
 import * as fs from 'fs';
 import * as debug from 'debug';
-import { SocketManager } from './services/socket/socket';
 import { Done } from 'mocha';
+import { Server } from './server';
+import { DockerService } from './services/docker/docker';
+import { TtyLog } from './services/docker/ttylog';
+import { environment } from './environments/environment';
+import { SocketManager } from './services/socket/socket-manager';
 
 const logger = debug('test:server');
 
@@ -19,21 +18,21 @@ const logger = debug('test:server');
 class PartialDone {
   private value = 0;
 
-  constructor(private expected: number, private _done: Done) { }
+  constructor(private expected: number, private mochaDone: Done) { }
 
-  done(err?: any): void {
+  done(err?: Error | string): void {
     if (err) {
-      return this._done(new Error(`error at ${this.value}/${this.expected}, reason: ${err}`));
+      const reason = err instanceof Error ? err.message : err;
+      this.mochaDone(new Error(`error at ${this.value}/${this.expected}, reason: ${reason}`));
+      return;
     }
     logger('%d of %d done', this.value + 1, this.expected);
-    if (++this.value == this.expected) {
-      this._done();
+    if (++this.value === this.expected) {
+      this.mochaDone();
     }
   }
 }
-const partial = (expected: number, done: Done): PartialDone => {
-  return new PartialDone(expected, done);
-};
+const partial = (expected: number, done: Done): PartialDone => new PartialDone(expected, done);
 
 // Randomize input to simulate input chunks
 const randomizeInput = (input: string, callback: (chunk: string) => void): void => {
@@ -47,34 +46,45 @@ const randomizeInput = (input: string, callback: (chunk: string) => void): void 
   }
 };
 
-describe('Server integration tests', function() {
-  it('should the server starts', () => {
-    expect(server.listening).to.be.true;
+describe('Server integration tests', () => {
+  let server: Server;
+
+  before('starts the server', async () => {
+    server = new Server();
+    await server.boot();
   });
 
-  describe('Socket integration', function() {
-    this.timeout(10000);
+  after('stop the server', async () => {
+    await server.stop();
+  });
 
-    let socket: any;
+  describe('Socket integration', function () {
+    this.timeout(20000);
+
+    let socket: SocketIOClient.Socket;
     const tutoId = 'dev';
 
-    before(async function() {
+    beforeEach(async function () {
       this.timeout(30000);
       await DockerService.connect(environment.docker).run(tutoId);
-    });
 
-    beforeEach(() => {
       socket = io('http://localhost:3000');
     });
 
-    xit('should attaching a socket to a docker container and get some commands results', function(done) {
+    afterEach(() => {
+      socket.disconnect();
+      SocketManager.destroy();
+    });
+
+    it('should attaching a socket to a docker container and get some commands results', (done) => {
       const part = partial(2, done);
       socket.on('show', (show: string) => {
         try {
           expect(show).to.contains('Linux'); // `uname` result
           part.done();
         } catch (error) {
-          part.done(error);
+          // will get 'uname\r' then 'Linux' from the docker container
+          debug(`show: ${show}`);
         }
       });
       socket.on('attached', (id: string) => {
@@ -86,7 +96,7 @@ describe('Server integration tests', function() {
       socket.emit('attach', tutoId);
     });
 
-    xit('should attaching a socket to a docker container and get some commands results after a reconnection', function(done) {
+    xit('should attaching a socket to a docker container and get some commands results after a reconnection', (done) => {
       const part = partial(2, done);
 
       socket.on('show', (show: string) => {
@@ -109,19 +119,19 @@ describe('Server integration tests', function() {
       socket.emit('attach', tutoId);
     });
 
-    it('should attaching a socket to a docker container and test \'edit\' hook', function(done) {
+    it('should attaching a socket to a docker container and test \'edit\' hook', (done) => {
       const part = partial(3, done);
 
       socket.on('ttylog', (ttylog: TtyLog) => {
-        part.done('should not got ttylog on edit hook: ' + ttylog.toString());
+        part.done(`should not got ttylog on edit hook: ${ttylog.toString()}`);
       });
-      socket.on('edit-start', (info: any) => {
+      socket.on('edit-start', (info: { path: string; }) => {
         socket.on('edit-content', (chunk: string) => {
           expect(chunk).not.to.be.undefined;
           part.done();
         });
         socket.on('edit-error', (err: string) => {
-          part.done('should not receive an error:' + err);
+          part.done(`should not receive an error:${err}`);
         });
         socket.on('edit-close', () => {
           part.done();
@@ -136,21 +146,25 @@ describe('Server integration tests', function() {
           socket.emit('cmd', chunk);
         });
       });
+      socket.on('err', (err: Error) => {
+        part.done(err);
+      });
       socket.emit('attach', tutoId);
     });
 
-    it('should attaching a socket to a docker container and test \'edit\' hook error handling', function(done) {
+    it('should attaching a socket to a docker container and test \'edit\' hook error handling', (done) => {
       const part = partial(2, done);
 
-      socket.on('edit-start', (info: any) => {
+      socket.on('edit-start', (info: { path: string; }) => {
         socket.on('edit-content', () => {
-          done('stderr should be handle by edit-error');
+          part.done('stderr should be handle by edit-error');
         });
-        socket.on('edit-error', (err: any) => {
+        socket.on('edit-error', (err: Error) => {
           expect(err).not.to.be.undefined;
+          part.done();
         });
         socket.on('edit-close', () => {
-          part.done();
+          part.done('error dont send close');
         });
 
         expect(info).to.have.property('path');
@@ -158,16 +172,17 @@ describe('Server integration tests', function() {
         part.done();
       });
       socket.on('attached', () => {
+        logger('attached');
         socket.emit('cmd', 'edit testfile.txt\r');
       });
       socket.emit('attach', tutoId);
     });
 
-    it('should send an error when trying to attach a socket to a non existent docker container', function(done) {
+    it('should send an error when trying to attach a socket to a non existent docker container', (done) => {
       socket.on('attached', () => {
-        done('Should not be attached to void');
+        done(new Error('Should not be attached to void'));
       });
-      socket.on('err', (err: any) => {
+      socket.on('err', (err: Error) => {
         expect(err).to.have.property('name');
         expect(err).to.have.property('message');
         done();
@@ -175,7 +190,7 @@ describe('Server integration tests', function() {
       socket.emit('attach', 'not exist');
     });
 
-    xit('should complete the demo tutorial', function(done) {
+    xit('should complete the demo tutorial', (done) => {
       socket.on('attached', () => {
         // Slide 2
         socket.once('next', () => {
@@ -191,8 +206,8 @@ describe('Server integration tests', function() {
               expect(content).to.be.empty;
 
               // send a file (should complete the tutorial - see on('completed')
-              request(app)
-                .post('/tuto/dev/write?path=' + encodeURI('/root/test.txt'))
+              void request(server.app)
+                .post(`/tuto/dev/write?path=${encodeURI('/root/test.txt')}`)
                 .set('content-type', 'application/octet-stream')
                 .send(fs.readFileSync('./test/test-file.txt'))
                 .expect(204)
@@ -213,18 +228,5 @@ describe('Server integration tests', function() {
       });
       socket.emit('attach', tutoId);
     });
-
-    afterEach(() => {
-      socket.disconnect();
-      SocketManager.destroy();
-    });
   });
-
-  /**
-   * Close the server properly at the end of tests
-   */
-  // after((done) => {
-  //  server.on('close', () => done());
-  //  server.close();
-  // });
 });

@@ -3,15 +3,18 @@ dockerize_host: "{{ ansible_default_ipv4.gateway }}"
 
 # Force to rebuild an app (image and container), the image or to recreate the container
 dockerize_force: no
+dockerize_force_images: "{{ dockerize_force }}"
+dockerize_force_containers: "{{ dockerize_force }}"
 dockerize_force_api: "{{ dockerize_force }}"
-dockerize_force_api_image: "{{ dockerize_force_api }}"
-dockerize_force_api_container: "{{ dockerize_force_api }}"
+dockerize_force_api_image: "{{ dockerize_force_api or dockerize_force_images }}"
+dockerize_force_api_container: "{{ dockerize_force_api or dockerize_force_containers }}"
 dockerize_force_app: "{{ dockerize_force }}"
-dockerize_force_app_image: "{{ dockerize_force_app }}"
-dockerize_force_app_container: "{{ dockerize_force_app }}"
+dockerize_force_app_image: "{{ dockerize_force_app or dockerize_force_images }}"
+dockerize_force_app_container: "{{ dockerize_force_app or dockerize_force_containers }}"
 
 # Expected state of the container : present or started
 dockerize_containers_state: started
+dockerize_containers_autoremove: yes
 
 # Should we wait for container initialization before moving to the next one
 dockerize_wait_for_init: yes
@@ -23,11 +26,11 @@ dockerize_container_env_backend:
 # Environment variables
 dockerize_api_production: yes
 dockerize_api_docker: # depends of the os, see tasks/prepare.yml
-dockerize_api_mongodb: 'mongodb://dev-tutorial-mongo-{{ deployer_env }}:27017/dev_tutorial_api'
+dockerize_api_mongodb: "mongodb://dev-tutorial-mongo-{{ deployer_env }}:27017/dev_tutorial_api"
 
 dockerize_app_production: yes
 dockerize_app_port: 4200
-dockerize_app_api_host: 'http://dev-tutorial-api-{{ deployer_env }}:3000'
-dockerize_app_api_endpoint: 'http://dev-tutorial-api-{{ deployer_env }}:3000/api'
-dockerize_app_socket_endpoint: 'http://dev-tutorial-api-{{ deployer_env }}:3000'
+dockerize_app_api_host: "http://dev-tutorial-api-{{ deployer_env }}"
+dockerize_app_api_port: 3000
+dockerize_app_socket_port: 3001
 dockerize_app_disable_terminal: no

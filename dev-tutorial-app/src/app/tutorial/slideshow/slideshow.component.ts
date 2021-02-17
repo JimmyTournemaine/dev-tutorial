@@ -1,7 +1,7 @@
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TutorialsWebServices } from 'src/app/webservices/tutorials.webservices.service';
+import { TutorialsWebServices } from '../../webservices/tutorials.webservices.service';
 
 @Component({
   selector: 'app-slideshow',
@@ -47,15 +47,17 @@ import { TutorialsWebServices } from 'src/app/webservices/tutorials.webservices.
   styleUrls: ['./slideshow.component.css']
 })
 export class SlideshowComponent {
-  private _tutoId: string;
-  private currentSlide = 0;
-
   slide: Observable<string>;
+
   slideVisible = true;
+
+  private tutoSlug: string;
+
+  private currentSlide = 0;
 
   set tutoId(tutoId: string) {
     if (tutoId) {
-      this._tutoId = tutoId;
+      this.tutoSlug = tutoId;
       this.getSlide();
     }
   }
@@ -78,6 +80,6 @@ export class SlideshowComponent {
   }
 
   private getSlide(): void {
-    this.slide = this.ws.getSlide(this._tutoId, this.currentSlide);
+    this.slide = this.ws.getSlide(this.tutoSlug, this.currentSlide);
   }
 }

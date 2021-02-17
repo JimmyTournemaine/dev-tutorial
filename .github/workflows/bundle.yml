@@ -3,7 +3,7 @@ name: Compose bundle
 on:
   push:
     paths:
-      - 'compose.py'
+      - "compose.py"
 
 jobs:
   bundle:

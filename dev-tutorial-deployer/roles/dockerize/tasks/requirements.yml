@@ -1,5 +1,4 @@
 ---
-
 - name: Get info on docker host
   docker_host_info:
     containers: yes

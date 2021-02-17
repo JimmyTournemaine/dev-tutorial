@@ -1,9 +1,9 @@
 {% include 'Dockerfile.base.app.j2' %}
-RUN apt-get update \
-&& apt-get install -y apt-transport-https \
+
+RUN set -o pipefail
 && sh -c 'echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list' \
 && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
 && apt-get update \
-&& apt-get install -y google-chrome-stable
+&& apt-get install -y apt-transport-https=1.4.11 google-chrome-stable=88.0.4324.150-1 --no-install-recommends
 EXPOSE 9876
 CMD ["yarn", "test", "--no-progress"]

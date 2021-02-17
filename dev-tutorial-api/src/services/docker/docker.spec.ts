@@ -1,22 +1,21 @@
-/* eslint-disable no-invalid-this */
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { environment } from '../../environments/environment';
-import { DemuxStream, DockerService as docker } from './docker';
 import * as fs from 'fs';
-import { fail } from 'assert';
 import { debug } from 'debug';
+import { DockerService as docker } from './docker';
+import { DemuxStream } from './stream';
+import { environment } from '../../environments/environment';
 
 const logger = debug('test:docker');
 
-describe('Docker Service', function() {
-  describe('Docker service initialization', function() {
-    it('should the docker service throw error without connection', function() {
+describe('Docker Service', () => {
+  describe('Docker service initialization', () => {
+    it('should the docker service throw error without connection', () => {
       docker.disconnect();
       expect(docker.getInstance).to.throw;
     });
 
-    it('should the docker service works and be unique', function() {
+    it('should the docker service works and be unique', () => {
       const service = docker.connect(environment.docker);
       expect(service).not.to.be.undefined;
 
@@ -26,16 +25,16 @@ describe('Docker Service', function() {
     });
   });
 
-  describe('Docker basic container features', function() {
+  describe('Docker basic container features', function () {
     const tutoId = 'dev';
     this.timeout(120000);
 
     before(() => docker.connect(environment.docker));
-    beforeEach(async function() {
+    beforeEach(async () => {
       await docker.getInstance().destroy(tutoId);
     });
 
-    it('should start a tutorial container, then stop and remove it', async function() {
+    it('should start a tutorial container, then stop and remove it', async () => {
       // Start
       logger('starting');
       const container = await docker.getInstance().run(tutoId);
@@ -54,29 +53,28 @@ describe('Docker Service', function() {
       await docker.getInstance().destroy(tutoId);
     });
   });
-  describe('Docker advanced container features', function() {
+  describe('Docker advanced container features', function () {
     const tutoId = 'dev';
     this.timeout(120000);
 
     before(() => docker.connect(environment.docker));
-    beforeEach(async function() {
+
+    beforeEach(async () => {
       await docker.getInstance().run(tutoId);
     });
-    afterEach(async function() {
-      this.timeout(120000);
-      setTimeout(async() => {
-        await docker.getInstance().destroy(tutoId);
-      }, 110000);
+
+    afterEach(async () => {
+      await docker.getInstance().destroy(tutoId);
     });
 
-    it('should write a file in the container', function(done) {
+    it('should write a file in the container', (done) => {
       // Write a file in the container
-      docker.getInstance().writeFile(tutoId, '/root/test_writeFile.txt', fs.createReadStream('./test/test-file.txt'))
+      void docker.getInstance().writeFile(tutoId, '/root/test_writeFile.txt', fs.createReadStream('./test/test-file.txt'))
         .then(() => {
-          docker.getInstance().exec(tutoId, 'cat /root/test_writeFile.txt').then((stream: DemuxStream) => {
+          void docker.getInstance().exec(tutoId, 'cat /root/test_writeFile.txt').then((stream: DemuxStream) => {
             const chunks = [];
             stream.onOut((data: Buffer) => { chunks.push(data); });
-            stream.onErr((err: any) => fail(err));
+            stream.onErr((err: string|Buffer) => done(new Error(err.toString())));
             stream.onClose(() => {
               const expected = 'This file should be extracted in a container during a test';
               const catResult = Buffer.concat(chunks).toString();
