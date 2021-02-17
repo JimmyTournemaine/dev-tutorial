@@ -62,7 +62,7 @@ module.exports = {
         "@typescript-eslint/comma-dangle": ["error", "only-multiline"],
         "jsdoc/require-returns": ["warn", {'exemptedBy': ['inheritdoc', 'unknown', 'never', 'void', 'Promise<void>']}],
         // Angular rules
-        "import/no-extraneous-dependencies": ["error", { "devDependencies": ["e2e/**/*.ts"] }],
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/e2e/**/*.ts"] }],
         "@angular-eslint/component-selector": [
           "error",
           {
