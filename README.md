@@ -51,7 +51,7 @@ Any modification of the API has an impact on the front. Thus, these changes must
 
 ### Commands Cheatsheet
 
-**Retrieve node_modules**
+**Retrieve node_modules from containers to local host**
 
 ```bash
 # Clean 
