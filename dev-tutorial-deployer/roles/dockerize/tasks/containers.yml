@@ -34,7 +34,7 @@
     auto_remove: "{{ dockerize_containers_autoremove }}"
     command: "{{ dockerize_backend_command | default(omit) }}"
     tty: yes
-    volumes:
+    volumes: "{{ volumes }}"
     ports:
       - "3000:3000"
       - "3001:3001"
