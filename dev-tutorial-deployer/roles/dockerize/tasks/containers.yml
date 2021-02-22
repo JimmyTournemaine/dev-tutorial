@@ -35,8 +35,6 @@
     command: "{{ dockerize_backend_command | default(omit) }}"
     tty: yes
     volumes:
-      - "{{ deployer_hosted_workspace }}/dev-tutorial-api:/usr/src/app/api"
-      - "/usr/src/app/api/node_modules"
     ports:
       - "3000:3000"
       - "3001:3001"
@@ -49,6 +47,11 @@
       - "{{ dockerize_containers_state == 'restarted' }}"
       - "{{ dockerize_force_api_container }}"
       - "{{ backend_env is changed }}"
+    default_volumes:
+      - "{{ deployer_hosted_workspace }}/dev-tutorial-api:/usr/src/app/api"
+      - "/usr/src/app/api/node_modules"
+    linux_volumes: "{{ default_volumes + ['/var/run/docker.sock:/var/run/docker.sock'] }}" 
+    volumes: "{{ linux_volumes if 'linux' == deployer_host_system else default_volumes }}"
   register: backend_cont_metadata
   tags:
     - build

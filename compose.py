@@ -151,7 +151,7 @@ class Dockerize(Command):
                         + start_time
                         + " dev-tutorial-api-"
                         + self.environment,
-                        "api"
+                        "api",
                     ),
                 ),
             ),
@@ -163,7 +163,7 @@ class Dockerize(Command):
                         + start_time
                         + " dev-tutorial-app-"
                         + self.environment,
-                        "app"
+                        "app",
                     ),
                 ),
             ),
