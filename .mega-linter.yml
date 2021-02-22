@@ -9,6 +9,7 @@ DISABLE:
   - HTML # wait new version (.htmlintrc not functional)
   - SPELL
   - JAVASCRIPT # Only typescript is used
+  - OPENAPI # ansible generated template
 DISABLE_LINTERS:
   - TYPESCRIPT_STANDARD # TYPESCRIPT_ES is preferred
 FLAVOR_SUGGESTIONS: false
@@ -19,7 +20,8 @@ UPDATED_SOURCES_REPORTER: false
 
 # Linter specific
 ANSIBLE_DIRECTORY: dev-tutorial-deployer
-SPELL_CSPELL_ARGUMENTS: --local "en,fr"
-SPELL_MISSPELL_FILTER_REGEX_EXCLUDE: '.*\.fr\..*'
+CSS_STYLELINT_FILTER_REGEX_EXCLUDE: "docs/.*" # ignore generated docs
+SPELL_CSPELL_ARGUMENTS: --local "en,fr" # add fr to locales
+SPELL_MISSPELL_FILTER_REGEX_EXCLUDE: '.*\.fr\..*' # mispell cannot lint french
 TYPESCRIPT_ES_CONFIG_FILE: LINTER_DEFAULT
-YAML_V8R_FILTER_REGEX_EXCLUDE: ".mega-linter.yml" # https://github.com/nvuillam/mega-linter/issues/321
+YAML_V8R_FILTER_REGEX_EXCLUDE: "(.mega-linter.yml|openapi.yml)" # https://github.com/nvuillam/mega-linter/issues/321

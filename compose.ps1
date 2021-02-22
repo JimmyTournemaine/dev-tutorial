@@ -16,7 +16,7 @@ $GitHubUri = "$RepoUri/actions?query=workflow%3A%22$WorkflowEncoded%22+is%3Asucc
 function dowload {
     New-Item -Name "dist" -ItemType "directory" -Force | Out-Null
 
-    Write-Output 'Missing executable, please download the latest artifact to the ./dist folder'
+    Write-Output 'Missing executable, please download the latest artifact to the ./dist folder (or install python!)'
     Write-Output 'Please select the last build and download the artifact in the "Artifacts" section at the bottom of the page'
     Write-Output 'Your web browser will open in a few seconds'
 

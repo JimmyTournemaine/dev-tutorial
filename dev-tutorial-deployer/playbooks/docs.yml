@@ -1,0 +1,15 @@
+---
+- name: Expose the project documentation
+  hosts: localhost
+  tasks:
+    - name: Manage the docs server
+      docker_container:
+        name: dev-tutorial-docs
+        image: nginx
+        state: "{{ docs_state | default('started') }}"
+        restart: "{{ docs_restart | default(False) }}"
+        auto_remove: yes
+        ports:
+          - "8000:80"
+        volumes:
+          - "{{ deployer_hosted_workspace }}/docs/html:/usr/share/nginx/html:ro"

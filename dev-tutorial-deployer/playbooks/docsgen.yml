@@ -1,0 +1,32 @@
+---
+- name: Generate the project documentation
+  hosts: localhost
+  tags: generate
+  pre_tasks:
+    - name: Run a node container
+      docker_container:
+        name: dev-tutorial-docsgen
+        image: node:14
+        state: started
+        auto_remove: yes
+        tty: yes
+        working_dir: "/usr/src"
+        volumes:
+          - "{{ deployer_hosted_workspace }}:/usr/src"
+    - name: Add container to inventory
+      add_host:
+        name: dev-tutorial-docsgen
+        ansible_connection: docker
+        ansible_python_interpreter: /usr/bin/python3
+      changed_when: False
+  roles:
+    - role: docsgen
+      delegate_to: dev-tutorial-docsgen
+  post_tasks:
+    - name: Stop the container
+      docker_container:
+        name: dev-tutorial-docsgen
+        state: absent
+      tags:
+        - never
+        - clean

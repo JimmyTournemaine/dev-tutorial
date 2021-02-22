@@ -35,6 +35,7 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": ["error"],
     "no-restricted-syntax": "off",
     "jsdoc/check-tag-names": ["warn", { "definedTags": ["openapi"] }],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/src/**/*.spec.ts"] }],
     // prettier
     "consistent-return": [
       "error",

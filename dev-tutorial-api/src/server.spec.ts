@@ -46,7 +46,7 @@ const randomizeInput = (input: string, callback: (chunk: string) => void): void 
   }
 };
 
-describe('Server integration tests', () => {
+xdescribe('Server integration tests', () => {
   let server: Server;
 
   before('starts the server', async () => {

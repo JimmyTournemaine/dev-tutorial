@@ -39,7 +39,7 @@ To force image rebuild, you can use the following command :
 ./compose.py dockerize <dev|test> -a dockerize_force=yes
 ```
 
-Many options are available to force some rebuilding or restarting. See [docker_force* variables in the deployer](./dev-tutorial-deployer/roles/dockerize/defaults/main.yml)
+Many options are available to force some rebuilding or restarting. See `docker_force` variables in the deployer at `dev-tutorial-deployer/roles/dockerize/defaults/main.yml`.
 
 ### API
 
@@ -47,6 +47,8 @@ Any modification of the API has an impact on the front. Thus, these changes must
 * Update the *OpenAPI Specification* documentation in *JSDocs*.
 * Update the model use from the frontend if needed.
 * Increment the API version if needed.
+
+To get the current API documentation, run `compose.py docs`
 
 
 ### Commands Cheatsheet

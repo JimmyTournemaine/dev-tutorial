@@ -1,8 +1,8 @@
-import { PassThrough, Readable } from 'stream';
+import { PassThrough, Readable, Writable } from 'stream';
 
 export interface IDemuxStream {
-  stdout: Readable;
-  stderr: Readable;
+  stdout: Readable & Writable;
+  stderr: Readable & Writable;
 
   onClose(listener: () => void): this;
   onOut(listener: (data: string|Buffer) => void): this;
@@ -10,9 +10,9 @@ export interface IDemuxStream {
 }
 
 export class DemuxStream implements IDemuxStream {
-  stdout: Readable;
+  stdout: Readable & Writable;
 
-  stderr: Readable;
+  stderr: Readable & Writable;
 
   constructor(protected mainStream: Readable) {
     this.stdout = new PassThrough();

@@ -1,0 +1,51 @@
+---
+- name: Check generation tools
+  command: yarn global list
+  register: yarn_global_list
+  changed_when: False
+
+- name: Install generation tools
+  yarn:
+    global: yes
+    name: "{{ item.name }}"
+    version: "{{ item.version | default(omit) }}"
+  when: "fullname not in yarn_global_list.stdout"
+  vars:
+    fullname: "{{ item.name + '@' + item.version | default('') | string }}"
+  loop_control:
+    label: "{{ fullname }}"
+  loop:
+    - { name: "@asyncapi/generator" }
+    - { name: "marked" }
+    - { name: "redoc-cli" }
+    - { name: "swagger-jsdoc", version: 6 }
+    - { name: "typescript" }
+    - { name: "typedoc" }
+
+- name: Remove previously generated doc
+  file:
+    path: docs
+    state: absent
+  when: "docsgen_force | bool"
+
+- name: Ensure docs folder exists
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - docs
+    - docs/html
+
+- name: Copy the main HTML file
+  copy:
+    src: index.html
+    dest: docs/html/index.html
+
+- name: Run documentation generators
+  include_tasks: "{{ genitem.file }}"
+  vars:
+    task_item: "{{ genitem.task_item | default(omit) }}"
+  loop: "{{ docsgen_generators }}"
+  loop_control:
+    loop_var: genitem
+    label: "{{ genitem.file | splitext | first }}"

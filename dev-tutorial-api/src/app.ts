@@ -4,9 +4,6 @@ import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
 import * as debug from 'debug';
 import * as mongoose from 'mongoose';
-import { serve as swaggerServe, setup as swaggerSetup } from 'swagger-ui-express';
-import * as swaggerJSDoc from 'swagger-jsdoc';
-
 import { RequestListener } from 'http';
 import { environment } from './environments/environment';
 import { TutorialService as tuto } from './services/tutorial/tutorial';
@@ -34,7 +31,6 @@ export class Application {
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
     this.app.use('/api', tutoRouter);
-    this.app.use('/api-docs', swaggerServe, this.swaggerSetup());
   }
 
   setPort(port: string | number): void {
@@ -59,22 +55,5 @@ export class Application {
   async unload(): Promise<void> {
     docker.disconnect();
     await mongoose.disconnect();
-  }
-
-  swaggerSetup(): express.RequestHandler {
-    const options = {
-      swaggerDefinition: {
-        openapi: '3.0.0',
-        info: {
-          title: 'Dev\' Tutorial API',
-          version: '1.0',
-
-        },
-      },
-      basePath: '/api',
-      apis: ['./src/models/*.ts', './src/controllers/*.ts', './src/routes/*.ts'],
-    };
-
-    return swaggerSetup(swaggerJSDoc(options));
   }
 }

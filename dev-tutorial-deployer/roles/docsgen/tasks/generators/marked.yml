@@ -1,0 +1,17 @@
+---
+- name: Generate documentation from Markdown files
+  command: marked {{ item | basename }} --gfm
+  register: marked
+  loop:
+    - README.md
+  changed_when: False
+
+- name: Insert marked documentation in the template
+  template:
+    src: "marked.html.j2"
+    dest: "docs/html/{{ item.item | splitext | first }}.html"
+  loop: "{{ marked.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  vars:
+    markdown_body: "{{ item.stdout }}"
