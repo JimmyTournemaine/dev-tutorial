@@ -14,7 +14,7 @@
     state: "{{ dockerize_containers_state }}"
     restart: "{{ dockerize_containers_state == 'started' and dockerize_force }}"
     auto_remove: "{{ dockerize_containers_autoremove }}"
-    #log_driver: none
+    log_driver: none
     ports:
       - "27017:27017"
     networks:
@@ -50,7 +50,7 @@
     default_volumes:
       - "{{ deployer_hosted_workspace }}/dev-tutorial-api:/usr/src/app/api"
       - "/usr/src/app/api/node_modules"
-    linux_volumes: "{{ default_volumes + ['/var/run/docker.sock:/var/run/docker.sock'] }}" 
+    linux_volumes: "{{ default_volumes + ['/var/run/docker.sock:/var/run/docker.sock'] }}"
     volumes: "{{ linux_volumes if 'linux' == deployer_host_system else default_volumes }}"
   register: backend_cont_metadata
   tags:
