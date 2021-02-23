@@ -3,17 +3,17 @@ Add-Type -AssemblyName System.Web
 
 $ErrorActionPreference = "Stop"
 
-$Workflow = "Compose bundle"
-
-$Branch = git branch --show-current
-$RemoteUri = git config --get remote.origin.url
-$RepoUri = $RemoteUri -Replace '.git$',''
-
-$WorkflowEncoded = [System.Web.HttpUtility]::UrlEncode($Workflow)
-$BranchEncoded = [System.Web.HttpUtility]::UrlEncode($Branch)
-$GitHubUri = "$RepoUri/actions?query=workflow%3A%22$WorkflowEncoded%22+is%3Asuccess+branch%3A$BranchEncoded"
-
 function dowload {
+    $Workflow = "Compose bundle"
+
+    $Branch = git branch --show-current
+    $RemoteUri = git config --get remote.origin.url
+    $RepoUri = $RemoteUri -Replace '.git$',''
+
+    $WorkflowEncoded = [System.Web.HttpUtility]::UrlEncode($Workflow)
+    $BranchEncoded = [System.Web.HttpUtility]::UrlEncode($Branch)
+    $GitHubUri = "$RepoUri/actions?query=workflow%3A%22$WorkflowEncoded%22+is%3Asuccess+branch%3A$BranchEncoded"
+
     New-Item -Name "dist" -ItemType "directory" -Force | Out-Null
 
     Write-Output 'Missing executable, please download the latest artifact to the ./dist folder (or install python!)'
