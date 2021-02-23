@@ -151,9 +151,9 @@ class Dockerize(Command):
                         + start_time
                         + " dev-tutorial-api-"
                         + self.environment,
-                        "api",
+                        "api"
                     ),
-                ),
+                )
             ),
             multiprocessing.Process(
                 target=self.exec,
@@ -163,10 +163,10 @@ class Dockerize(Command):
                         + start_time
                         + " dev-tutorial-app-"
                         + self.environment,
-                        "app",
+                        "app"
                     ),
-                ),
-            ),
+                )
+            )
         ]
         [t.start() for t in threads]
 
@@ -189,7 +189,7 @@ class Dockerize(Command):
                         args=(
                             "docker cp "
                             + f"dev-tutorial-api-{self.environment}:/usr/src/app/api/node_modules"
-                            + " ./dev-tutorial-api/"
+                            + " ./dev-tutorial-api/",
                         ),
                     ),
                     multiprocessing.Process(
@@ -197,7 +197,7 @@ class Dockerize(Command):
                         args=(
                             "docker cp "
                             + f"dev-tutorial-app-{self.environment}:/usr/src/app/app-ui/node_modules"
-                            + " ./dev-tutorial-app/"
+                            + " ./dev-tutorial-app/",
                         ),
                     ),
                 )
@@ -212,7 +212,7 @@ class Dockerize(Command):
         elif container == "app":
             label = "frontend"
             color = "32"
-            win_color = "Orange"
+            win_color = "DarkYellow"
         else:
             label = "others  "
             color = "31"
@@ -220,8 +220,7 @@ class Dockerize(Command):
 
         if "win32" == sys.platform:
             log_transform = (
-                'powershell "{}"'
-                + " | % {{ Write-Host -NoNewline -ForegroundColor {} '{} | '; Write-Host $_ }}\""
+                "powershell \"{} | % {{ Write-Host -NoNewline -ForegroundColor {} '{} | '; Write-Host $_ }}\""
             ).format(logCommand, win_color, label)
         else:
             log_transform = "{} | sed -e 's/^/\033[0;{}m{} | \033[0m/'".format(
