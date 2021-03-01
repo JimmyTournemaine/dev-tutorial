@@ -1,10 +1,11 @@
 markdown ::ng-deep a,
 markdown ::ng-deep a:visited {
-  color: #1b69b6;  
+  color: #1b69b6;
   text-decoration: none;
 }
+
 markdown ::ng-deep a::after {
-  font-family: 'Material Icons';
+  font-family: 'Material Icons', sans-serif;
   content: "exit_to_app";
   padding-left: 5px;
   line-height: 10px;
@@ -13,9 +14,10 @@ markdown ::ng-deep a::after {
 markdown ::ng-deep code {
   color: #1f1f1f;
   background-color: #f0f0f0;
-  font-family: menlo, dejavu sans mono, liberation mono, consolas, ubuntu mono, courier new, andale mono, lucida console, monospace;
+  font-family: menlo, dejavu sans mono, liberation mono, consolas, ubuntu mono, sans-serif;
   padding: 2px 4px;
 }
+
 markdown ::ng-deep pre code {
   color: inherit;
   background-color: inherit;

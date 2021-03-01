@@ -8,35 +8,34 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
+import { MatDialogModule } from '@angular/material/dialog';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { TutorialCompletedDialogComponent, TutorialComponent } from './tutorial/tutorial.component';
-import { MatCardModule } from '@angular/material/card';
 import { TutorialsPanelComponent } from './tutorials-panel/tutorials-panel.component';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
-import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
 import { TerminalComponent } from './tutorial/terminal/terminal.component';
 import { EditorComponent } from './tutorial/editor/editor.component';
+import { QuitWithoutSavingDialogComponent } from './tutorial/editor/editor.quit-dialog.component';
 import { SlideshowComponent } from './tutorial/slideshow/slideshow.component';
-import { FormsModule } from '@angular/forms';
-import { MatDialogModule } from '@angular/material/dialog';
+import { EditorAddedDirective } from './tutorial/editor/editor.added.directive';
 
-const monacoConfig: NgxMonacoEditorConfig = {
-  defaultOptions: { theme: 'vs-dark' },
-};
-
-function markedOptionsFactory(): MarkedOptions {
+const markedOptionsFactory = () => {
   const renderer = new MarkedRenderer();
-  const linkRenderer = renderer.link;
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const linkRenderer: (href: string, title: string, text: string) => string = renderer.link;
 
-  renderer.link = (href, title, text) => {
-    const html = linkRenderer.call(renderer, href, title, text);
+  renderer.link = (href: string, title: string, text: string): string => {
+    const html = linkRenderer.call(renderer, href, title, text) as string;
     return html.replace(/^<a /, '<a role="link" tabindex="0" target="_blank" rel="nofollow noopener noreferrer" ');
   };
 
@@ -46,10 +45,9 @@ function markedOptionsFactory(): MarkedOptions {
     breaks: false,
     pedantic: false,
     smartLists: true,
-    smartypants: false,
+    smartypants: false
   };
-}
-
+};
 
 @NgModule({
   declarations: [
@@ -59,14 +57,17 @@ function markedOptionsFactory(): MarkedOptions {
     TutorialsPanelComponent,
     TerminalComponent,
     EditorComponent,
+    QuitWithoutSavingDialogComponent,
     SlideshowComponent,
     TutorialCompletedDialogComponent,
+    EditorAddedDirective,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     MarkdownModule.forRoot({
-      loader: HttpClient, markedOptions: {
+      loader: HttpClient,
+      markedOptions: {
         provide: MarkedOptions,
         useFactory: markedOptionsFactory
       }
@@ -85,9 +86,10 @@ function markedOptionsFactory(): MarkedOptions {
     MatGridListModule,
     MatProgressBarModule,
     MatDialogModule,
+    MatTabsModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
     FormsModule,
-    MonacoEditorModule.forRoot(monacoConfig),
   ],
   providers: [
   ],

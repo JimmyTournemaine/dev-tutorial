@@ -1,0 +1,6 @@
+---
+- name: Generate AsyncAPI documentation
+  command:
+    chdir: dev-tutorial-api
+    cmd: ag asyncapi.yml @asyncapi/html-template -o ../docs/html/asyncapi
+    creates: ../docs/html/asyncapi

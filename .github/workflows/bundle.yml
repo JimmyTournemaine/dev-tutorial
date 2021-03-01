@@ -1,0 +1,27 @@
+name: Compose bundle
+
+on:
+  push:
+    paths:
+      - "compose.py"
+
+jobs:
+  bundle:
+    name: Package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            artifact: compose.exe
+          - os: ubuntu-latest
+            artifact: compose
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: pip install pyinstaller
+      - run: pyinstaller compose.py -y --onefile --distpath .
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ${{ matrix.artifact }}

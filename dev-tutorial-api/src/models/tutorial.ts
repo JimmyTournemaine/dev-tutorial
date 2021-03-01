@@ -3,16 +3,59 @@ import * as mongooseFuzzy from 'mongoose-fuzzy-searching';
 
 /**
  * Slide model type
+ *
+ * @openapi
+ * components:
+ *   schemas:
+ *     Slide:
+ *       properties:
+ *         src:
+ *           type: string
+ *         validators:
+ *           type: array
+ *           items:
+ *             type: object
+ *       required:
+ *         - src
  */
 interface ISlideDescriptor {
   src: string;
-  validators: Object[];
+  validators: Record<string, unknown>[];
 }
 
 /**
  * Tutorial model type (for document creation)
+ *
+ * @openapi
+ * components:
+ *   schemas:
+ *     Tutorial:
+ *       properties:
+ *         name:
+ *           type: string
+ *         resume:
+ *           type: string
+ *         slug:
+ *           type: string
+ *         description:
+ *           type: string
+ *         icon:
+ *           type: string
+ *         dirname:
+ *           type: string
+ *         slides:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Slide'
+ *       required:
+ *         - name
+ *         - resume
+ *         - slug
+ *         - description
+ *         - slides
+ *         - dirname
  */
-interface ITutorialDescriptor {
+export interface ITutorialDescriptor {
   name: string;
   resume: string;
   slug: string;
@@ -50,7 +93,7 @@ const slideSchema = new mongoose.Schema({
   },
 });
 
-const tutorialSchema = new mongoose.Schema({
+const tutorialSchema = new mongoose.Schema<TutorialDescriptorModelInterface>({
   name: {
     type: String,
     required: true,
@@ -78,13 +121,18 @@ const tutorialSchema = new mongoose.Schema({
   dirname: {
     type: String,
     required: true,
-  }
+  },
 });
-tutorialSchema.statics.build = (attr: ITutorialDescriptor) => {
-  return new TutorialDescriptor(attr);
-};
+
+const statics = tutorialSchema.statics as TutorialDescriptorModelInterface;
+// static.build has to be defined before TutorialDescriptor declaration, otherwise build method does not exist
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
+statics.build = (attr: ITutorialDescriptor): TutorialDescriptorDocument => new TutorialDescriptor(attr);
 tutorialSchema.plugin(mongooseFuzzy, { fields: ['name', 'resume'] });
 
-const TutorialDescriptor = mongoose.model<any, TutorialDescriptorModelInterface>('TutorialDescriptor', tutorialSchema);
+const TutorialDescriptor = mongoose.model<TutorialDescriptorDocument, TutorialDescriptorModelInterface>(
+  'TutorialDescriptor',
+  tutorialSchema
+);
 
 export { TutorialDescriptor, TutorialDescriptorDocument };

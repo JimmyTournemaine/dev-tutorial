@@ -6,14 +6,8 @@
         "noImplicitAny": false,
         "pretty": true,
         "sourceMap": true,
-        "target": "es6",
+        "target": "es2017",
         "outDir": "dist"
     },
-    "include": [
-        "src/**/*.ts",
-    ],
-    "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
-    ]
+    "include": ["src/**/*.ts"]
 }

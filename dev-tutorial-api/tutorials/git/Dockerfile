@@ -1,3 +1,2 @@
-FROM centos:7
-RUN yum install -y git
-ENTRYPOINT [ "/bin/bash" ]
+FROM alpine:3.12
+RUN apk add git~=2 --no-cache

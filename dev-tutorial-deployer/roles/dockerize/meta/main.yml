@@ -1,0 +1,11 @@
+galaxy_info:
+  author: Jimmy Tournemaine
+  description: Build a Dev'Tutorial environment using Docker containers
+  license: private
+  min_ansible_version: 2.9
+  platforms:
+    - name: Alpine
+      versions:
+        - 3.12
+  galaxy_tags: []
+dependencies: []

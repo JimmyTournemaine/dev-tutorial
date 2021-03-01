@@ -4,8 +4,7 @@
 
 Lorem markdownum manus. Imaginis quae gradu ruunt solo, comes satis ad crescendo
 fretum Haemus nesciet, ego lolium arces deus, et. Quoque levat tam plumas,
-Clymeneia turbasti recordor malis, tua partus,
-[tundit](http://www.si-promisistis.org/silicem).
+Clymeneia turbasti recordor malis, tua partus, tundit.
 
 - Permiscuit pertimui Semiramio loqui
 - Hic male spectare in removit consiliis creatis
@@ -13,9 +12,9 @@ Clymeneia turbasti recordor malis, tua partus,
 
 ## Teli est
 
-Quas postquam, agmenque fatetur nomine [sceleris perlucida
-sic](http://mirabere-et.com/dextra-bracchia.aspx) tua, quo quae est? Ferrum
-Iunonis cibus, rutilis in [quae non](http://restat.io/peccavimus-meos.html),
+Quas postquam, agmenque fatetur nomine sceleris perlucida
+sic tua, quo quae est? Ferrum
+Iunonis cibus, rutilis in quae non,
 moenia haec non erat? Ulterius quisquam duorum visam. Tangeret naturale ex
 *primi* praesens **latratibus urbis magno** regina! Qua **orbis** quae intus
 Phineus et eget.

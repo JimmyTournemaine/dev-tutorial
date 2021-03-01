@@ -1,0 +1,150 @@
+---
+asyncapi: 2.0.0
+info:
+  title: Dev' Tutorial WebSocket API
+  version: "1.0"
+  description: |
+    The Dev' Tutorial Webservice API allow the frontend to produce and consume messages of a running tutorial
+    in the backend side.
+
+    The Dev' Tutorial Application bind a browser xterm terminal to a real tutorial container shell.
+
+    Other stateful services from the backend are using this api to exchange messages with the frontend
+    (commands validation, file content edition, etc.)
+channels:
+  attach:
+    subscribe:
+      summary: Attach all subsequent operations to a tutorial environment
+      description: >
+        This operation will attach all subsequent operations to a running tutorial container.
+        An error will be send if the container is not started.
+        Should should use [the REST API '`start`' operation](../openapi/index.html#path--tuto--slug--start)
+        to start the container beforehand.
+      message:
+        $ref: "#/components/messages/tutoId"
+  attached:
+    publish:
+      summary: Response to the 'attach' operation
+      description: >
+        `attached` is sent when the socket has been sucessfully attached to a running tutorial container.
+        Otherwise, `error` is sent.
+      message:
+        $ref: "#/components/messages/tutoId"
+  show:
+    publish:
+      summary: A new console chunk to show
+      description: >
+        A `show` event is emmited every time something is written to the console.
+        Be aware that 'cmd' operation will write to the console,
+        so a `show` event will be sent back with the same value.
+      message:
+        $ref: "#/components/messages/chunk"
+  ttylog:
+    publish:
+      summary: A new console *TTY log*
+      description: >
+        A *TTY log* is generated from the tutorial containers shell each time a command is run.
+        It permits to provide additional command execution information.
+      message:
+        $ref: "#/components/messages/ttylog"
+  cmd:
+    subscribe:
+      summary: A command to execute
+      description: >
+        The provided command will be executed in the current tutorial container.
+      message:
+        $ref: "#/components/messages/chunk"
+  edit-start:
+    publish:
+      summary: A file edition starts
+      description: >
+        Starts a file edition.
+        When `edit-start` is received, the consumer should listen for `edit-content` and `edit-close` events.
+      message:
+        $ref: "#/components/messages/editInfos"
+  edit-content:
+    publish:
+      summary: The file content stream
+      description: The event will be emitted multiple times until the file content has been completly sent.
+      message:
+        $ref: "#/components/messages/chunk"
+  edit-error:
+    publish:
+      summary: Error during file edition
+      message:
+        $ref: "#/components/messages/error"
+  edit-close:
+    publish:
+      summary: No more file-content to send
+      description: This message is sent when the file content has been completly produces in `edit-content`.
+      message:
+        $ref: "#/components/messages/void"
+  next:
+    publish:
+      summary: Current tutorial slide is validated. Next slide will start.
+      message:
+        $ref: "#/components/messages/void"
+  completed:
+    publish:
+      summary: All tutorial slides are validated. The tutorial is completed.
+      message:
+        $ref: "#/components/messages/void"
+components:
+  messages:
+    void:
+      payload:
+        summary: Empty message
+    error:
+      payload:
+        summary: An error
+        type: object
+        properties:
+          name:
+            type: string
+          message:
+            type: string
+        example:
+          name: Error
+          message: The container is not started
+    chunk:
+      payload:
+        summary: A chunk
+        type: string
+    tutoId:
+      payload:
+        summary: A tutorial identifier
+        description: A tutorial idenfifier must match a tutorial `slug`
+        type: string
+        example: dev
+    editInfos:
+      payload:
+        summary: A file informations
+        type: object
+        properties:
+          path:
+            type: string
+            description: The path to the file in the container
+        example:
+          path: /home/me/test/my-file.txt
+    ttylog:
+      payload:
+        summary: A TTY log
+        type: object
+        properties:
+          user:
+            type: string
+            description: Name of the user
+          cmd:
+            type: string
+            description: Executed command
+          exitCode:
+            type: integer
+            description: Command exit code
+          workDir:
+            type: string
+            description: Working directory
+        example:
+          user: root
+          cmd: ls -l
+          exitCode: 0
+          workDir: /root/workdir

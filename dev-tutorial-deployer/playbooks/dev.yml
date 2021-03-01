@@ -1,0 +1,8 @@
+---
+- name: Prepare the local development environment
+  hosts: all
+  roles:
+    - role: dockerize
+      deployer_env: dev
+      dockerize_container_env_backend:
+        DEBUG: "app:*"

@@ -1,0 +1,10 @@
+/* {{ ansible_managed }} */
+export const environment = {
+  production: {{ dockerize_api_production | string | lower }},
+  docker: {
+  {% for key, value in dockerize_api_docker.items() %}
+  {{ key }}: {{ "'" + value + "'" if value is string else value }},
+  {% endfor -%}
+  },
+  mongodb: '{{ dockerize_api_mongodb }}',
+};

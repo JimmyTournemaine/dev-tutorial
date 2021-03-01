@@ -1,17 +1,17 @@
-import { trigger, transition, style, animate, state } from '@angular/animations';
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TutorialsWebServices } from 'src/app/webservices/tutorials.webservices.service';
+import { TutorialsWebServices } from '../../webservices/tutorials.webservices.service';
 
 @Component({
   selector: 'app-slideshow',
   animations: [
     trigger(
-      "fadeAnimation",
+      'fadeAnimation',
       [
         transition(':enter', [
           style({ backgroundColor: '#EEA3A2' }),
-          animate('2s', style({ backgroundColor: 'transparent' })),
+          animate('2s', style({ backgroundColor: 'transparent' }))
         ]),
         transition(':leave', [
           animate(500, style({ opacity: 0 }))
@@ -19,11 +19,11 @@ import { TutorialsWebServices } from 'src/app/webservices/tutorials.webservices.
       ]
     ),
     trigger(
-      "upAnimation",
+      'upAnimation',
       [
         transition(':enter', [
           style({ position: 'relative', top: 0, transform: 'translateY(+1000px)' }),
-          animate('2s', style({ transform: 'none' })),
+          animate('2s', style({ transform: 'none' }))
         ]),
         transition(':leave', [
           animate(500, style({ opacity: 0 }))
@@ -31,11 +31,11 @@ import { TutorialsWebServices } from 'src/app/webservices/tutorials.webservices.
       ]
     ),
     trigger(
-      "downAnimation",
+      'downAnimation',
       [
         transition(':enter', [
           style({ position: 'relative', top: 0, transform: 'translateY(-2000px)' }),
-          animate('2s', style({ transform: 'none' })),
+          animate('2s', style({ transform: 'none' }))
         ]),
         transition(':leave', [
           animate(500, style({ opacity: 0 }))
@@ -46,30 +46,28 @@ import { TutorialsWebServices } from 'src/app/webservices/tutorials.webservices.
   templateUrl: './slideshow.component.html',
   styleUrls: ['./slideshow.component.css']
 })
-export class SlideshowComponent implements AfterViewInit {
-
-  private _tutoId: string;
-  private currentSlide = 0;
-
+export class SlideshowComponent {
   slide: Observable<string>;
-  slideVisible: boolean = true;
+
+  slideVisible = true;
+
+  private tutoSlug: string;
+
+  private currentSlide = 0;
 
   set tutoId(tutoId: string) {
     if (tutoId) {
-      this._tutoId = tutoId;
+      this.tutoSlug = tutoId;
       this.getSlide();
     }
   }
 
   constructor(private ws: TutorialsWebServices, private changeDetectorRef: ChangeDetectorRef) { }
 
-  ngAfterViewInit(): void {
-  }
-
   /**
    * Go to the next slide
    */
-  nextSlide() {
+  nextSlide(): void {
     this.changeDetectorRef.detectChanges();
     this.slideVisible = false;
 
@@ -82,6 +80,6 @@ export class SlideshowComponent implements AfterViewInit {
   }
 
   private getSlide(): void {
-    this.slide = this.ws.getSlide(this._tutoId, this.currentSlide);
+    this.slide = this.ws.getSlide(this.tutoSlug, this.currentSlide);
   }
 }

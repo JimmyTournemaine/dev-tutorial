@@ -1,45 +1,49 @@
 declare module 'bash-parser' {
 
-  var parse: parse.Parse & { parse: parse.Parse; default: parse.Parse; };
-  export = parse;
-
   namespace parse {
-    interface Parse {
-      (sourceCode: string, options?: ParseOptions): Ast;
-    }
 
-    type ParseOptions = any;
+    type ParseOptions = unknown;
 
-    type AstNode = Op | Word | Command | Script | Pipeline | Redirect;
+    type AstNode = Record<string, unknown>;
 
-    interface Op {
+    interface Op extends AstNode {
       type: 'great';
       text: string;
     }
-    interface Word {
+    interface Word extends AstNode {
       type: 'Word';
       text: string;
-      expansion?: any;
+      expansion?: unknown;
     }
-    interface Command {
+
+    interface Command extends AstNode {
       type: 'Command';
       name: Word;
       suffix?: AstNode[];
     }
-    interface Redirect {
+    interface Redirect extends AstNode {
       type: 'Redirect';
       op: Op;
       file: AstNode;
       numberIo?: AstNode;
     }
-    interface Pipeline {
+    interface Pipeline extends AstNode {
       type: 'Pipeline';
       commands: Command[];
     }
-    interface Script {
+    interface Script extends AstNode {
       type: 'Script';
       commands: (Command | Pipeline)[];
     }
+
     type Ast = Script;
+
+    interface Parse {
+      (sourceCode: string, options?: ParseOptions): Ast;
+    }
+
   }
+
+  const parse: parse.Parse & { parse: parse.Parse; default: parse.Parse; };
+  export = parse;
 }
