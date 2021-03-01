@@ -29,5 +29,5 @@ report/
 Dockerfile.*
 !/dev-tutorial-deployer/**/Dockerfile.*
 /*/src/environments/
-/dev-tutorial-app/src/proxy.conf.json"
+/dev-tutorial-app/src/proxy.conf.js
 docs/

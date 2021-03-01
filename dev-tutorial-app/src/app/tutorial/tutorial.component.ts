@@ -88,7 +88,8 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.editorService.close.subscribe(() => { this.editMode = false; });
+    this.editorService.save.subscribe((model: NgxEditorModel) => this.onEditorSave(model));
+    this.editorService.close.subscribe(() => this.onEditorQuit());
   }
 
   /**
@@ -135,7 +136,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
    * Switch to the terminal mode.
    */
   onEditorQuit(): void {
-    console.log('onEditorQuit');
     this.editMode = false;
   }
 

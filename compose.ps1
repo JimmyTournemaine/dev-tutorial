@@ -26,12 +26,15 @@ function dowload {
 
 $exe = where.exe python
 if($exe) {
-    $exe = "$exe .\compose.py"
 } elseif([System.IO.File]::Exists('compose.exe')) {
     $exe = '.\compose.exe'
 } else {
     download
+    exit 1
 }
 
-# Run
-& "$exe $($args -Join ' ')"
+If($args -eq $null) {
+    & $exe compose.py
+} Else {
+    & $exe compose.py $args
+}
