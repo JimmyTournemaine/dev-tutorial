@@ -1,3 +1,45 @@
-.editor {
+.editor-container {
+  overflow: hidden;
+  position: relative;
+  display: table;
+  width: 100%;
   height: 100%;
+}
+
+.monaco-editor {
+  width: 100%;
+  height: 100%;
+}
+
+.editor-close {
+  display: none;
+}
+
+.editor-notchanged {
+  visibility: hidden;
+}
+
+.editor-changed {
+  visibility: visible;
+}
+
+.editor-changed,
+.editor-notchanged,
+.editor-close {
+  font-size: small;
+}
+
+::ng-deep mat-tab-group,
+::ng-deep .mat-tab-body-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+::ng-deep .mat-tab-label:hover .editor-changed,
+::ng-deep .mat-tab-label:hover .editor-notchanged {
+  display: none;
+}
+
+::ng-deep .mat-tab-label:hover .editor-close {
+  display: block;
 }

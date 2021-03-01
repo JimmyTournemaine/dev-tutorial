@@ -104,7 +104,7 @@
     url: http://{{ dockerize_host }}:4200
   register: _result
   until: _result.status == 200
-  retries: 10
+  retries: 15
   delay: 30
   when:
     - "dockerize_containers_state == 'started'"

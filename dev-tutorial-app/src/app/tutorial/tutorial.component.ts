@@ -1,6 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { NgxEditorModel } from 'ngx-monaco-editor';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as io from 'socket.io-client';
@@ -9,6 +8,8 @@ import { TerminalComponent } from './terminal/terminal.component';
 import { EditorComponent } from './editor/editor.component';
 import { SlideshowComponent } from './slideshow/slideshow.component';
 import { TutorialsWebServices } from '../webservices/tutorials.webservices.service';
+import { EditorService } from './editor/editor.service';
+import { createModel, NgxEditorModel } from './editor/editor-utils';
 
 @Component({
   selector: 'app-tutorial-completed-dialog',
@@ -42,11 +43,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  @ViewChild('editor', { static: false }) set editorView(editor: EditorComponent) {
-    if (editor) {
-      this.editor = editor;
-    }
-  }
+  @ViewChild('editor') editor: EditorComponent;
 
   @ViewChild('slideshow') private slideshowElement: ElementRef;
 
@@ -60,16 +57,13 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
   disabled = false;
 
-  editor: EditorComponent;
-
   editMode = false;
-
-  model: NgxEditorModel;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private ws: TutorialsWebServices,
+    private editorService: EditorService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
   ) { }
@@ -93,6 +87,8 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
     });
+
+    this.editorService.close.subscribe(() => { this.editMode = false; });
   }
 
   /**
@@ -120,18 +116,18 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param info.content The file content
    */
   editFile(info: { path: string; content: string }): void {
-    this.model = { uri: info.path, value: info.content };
+    this.editorService.addEditor(createModel(info.path, info.content));
     this.editMode = true;
   }
 
   /**
    * When the editor trigger a 'save' event.
    *
-   * @param value The new content of the file.
+   * @param model The modified model.
    */
-  onEditorSave(value: string): void {
-    this.ws.edit(this.tutoId, this.model.uri, value);
-    //  .subscribe(() => console.log('written'), console.error);
+  onEditorSave(model: NgxEditorModel): void {
+    this.ws.edit(this.tutoId, model.uri, model.value)
+      .subscribe(() => console.log('written'), console.error);
   }
 
   /**
@@ -139,6 +135,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
    * Switch to the terminal mode.
    */
   onEditorQuit(): void {
+    console.log('onEditorQuit');
     this.editMode = false;
   }
 

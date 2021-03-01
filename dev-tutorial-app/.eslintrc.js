@@ -49,6 +49,7 @@ module.exports = {
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/unbound-method": ["error", { ignoreStatic: true }],
         "no-restricted-syntax": "off",
+        "no-shadow": "off",
         // prettier
         "consistent-return": [
           "error",

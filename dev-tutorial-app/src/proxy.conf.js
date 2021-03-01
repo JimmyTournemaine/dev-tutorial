@@ -2,12 +2,12 @@
 const PROXY_CONFIG = [
   {
     context: ['/api'],
-    target: 'http://dev-tutorial-api-ci:3000',
+    target: 'http://dev-tutorial-api-dev:3000',
     secure: false,
   },
   {
     context: ['/socket.io'],
-    target: 'http://dev-tutorial-api-ci:3001',
+    target: 'http://dev-tutorial-api-dev:3001',
     secure: false,
     ws: true,
   },

@@ -20,7 +20,7 @@ UPDATED_SOURCES_REPORTER: false
 
 # Linter specific
 ANSIBLE_DIRECTORY: dev-tutorial-deployer
-CSS_STYLELINT_FILTER_REGEX_EXCLUDE: "docs/.*" # ignore generated docs
+CSS_STYLELINT_FILTER_REGEX_EXCLUDE: "(docs|.*/dist)/.*" # ignore generated docs
 SPELL_CSPELL_ARGUMENTS: --local "en,fr" # add fr to locales
 SPELL_MISSPELL_FILTER_REGEX_EXCLUDE: '.*\.fr\..*' # mispell cannot lint french
 TYPESCRIPT_ES_CONFIG_FILE: LINTER_DEFAULT

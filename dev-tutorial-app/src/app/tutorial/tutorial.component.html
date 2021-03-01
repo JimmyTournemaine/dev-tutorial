@@ -18,5 +18,5 @@
 </div>
 <div class="terminal-box" *ngIf="ready">
   <app-terminal #term [hidden]="editMode" id="terminal"></app-terminal>
-  <app-editor #editor *ngIf="editMode" [model]="model" (save)="onEditorSave($event)" (quit)="onEditorQuit()"></app-editor>
+  <app-editor #editor [hidden]="!editMode"></app-editor>
 </div>

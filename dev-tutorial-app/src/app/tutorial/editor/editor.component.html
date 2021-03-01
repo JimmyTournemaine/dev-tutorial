@@ -1,1 +1,19 @@
-<ngx-monaco-editor class="editor" [options]="options" [(ngModel)]="content" (onInit)="onEditorInit($event)"></ngx-monaco-editor>
+<mat-tab-group #editors mat-align-tabs="start" animationDuration="0ms" [selectedIndex]="selectedEditor" (selectedTabChange)="tabChanged($event)">
+  <mat-tab *ngFor="let editorTab of editorTabs; let index = index">
+    <ng-template mat-tab-label>
+      <div>{{ editorTab.label }}</div>
+      <button mat-icon-button aria-label="Close editor tab" class="editor-close" (click)="close(index)">
+        <mat-icon [inline]="true">close</mat-icon>
+      </button>
+      <button mat-icon-button [ngClass]="editorTab.isChanged() ? 'editor-changed' : 'editor-notchanged'">
+        <mat-icon [inline]="true">
+          fiber_manual_record
+          <span class="cdk-visually-hidden">(not saved)</span>
+        </mat-icon>
+      </button>
+    </ng-template>
+    <div class="editor-container">
+      <div class="monaco-editor" (appEditorAdded)="createEditor(editorTab, $event)"></div>
+    </div>
+  </mat-tab>
+</mat-tab-group>

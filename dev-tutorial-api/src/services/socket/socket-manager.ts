@@ -48,12 +48,12 @@ export class SocketManager implements ISocketManager {
   }
 
   service(): void {
-    if (!this.socketService) {
-      logger('New socket service');
-      this.socketService = new SocketService(this);
-    } else {
-      logger('Socket service already running');
-    }
+    // if (!this.socketService) {
+    //   logger('New socket service');
+    this.socketService = new SocketService(this);
+    // } else {
+    //   logger('Socket service already running');
+    // }
   }
 
   socket(socket: Socket): this {
@@ -67,12 +67,12 @@ export class SocketManager implements ISocketManager {
 
     // move all the listeners to the new socket
     // FIXME: listeners should be destroyed if tutorial is restarted (container recreated)
-    for (const entry of this.listeners.entries()) {
-      const event = entry[0];
-      for (const listener of entry[1]) {
-        this.ioSocket.on(event, listener);
-      }
-    }
+    // for (const entry of this.listeners.entries()) {
+    //   const event = entry[0];
+    //   for (const listener of entry[1]) {
+    //     this.ioSocket.on(event, listener);
+    //   }
+    // }
 
     return this;
   }
@@ -88,7 +88,8 @@ export class SocketManager implements ISocketManager {
   }
 
   emit(event: string, ...args: unknown[]): boolean {
-    logger('emitting %s: ', event, ...args);
+    // eslint-disable-next-line no-control-regex
+    logger('emitting \'%s\'', event, ...args.map((value: unknown) => value.toString().replace(/[\u0000-\u001F\u007F-\u009F]/g, '')));
 
     return this.ioSocket.emit(event, ...args);
   }

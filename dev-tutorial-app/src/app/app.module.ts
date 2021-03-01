@@ -8,6 +8,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
@@ -16,7 +17,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
-import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -25,12 +25,9 @@ import { TutorialCompletedDialogComponent, TutorialComponent } from './tutorial/
 import { TutorialsPanelComponent } from './tutorials-panel/tutorials-panel.component';
 import { TerminalComponent } from './tutorial/terminal/terminal.component';
 import { EditorComponent } from './tutorial/editor/editor.component';
+import { QuitWithoutSavingDialogComponent } from './tutorial/editor/editor.quit-dialog.component';
 import { SlideshowComponent } from './tutorial/slideshow/slideshow.component';
-
-
-const monacoConfig: NgxMonacoEditorConfig = {
-  defaultOptions: { theme: 'vs-dark' }
-};
+import { EditorAddedDirective } from './tutorial/editor/editor.added.directive';
 
 const markedOptionsFactory = () => {
   const renderer = new MarkedRenderer();
@@ -60,8 +57,10 @@ const markedOptionsFactory = () => {
     TutorialsPanelComponent,
     TerminalComponent,
     EditorComponent,
+    QuitWithoutSavingDialogComponent,
     SlideshowComponent,
-    TutorialCompletedDialogComponent
+    TutorialCompletedDialogComponent,
+    EditorAddedDirective,
   ],
   imports: [
     BrowserModule,
@@ -87,10 +86,10 @@ const markedOptionsFactory = () => {
     MatGridListModule,
     MatProgressBarModule,
     MatDialogModule,
+    MatTabsModule,
     MatSnackBarModule,
     ReactiveFormsModule,
     FormsModule,
-    MonacoEditorModule.forRoot(monacoConfig),
   ],
   providers: [
   ],

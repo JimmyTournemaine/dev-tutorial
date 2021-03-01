@@ -24,8 +24,13 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "node_modules/ngx-monaco-editor/assets/monaco",
-                "output": "assets/monaco"
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "vs"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min-maps/vs",
+                "output": "min-maps/vs"
               }
             ],
             "styles": [
