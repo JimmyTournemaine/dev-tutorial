@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabChangeEvent } from '@angular/material/tabs';
+// eslint-disable-next-line import/no-unresolved
 import * as monacoEditor from 'monaco-editor';
 import { NgxEditorModel } from './editor-utils';
 import { EditorService } from './editor.service';

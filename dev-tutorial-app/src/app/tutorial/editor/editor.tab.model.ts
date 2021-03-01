@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import * as monacoEditor from 'monaco-editor';
 import { NgxEditorModel } from './editor-utils';
 
