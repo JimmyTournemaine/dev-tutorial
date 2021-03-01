@@ -151,9 +151,9 @@ class Dockerize(Command):
                         + start_time
                         + " dev-tutorial-api-"
                         + self.environment,
-                        "api"
+                        "api",
                     ),
-                )
+                ),
             ),
             multiprocessing.Process(
                 target=self.exec,
@@ -163,10 +163,10 @@ class Dockerize(Command):
                         + start_time
                         + " dev-tutorial-app-"
                         + self.environment,
-                        "app"
+                        "app",
                     ),
-                )
-            )
+                ),
+            ),
         ]
         [t.start() for t in threads]
 
