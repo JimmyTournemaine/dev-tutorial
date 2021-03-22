@@ -31,7 +31,7 @@ The `dev` environment allow you to use direct links but any other environment co
 ### Dependencies
 
 * Use `yarn` instead of `npm` to manage NodeJS dependencies.
-* When a dependecy is added, you shall rebuild at least the docker image.
+* When a dependency is added, you shall rebuild at least the docker image.
 
 To force image rebuild, you can use the following command :
 
@@ -49,7 +49,6 @@ Any modification of the API has an impact on the front. Thus, these changes must
 * Increment the API version if needed.
 
 To get the current API documentation, run `compose.py docs`
-
 
 ### Commands Cheatsheet
 

@@ -1,9 +1,10 @@
 ---
 docsgen_generators:
-  - file: generators/typedoc.yml
-    task_item: app
-  - file: generators/asyncapi.yml
-  - file: generators/typedoc.yml
-    task_item: api
   - file: generators/marked.yml
   - file: generators/openapi.yml
+  - file: generators/coverage.yml
+  - file: generators/typedoc.yml
+    task_item: api
+  - file: generators/typedoc.yml
+    task_item: app
+  # - file: generators/asyncapi.yml

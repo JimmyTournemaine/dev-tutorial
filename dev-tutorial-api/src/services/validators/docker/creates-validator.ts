@@ -29,7 +29,7 @@ export class CreatesValidator extends DockerExecValidator<CreatesValidatorOption
       command += ` && [[ $(stat -c%s ${options.path}) -ge ${options.minLength} ]]`;
     }
     if (options.type === 'file' && options.maxLength) {
-      command += ` && [[ $(stat -c%s ${options.path}) -le ${options.minLength} ]]`;
+      command += ` && [[ $(stat -c%s ${options.path}) -le ${options.maxLength} ]]`;
     }
     super(`${command} && echo 'OK' || echo 'KO'`, options);
   }

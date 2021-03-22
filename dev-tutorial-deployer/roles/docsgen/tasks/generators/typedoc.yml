@@ -1,10 +1,4 @@
 ---
-- name: Ensure dependencies are installed
-  command:
-    chdir: "dev-tutorial-{{ task_item }}"
-    cmd: yarn install
-    creates: node_modules
-
 - name: Generate {{ task_item }} project documentation
   shell:
     chdir: "dev-tutorial-{{ task_item }}"
@@ -12,7 +6,7 @@
       typedoc
       --out ../docs/html/tsdoc-{{ task_item }}
       --name 'Dev'' Tutorial {{ task_item | upper }} Project'
-      --exclude '**/*.spec.ts' --exclude '**/@types/**'
+      --exclude '**/*.spec.ts' --exclude '**/@types/**' --exclude '**/*e2e**'
       --excludeExternals
       --hideGenerator
       --readme none

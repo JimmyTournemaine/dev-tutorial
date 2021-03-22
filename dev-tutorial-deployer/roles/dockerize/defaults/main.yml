@@ -27,6 +27,8 @@ dockerize_container_env_backend:
 dockerize_api_production: yes
 dockerize_api_docker: # depends of the os, see tasks/prepare.yml
 dockerize_api_mongodb: "mongodb://dev-tutorial-mongo-{{ deployer_env }}:27017/dev_tutorial_api"
+dockerize_api_token_access_expiresIn: 10
+dockerize_api_token_refresh_expiresIn: 604800
 
 dockerize_app_production: yes
 dockerize_app_port: 4200

@@ -11,13 +11,15 @@
     version: "{{ item.version | default(omit) }}"
   when: "fullname not in yarn_global_list.stdout"
   vars:
-    fullname: "{{ item.name + '@' + item.version | default('') | string }}"
+    fullname: "{{ item.name + (('@' + item.version|string) if item.version is defined else '') }}"
   loop_control:
     label: "{{ fullname }}"
   loop:
     - { name: "@asyncapi/generator" }
     - { name: "marked" }
+    - { name: "nyc" }
     - { name: "redoc-cli" }
+    - { name: "redoc-asyncapi" }
     - { name: "swagger-jsdoc", version: 6 }
     - { name: "typescript" }
     - { name: "typedoc" }
@@ -41,6 +43,13 @@
     src: index.html
     dest: docs/html/index.html
 
+- name: Ensure dependencies are installed
+  yarn:
+    path: "{{ item }}"
+  loop:
+    - dev-tutorial-api
+    - dev-tutorial-app
+
 - name: Run documentation generators
   include_tasks: "{{ genitem.file }}"
   vars:
@@ -49,3 +58,7 @@
   loop_control:
     loop_var: genitem
     label: "{{ genitem.file | splitext | first }}"
+
+- name: Some generators has warnings!
+  debug:
+    var: docsgen_warnings

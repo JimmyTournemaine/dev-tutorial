@@ -54,7 +54,7 @@ export class TutorialController {
   public static index(req: Request, res: Response): void {
     void TutorialService.getInstance().getTutorials(undefined, (err, tutorials) => {
       if (err) {
-        return res.status(500).send(err);
+        return res.status(500).send(new ErrorResponse(err));
       }
       return res.json(tutorials);
     });
@@ -93,7 +93,7 @@ export class TutorialController {
   public static search(req: Request<unknown, unknown, SearchBody>, res: Response): void {
     if (req.body.search === undefined) {
       res.status(400).json(new ErrorResponse('Malformed search entity'));
-      return undefined;
+      return;
     }
 
     void TutorialService.getInstance().getTutorials(req.body.search, (err, tutorials) => {
@@ -424,7 +424,7 @@ export class TutorialController {
    *
    * @openapi
    * /tuto/{slug}/stop:
-   *   post:
+   *   delete:
    *     summary: Stop the tutorial container
    *     description: Stop the tutorial environment container and remove the container.
    *     parameters:

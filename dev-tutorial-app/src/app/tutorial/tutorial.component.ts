@@ -3,17 +3,35 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as io from 'socket.io-client';
+import { map, take, tap } from 'rxjs/operators';
+import { interval, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TerminalComponent } from './terminal/terminal.component';
 import { EditorComponent } from './editor/editor.component';
 import { SlideshowComponent } from './slideshow/slideshow.component';
-import { TutorialsWebServices } from '../webservices/tutorials.webservices.service';
+import { TutorialsWebServices } from '../ws/tutorial.ws.service';
 import { EditorService } from './editor/editor.service';
 import { createModel, NgxEditorModel } from './editor/editor-utils';
+import { retryWhen } from '../utils/observable.utils';
+import { AuthService } from '../auth/auth.service';
+
+type TutoState = 'disabled' | 'creating' | 'ready' | 'error';
 
 @Component({
   selector: 'app-tutorial-completed-dialog',
-  templateUrl: 'tutorial-completed-dialog.component.html'
+  template: `
+    <h2 mat-dialog-title>Bravo !</h2>
+    <mat-dialog-content class="mat-typography">
+      <h3>Tutoriel terminé avec succès</h3>
+      <p>Vous avez termine toutes les etapes du tutoriel.</p>
+      <p>Vous pouvez decider de retourner au menu principal
+        ou rester sur cette page pour continuer a jouer avec l'environnement</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="close('stay')">Rester</button>
+      <button mat-button (click)="close('leave')">Quitter</button>
+    </mat-dialog-actions>
+  `
 })
 export class TutorialCompletedDialogComponent {
   constructor(public dialogRef: MatDialogRef<TutorialCompletedDialogComponent>) { }
@@ -53,15 +71,16 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
   terminal: TerminalComponent;
 
-  ready = false;
+  state: TutoState = 'creating';
 
-  disabled = false;
+  progressValue: Observable<number>;
 
   editMode = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private auth: AuthService,
     private ws: TutorialsWebServices,
     private editorService: EditorService,
     private dialog: MatDialog,
@@ -79,12 +98,31 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.tutoId = params.get('slug');
       if (environment.disableTerminal) {
-        this.disabled = true;
+        this.state = 'disabled';
       } else {
-        this.ws.getReady(this.tutoId).subscribe(() => {
-          this.initSocket();
-          this.ready = true;
-        });
+        this.ws.getReady(this.tutoId)
+          .pipe(
+            // On error, retry to start environment in 10s, following countdown with a progress bar
+            tap({
+              error: () => {
+                this.state = 'error';
+                this.progressValue = interval(100).pipe(map(v => 1 + v), take(100));
+                this.progressValue.subscribe();
+              }
+            }),
+            retryWhen({
+              retries: 1,
+              delay: 10000,
+              do: () => { this.state = 'creating'; }
+            })
+          )
+          .subscribe((res) => {
+            console.log('lets go', res);
+            this.initSocket();
+            this.state = 'ready';
+          }, (err) => {
+            console.log('error sub', err);
+          }, () => console.log('completed sub'));
       }
     });
 
@@ -104,9 +142,8 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.socket) {
-      this.socket.emit('destroy');
+      this.socket.close();
     }
-    this.socket.close();
   }
 
   /**
@@ -190,13 +227,15 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initSocket() {
-    this.socket = io(environment.socketEndpoint);
-    this.socket.on('err', (err: { message: string }) => {
-      console.log(err);
-      this.snackBar.open(err.message, 'dismiss', {
+    const handleError = (err: string|Error) => {
+      const error = (err as Error).message || err as string;
+      this.snackBar.open(error, 'dismiss', {
         duration: 3000,
       });
-    });
+    };
+    this.socket = io(environment.socketEndpoint, { query: { token: this.auth.getToken() } });
+    this.socket.on('error', handleError);
+    this.socket.on('err', handleError);
 
     // Next slide
     this.socket.on('completed', () => { this.onTutorialCompleted(); });

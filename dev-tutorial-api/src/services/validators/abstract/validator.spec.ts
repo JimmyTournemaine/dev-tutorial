@@ -48,52 +48,52 @@ describe('Validation', () => {
       const validator = ValidatorFactory.create(PreValidator, { cmd: 'git --version' });
 
       const validation = validator.validate('git --version');
-      expect(validation).to.be.true;
+      expect(validation).to.equal(true);
     });
     it('should not pre-validate a not matching command', () => {
       const validator = ValidatorFactory.create(PreValidator, { cmd: 'git --version' });
 
       const validation = validator.validate('ls -l');
-      expect(validation).to.be.false;
+      expect(validation).to.equal(false);
     });
     it('should pre-validate a command with too much blanks', () => {
       const validator = ValidatorFactory.create(PreValidator, { cmd: 'git --version' });
 
       const validation = validator.validate('git   --version');
-      expect(validation).to.be.true;
+      expect(validation).to.equal(true);
     });
     // it('should pre-validate a command with options regardless the order', async function () {
     //   const validator = ValidatorFactory.create(PreValidator, {cmd: 'chmod -R 777 /tmp/file.txt'});
 
     //   let validation = await validator.isValid('chmod 777 -R /tmp/file.txt');
-    //   expect(validation).to.be.true;
+    //   expect(validation).to.equal(true);
     // });
     // it('should pre-validate a command with options regardless the order #2', async function () {
     //   const validator = ValidatorFactory.create(PreValidator, {cmd: 'docker exec -it test bash'});
 
     //   let validation = await validator.isValid('docker exec -ti test bash');
-    //   expect(validation).to.be.true;
+    //   expect(validation).to.equal(true);
     // });
     // it('should pre-validate a command with options regardless the order #3', async function () {
     //   const validator = ValidatorFactory.create(PreValidator, {cmd: 'test --option=1 --option 2'});
 
     //   let validation = await validator.isValid('test --option 1 --option 2');
-    //   expect(validation).to.be.true;
+    //   expect(validation).to.equal(true);
 
     //   validation = await validator.isValid('test --option=1 --option=2');
-    //   expect(validation).to.be.true;
+    //   expect(validation).to.equal(true);
 
     //   validation = await validator.isValid('test --option 1 --option=2');
-    //   expect(validation).to.be.true;
+    //   expect(validation).to.equal(true);
 
     //   validation = await validator.isValid('test --option 2 --option 1');
-    //   expect(validation).to.be.true;
+    //   expect(validation).to.equal(true);
 
     //   validation = await validator.isValid('test --option=2 --option=1');
-    //   expect(validation).to.be.true;
+    //   expect(validation).to.equal(true);
 
     //   validation = await validator.isValid('test --option 2 --option=1');
-    //   expect(validation).to.be.true;
+    //   expect(validation).to.equal(true);
     // });
   });
   describe('Post-Validation', () => {
@@ -102,8 +102,9 @@ describe('Validation', () => {
 
       // Validation
       const validation = await validator.validate({ ttylog: ttylogExample });
-      expect(validation).to.be.true;
+      expect(validation).to.equal(true);
     });
+
     it('should validate a file creation', async () => {
       const serviceStub = sinon.createStubInstance(SocketService);
       const dockerStub = sinon.createStubInstance(DockerService);
@@ -123,13 +124,29 @@ describe('Validation', () => {
 
       // Validation
       const validation = await validator.validate();
-      expect(validation).to.be.true;
+      expect(validation).to.equal(true);
+    });
 
-      // Validation (with dumb extra args)
-      // validation = await validator.isValid(ttylogExample);
-      // expect(validation).to.be.true;
-      // validation = await validator.isValid(outputExample);
-      // expect(validation).to.be.true;
+    it('should not validate a file creation which is not respecting criterias', async () => {
+      const serviceStub = sinon.createStubInstance(SocketService);
+      const dockerStub = sinon.createStubInstance(DockerService);
+      dockerStub.exec.returns(new Promise((resolve) => {
+        const stdout = new PassThrough();
+        const stream = new PassThroughDemuxStream(stdout);
+
+        setTimeout(() => {
+          stdout.end('KO');
+        }, 500);
+
+        resolve(stream);
+      }));
+
+      const validator = ValidatorFactory.create(CreatesValidator, { type: 'file', path: 'test.txt', maxLength: 2 }, serviceStub);
+      validator.setDockerService(dockerStub);
+
+      // Validation
+      const validation = await validator.validate();
+      expect(validation).to.equal(false);
     });
   });
   describe('Validation parser', () => {
@@ -147,7 +164,7 @@ describe('Validation', () => {
       expect(validators).to.have.property('sequence');
 
       const prevalidated = validators.preValidate('git --version');
-      expect(prevalidated).to.be.true;
+      expect(prevalidated).to.equal(true);
 
       void validators.validate(undefined, ttylogExample);
     });
@@ -165,23 +182,28 @@ describe('Validation', () => {
       expect(validators).to.have.property('sequence');
 
       const prevalidated = validators.preValidate('git --version');
-      expect(prevalidated).to.be.true;
+      expect(prevalidated).to.equal(true);
 
       void validators.validate(undefined, ttylogExample);
     });
-    it('should use the parser', () => {
-      const validator = new PreValidator({ cmd: 'ls' });
+    it('should throw on unhandled validator', () => {
+      const serviceStub = sinon.createStubInstance(SocketService);
+      const descriptor = [{
+        truc: { cmd: 'git --version' },
+      }];
 
-      validator.validate('ls -l  ');
-      validator.validate(' git add  README.md ');
-      validator.validate('git commit  -m "my commit message"');
-      validator.validate('git commit -a -m "my commit message to commit all modified"');
-      validator.validate('git commit -am   "my commit message to commit all modified"');
-      validator.validate('git push origin master');
-      validator.validate('ansible-playbook  playbooks/test.yml');
-      validator.validate(' ansible-playbook playbooks/test.yml -l vougeot -e @test.json --tags=test');
-      validator.validate('echo "$HOME/test" > /dev/null 2>error.log');
-      validator.validate('cat myfile.text | tee -e file.log');
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      expect(() => ValidatorDescriptorsParser.create(serviceStub, descriptor)).to.throw();
+    });
+    it('should throw on multiple prevalidators', () => {
+      const serviceStub = sinon.createStubInstance(SocketService);
+      const descriptor = [{
+        input: { cmd: 'git --version' },
+        prevalidate: { cmd: 'git --version' },
+      }];
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      expect(() => ValidatorDescriptorsParser.create(serviceStub, descriptor)).to.throw();
     });
   });
 });

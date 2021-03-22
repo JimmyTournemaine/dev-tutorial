@@ -84,7 +84,7 @@
       - "{{ deployer_hosted_workspace }}/dev-tutorial-app:/usr/src/app/app-ui"
       - "/usr/src/app/app-ui/node_modules"
     ports:
-      - "4200:{{ dockerize_app_port }}"
+      - "{{ dockerize_app_port }}:{{ dockerize_app_port }}"
     networks:
       - name: "dev-tutorial-network-{{ deployer_env }}"
     networks_cli_compatible: no

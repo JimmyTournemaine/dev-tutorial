@@ -1,0 +1,24 @@
+---
+- name: Check for test coverage data
+  stat:
+    path: dev-tutorial-api/.nyc_output
+  register: coverage_data
+
+- name: Missing coverage data
+  set_fact:
+    docsgen_warnings: "{{ docgen_warnings | default([]) + [warn] }}"
+  vars:
+    warn: >
+      Tests coverage has not been executed.
+      No HTML report will be generated.
+      Please run coverage report using :
+      docker exec -it dev-tutorial-api-<env> yarn cover
+      Then regenerate the documentation.
+  when: not coverage_data.stat.exists
+
+- name: Generate test coverage HTML report
+  command:
+    chdir: dev-tutorial-api
+    cmd: nyc report --check-coverage false --reporter html --report-dir ../docs/html/coverage
+    creates: ../docs/html/coverage
+  when: coverage_data.stat.exists

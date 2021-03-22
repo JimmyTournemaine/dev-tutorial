@@ -1,7 +1,7 @@
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TutorialsWebServices } from '../../webservices/tutorials.webservices.service';
+import { TutorialsWebServices } from '../../ws/tutorial.ws.service';
 
 @Component({
   selector: 'app-slideshow',
