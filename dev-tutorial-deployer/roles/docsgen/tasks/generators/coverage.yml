@@ -6,7 +6,7 @@
 
 - name: Missing coverage data
   set_fact:
-    docsgen_warnings: "{{ docgen_warnings | default([]) + [warn] }}"
+    docsgen_warnings: "{{ docgen_warnings | default([]) + [{ generator: 'coverage', warn }] }}"
   vars:
     warn: >
       Tests coverage has not been executed.
@@ -16,9 +16,16 @@
       Then regenerate the documentation.
   when: not coverage_data.stat.exists
 
+- name: Remove temp reports
+  file:
+    path: /tmp/coverage
+    state: absent
+  changed_when: False
+  when: "docsgen_force | bool"
+
 - name: Generate test coverage HTML report
   command:
     chdir: dev-tutorial-api
-    cmd: nyc report --check-coverage false --reporter html --report-dir ../docs/html/coverage
-    creates: ../docs/html/coverage
+    cmd: nyc report --reporter html --report-dir /tmp/coverage --exclude-after-remap false
+    creates: /tmp/coverage
   when: coverage_data.stat.exists

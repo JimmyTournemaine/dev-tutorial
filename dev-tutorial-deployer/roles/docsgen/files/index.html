@@ -91,6 +91,21 @@
             letter-spacing: .2em;
             font-size: 1em
         }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown > ul {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .dropdown:hover > ul {
+            display: block;
+        }
     </style>
     <title>Dev' Tutorial Documentation</title>
 </head>
@@ -100,10 +115,26 @@
         <nav>
             <ul>
                 <li class="active"><a href="./README.html">README</a></li>
-                <li><a href="./openapi/index.html">REST API</a></li>
-                <li><a href="./asyncapi/index.html">Websocket API</a></li>
-                <li><a href="./tsdoc-api/index.html">Backend</a></li>
-                <li><a href="./tsdoc-app/index.html">Frontend</a></li>
+                <li class="dropdown">
+                    <a href="#">API</a>
+                    <ul>
+                        <li><a href="./openapi/index.html">REST</a></li>
+                        <li><a href="./asyncapi/index.html">WebSocket</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#">Reference</a>
+                    <ul>
+                        <li><a href="./tsdoc-api/index.html">Backend</a></li>
+                        <li><a href="./tsdoc-app/index.html">Frontend</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#">Reports</a>
+                    <ul>
+                        <li><a href="./coverage/index.html">Coverage</a></li>
+                    </ul>
+                </li>
             </ul>
         </nav>
     </div>
@@ -132,6 +163,7 @@
                 $("nav ul li a").each(function () {
                     var href = $(this).attr('href');
                     if (location === absolute(window.location.href, href)) {
+                        console.log('click');
                         $(this).click();
                     }
                 });
@@ -151,9 +183,14 @@
                     })),
                 nav.find("ul li a").click(function (a) {
                     a.preventDefault();
-                    if (!$(this).parent().hasClass("active") && !nav.hasClass("animate")) {
+                    if (!$(this).parent('li').hasClass("active") && !nav.hasClass("animate")) {
+                        var l = $(this);
+                        var p = $(this).parent().parents('li');
+                        var i = p.length > 0 ? p.find('> a') : $(this);
+                        if(p.length === 0 && l.attr('href') === '#') {
+                            return; // dropdown button
+                        }
                         nav.addClass("animate");
-                        var i = $(this);
                         nav.find("ul li").removeClass("active");
                         var t = i.parent().position(),
                             e = i.parent().width();
@@ -172,10 +209,11 @@
                                         150,
                                         function () {
                                             nav.removeClass("animate");
-                                            $("iframe").attr("src", i.attr("href"));
+                                            $("iframe").attr("src", l.attr("href"));
                                         }
                                     ),
                                         i.parent().addClass("active");
+                                        l.parent().addClass("active");
                                 }
                             )
                             : line.animate(
@@ -192,10 +230,11 @@
                                         150,
                                         function () {
                                             nav.removeClass("animate");
-                                            $("iframe").attr("src", i.attr("href"));
+                                            $("iframe").attr("src", l.attr("href"));
                                         }
                                     ),
                                         i.parent().addClass("active");
+                                        l.parent().addClass("active");
                                 }
                             ),
                             (pos = t.left),
@@ -205,5 +244,4 @@
         });
     </script>
 </body>
-
 </html>

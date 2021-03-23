@@ -46,9 +46,15 @@
 - name: Ensure dependencies are installed
   yarn:
     path: "{{ item }}"
+  register: yarn_deps
+  changed_when: "'Already up-to-date' in yarn_deps"
   loop:
     - dev-tutorial-api
     - dev-tutorial-app
+
+- name: Prepare the warnings variable
+  set_fact:
+    docsgen_warnings: []
 
 - name: Run documentation generators
   include_tasks: "{{ genitem.file }}"
@@ -59,6 +65,8 @@
     loop_var: genitem
     label: "{{ genitem.file | splitext | first }}"
 
-- name: Some generators has warnings!
+- name: Some generators cannot proceed
   debug:
     var: docsgen_warnings
+  when: "docsgen_warnings | length > 0"
+  failed_when: True
