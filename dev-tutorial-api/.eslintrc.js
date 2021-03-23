@@ -35,7 +35,7 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": ["error"],
     "no-restricted-syntax": "off",
     "jsdoc/check-tag-names": ["warn", { "definedTags": ["openapi"] }],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/src/**/*.spec.ts"] }],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/src/**/*.spec.ts","**/src/**/*.test.ts"] }],
     // prettier
     "consistent-return": [
       "error",
@@ -52,6 +52,7 @@ module.exports = {
   overrides: [
     {
       files: "*.spec.ts",
+      files: "*.test.ts",
       rules: {
         // mocha limitations
         "@typescript-eslint/no-unused-expressions": "off",

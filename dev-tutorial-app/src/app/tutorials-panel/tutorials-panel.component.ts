@@ -3,9 +3,13 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { debounceTime, startWith, switchMap, filter } from 'rxjs/operators';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { TutorialsWebServices } from '../webservices/tutorials.webservices.service';
+import { TutorialsWebServices } from '../ws/tutorial.ws.service';
 import { Tutorial } from '../tutorial/tutorial';
 
+/**
+ * Display a panel of tutorials that can be started with a user account.
+ * The component can restrict the tutorial list from search criterias.
+ */
 @Component({
   selector: 'app-tutorials-panel',
   templateUrl: './tutorials-panel.component.html',

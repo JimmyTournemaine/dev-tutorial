@@ -6,6 +6,10 @@ if (extraDirsEnv) {
   extraDirs = extraDirsEnv.split(' ');
 }
 
+process.on('unhandledRejection', (reason: Error) => {
+  console.error('Unhandled Rejection:', reason);
+});
+
 new Server(...extraDirs)
   .boot()
   .catch((err: Error) => {

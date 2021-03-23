@@ -256,6 +256,13 @@
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-9.1.0.tgz#df059c0f64fa41ada8f6b5ce741fe47d49f10194"
   integrity sha512-cExO1nPnoPFiUJWZ28hTHozPLFoCmqr3xqcM57We0hhKE0esdrO+gRWKRH0EJERukLbU8coPKVhA8daGUpASiQ==
 
+"@auth0/angular-jwt@4":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@auth0/angular-jwt/-/angular-jwt-4.2.0.tgz#60f74552fbdd9404aeb55e41fa4d3d514f8465d6"
+  integrity sha512-kxHMztP0scAaKSfWRQ4y3ba5ggcGh2YVapC1UnimyE1I1Vs68gdSlV00bnpAK4aCaNut9IqtdGurgbljHt24Lw==
+  dependencies:
+    url "^0.11.0"
+
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"

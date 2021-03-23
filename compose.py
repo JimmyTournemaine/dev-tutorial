@@ -293,8 +293,11 @@ class Docs(Command):
     def generate(self, clean, force):
         tags = ("all", "clean") if clean else ()
         args = ("docsgen_force=yes", "docs_restart=yes") if force else ()
-        Deployer("playbooks/docsgen.yml playbooks/docs.yml", tags, args).start()
-        # webbrowser.open('http://localhost:8000')
+        Deployer.forPlaybooks(
+            ["playbooks/docsgen.yml", "playbooks/docs.yml"], tags, args,
+            self.verbose, self.dry_run
+        ).start()
+        webbrowser.open('http://localhost:8000')
 
     def status(self, state):
         Deployer.forPlaybook(
@@ -303,7 +306,8 @@ class Docs(Command):
             verbose=self.verbose,
             dry_run=self.dry_run,
         ).start()
-        # webbrowser.open('http://localhost:8000')
+        if state == 'started':
+            webbrowser.open('http://localhost:8000')
 
 
 def main(argv):

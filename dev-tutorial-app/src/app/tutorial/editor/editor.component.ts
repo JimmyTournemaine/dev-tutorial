@@ -30,11 +30,13 @@ export class EditorComponent implements AfterViewInit {
   constructor(private editorService: EditorService, public dialog: MatDialog) {
   }
 
+  /**
+   * Load AMD loader to launch monaco and subscribe for new models.
+   */
   ngAfterViewInit(): void {
     const initialized = new Promise<void>((resolve) => {
       // Load AMD loader if necessary
       if (!window.require) {
-        console.log('loading AMD script');
         const loaderScript = document.createElement('script');
         loaderScript.type = 'text/javascript';
         loaderScript.src = 'vs/loader.js';
@@ -145,7 +147,6 @@ export class EditorComponent implements AfterViewInit {
    */
   private onGotAmdLoader = (cb?: () => void): void => {
     (window as unknown as AsyncRequire).require(['vs/editor/editor.main'], () => {
-      console.log('AMD loaded, executing callback');
       cb();
     });
   };

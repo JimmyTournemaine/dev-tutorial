@@ -87,12 +87,26 @@ export class TutorialService {
     return this.instance;
   }
 
+  public async getTutorials(search?: string): Promise<TutorialDescriptorDocument[]>;
   /**
    * Get all the tutorials descriptions.
    *
    * @param search The text to search in tutorials properties.
    * @param callback An optional callback when search is completed
    * @returns A promise that the matching tutorials will be returned.
+   * @deprecated Only promise should be used, not the "callback way"
+   */
+  public async getTutorials(
+    search: string,
+    callback: (err: NodeJS.ErrnoException | null, tutorials: TutorialDescriptorDocument[]) => void
+  ): Promise<TutorialDescriptorDocument[]>;
+  /**
+   * Get all the tutorials descriptions.
+   *
+   * @param search The text to search in tutorials properties.
+   * @param callback An optional callback when search is completed
+   * @returns A promise that the matching tutorials will be returned.
+   * @deprecated Only promise should be used, not the "callback way"
    */
   public async getTutorials(
     search?: string,
@@ -114,6 +128,19 @@ export class TutorialService {
     });
   }
 
+  public async getTutorial(tutoId: string): Promise<TutorialDescriptorDocument>;
+  /**
+   * Get a tutorial.
+   *
+   * @param tutoId The tutorial identifier.
+   * @param callback An optional callback when search is completed.
+   * @returns promise A promise that return the tutorial if it exists.
+   * @deprecated Only promise should be used, not the "callback way"
+   */
+  public async getTutorial(
+    tutoId: string,
+    callback: (err: NodeJS.ErrnoException | null, tutorial: TutorialDescriptorDocument) => void
+  ): Promise<TutorialDescriptorDocument>;
   /**
    * Get a tutorial.
    *

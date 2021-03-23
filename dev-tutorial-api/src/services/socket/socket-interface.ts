@@ -1,7 +1,8 @@
-import { ISocketManager } from './socket-manager-interface';
+import { EventEmitter } from 'events';
 
 export interface ISocketService {
   tutoId: string;
-  socket: ISocketManager;
   wd: string;
+  socket: EventEmitter;
+  attach(): Promise<void>;
 }

@@ -8,7 +8,8 @@ import { RequestListener } from 'http';
 import { environment } from './environments/environment';
 import { TutorialService as tuto } from './services/tutorial/tutorial';
 import { DockerService as docker } from './services/docker/docker';
-import { tutoRouter } from './routes/tutorial';
+import { router as tutoRouter } from './routes/tutorial';
+import { router as userRouter } from './routes/user';
 
 const logger = debug('app:access');
 
@@ -30,7 +31,8 @@ export class Application {
     this.app.use(express.json({}));
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
-    this.app.use('/api', tutoRouter);
+    this.app.use('/api/tuto', tutoRouter);
+    this.app.use('/api/user', userRouter);
   }
 
   setPort(port: string | number): void {

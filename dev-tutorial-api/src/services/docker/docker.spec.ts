@@ -8,26 +8,28 @@ import { environment } from '../../environments/environment';
 
 const logger = debug('test:docker');
 
-describe('Docker Service', () => {
+describe('[IT] Docker Service', () => {
   describe('Docker service initialization', () => {
     it('should the docker service throw error without connection', () => {
       docker.disconnect();
-      expect(docker.getInstance).to.throw;
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      expect(() => docker.getInstance()).to.throw();
     });
 
     it('should the docker service works and be unique', () => {
       const service = docker.connect(environment.docker);
-      expect(service).not.to.be.undefined;
+      expect(service).not.to.equal(undefined);
 
       const instance = docker.getInstance();
-      expect(instance).not.to.be.null;
+      expect(instance).not.to.equal(null);
       expect(instance).to.equals(service);
     });
   });
 
-  describe('Docker basic container features', function () {
-    const tutoId = 'dev';
+  describe('Docker basic container features', function runDockerFeatures() {
     this.timeout(120000);
+
+    const tutoId = 'dev';
 
     before(() => docker.connect(environment.docker));
     beforeEach(async () => {
@@ -38,24 +40,25 @@ describe('Docker Service', () => {
       // Start
       logger('starting');
       const container = await docker.getInstance().run(tutoId);
-      expect(container).not.to.be.undefined;
+      expect(container).not.to.equal(undefined);
       expect(container).to.have.property('id');
 
       // Check start status
       logger('inspect');
       const inspect = await container.inspect();
       expect(inspect).to.have.nested.property('State.Status').that.equals('running');
-      expect(inspect).to.have.nested.property('State.Running').that.is.true;
-      expect(inspect).to.have.nested.property('State.Dead').that.is.false;
+      expect(inspect).to.have.nested.property('State.Running').that.equals(true);
+      expect(inspect).to.have.nested.property('State.Dead').that.equals(false);
 
       // Stop/Remove
       logger('destroy');
       await docker.getInstance().destroy(tutoId);
     });
   });
-  describe('Docker advanced container features', function () {
-    const tutoId = 'dev';
+  describe('Docker advanced container features', function runAdvancedFeatures() {
     this.timeout(120000);
+
+    const tutoId = 'dev';
 
     before(() => docker.connect(environment.docker));
 

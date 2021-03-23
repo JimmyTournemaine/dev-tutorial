@@ -7,16 +7,21 @@
 <div class="slideshow" #slideshow>
   <app-slideshow #slide></app-slideshow>
 </div>
-
-<div class="terminal-box" *ngIf="!ready && !disabled">
-  <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
-  <pre>Environnement en cours de creation...</pre>
-</div>
-<div class="terminal-box" *ngIf="!ready && disabled">
-  <mat-progress-bar [mode]="'buffer'" [color]="'accent'"></mat-progress-bar>
-  <pre>Terminal desactive pour cet environnement</pre>
-</div>
-<div class="terminal-box" *ngIf="ready">
-  <app-terminal #term [hidden]="editMode" id="terminal"></app-terminal>
-  <app-editor #editor [hidden]="!editMode"></app-editor>
+<div [ngSwitch]="state">
+  <div class="terminal-box" *ngSwitchCase="'disabled'">
+    <mat-progress-bar [mode]="'buffer'" [color]="'accent'"></mat-progress-bar>
+    <pre>Terminal desactive pour cet environnement</pre>
+  </div>
+  <div class="terminal-box" *ngSwitchCase="'error'">
+    <mat-progress-bar [mode]="'determinate'" [value]="progressValue | async" [color]="'warn'"></mat-progress-bar>
+    <pre>Erreur lors de la creation de l'environnement.</pre>
+  </div>
+  <div class="terminal-box" *ngSwitchCase="'ready'">
+    <app-terminal #term [hidden]="editMode" id="terminal"></app-terminal>
+    <app-editor #editor [hidden]="!editMode"></app-editor>
+  </div>
+  <div class="terminal-box" *ngSwitchDefault>
+    <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+    <pre>Environnement en cours de creation...</pre>
+  </div>
 </div>

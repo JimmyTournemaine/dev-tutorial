@@ -13,6 +13,7 @@
     "**/report/**",
     "**/*cache*/**",
     "**/*.spec.ts",
+    "**/*.test.ts",
     "**/*.json",
     "**/*.yaml",
     "**/*.yml",

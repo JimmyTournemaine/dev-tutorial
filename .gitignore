@@ -17,6 +17,7 @@ test-results.xml
 
 # Tests
 report/
+.nyc_output/
 ## Mega-Linter
 /.eslintrc.*
 ## Python

@@ -3,9 +3,11 @@
 import * as http from 'http';
 import * as debug from 'debug';
 import * as io from 'socket.io';
+import { createHttpTerminator } from 'http-terminator';
 import { AddressInfo } from 'net';
 import { SocketManager } from './services/socket/socket-manager';
 import { Application } from './app';
+import { IdentifiedSocket, socketAuth } from './middleware/auth';
 
 const logger = debug('app:server');
 
@@ -19,7 +21,11 @@ export class Server {
 
   private httpServer: http.Server;
 
-  private socketServer: http.Server;
+  private socketServer: io.Server;
+
+  private serverTerminators: { terminate: () => Promise<void> }[] = [];
+
+  private errorHandler: (err: Error) => void|never;
 
   constructor(...extraDirs: string[]) {
     this.port = this.normalizePort(process.env.PORT || '3000');
@@ -57,6 +63,7 @@ export class Server {
         resolve();
       });
       this.httpServer.listen(this.port);
+      this.serverTerminators.push(createHttpTerminator({ server: this.httpServer }));
     });
   }
 
@@ -66,44 +73,42 @@ export class Server {
   startSocketServer(): Promise<void> {
     return new Promise<void>((resolve) => {
       // Create a server
-      this.socketServer = http.createServer();
-      this.socketServer.on('error', (err: Error) => this.onError(err));
-      this.socketServer.on('listening', () => {
-        this.onListening(this.socketServer.address());
-        resolve();
-      });
+      const server = http.createServer()
+        .on('error', (err: Error) => this.onError(err))
+        .on('listening', () => {
+          this.onListening(server.address());
+          resolve();
+        });
       // Bind SocketIO
-      const ioServer = io(this.socketServer);
-      ioServer.on('connection', (sock: SocketIO.Socket) => {
-        this.onIOConnection(sock);
-      });
-      ioServer.on('error', (err: Error) => this.onError(err));
+      this.socketServer = io(server);
+      const manager = new SocketManager(this.socketServer);
+      this.socketServer
+        .use(socketAuth)
+        .on('connection', (sock: IdentifiedSocket) => {
+          sock.on('disconnect', (reason) => logger('socket %s disconnected', sock.id, reason));
+          manager.socket(sock);
+        })
+        .on('error', (err: Error) => this.onError(err));
 
-      this.socketServer.listen(3001);
+      server.listen(3001);
+      this.serverTerminators.push(createHttpTerminator({ server }));
     });
   }
 
   /**
    * Stop all the services, then stop the server itself.
+   *
+   * @returns A promise that servers will be stopped properly
    */
-  async stop(): Promise<void> {
+  async stop(): Promise<void[]> {
+    logger('Stopping servers...');
     await this.application.unload();
-    await new Promise<void>((resolve, reject) => {
-      this.httpServer.close((err?: Error) => {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      });
-    });
-    await new Promise<void>((resolve, reject) => {
-      this.socketServer.close((err?: Error) => {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      });
-    });
+    return Promise.all(this.serverTerminators.map((term) => term.terminate()));
+  }
+
+  handleError(callback: Server['errorHandler']): this {
+    this.errorHandler = callback;
+    return this;
   }
 
   /**
@@ -133,22 +138,27 @@ export class Server {
    *
    * @param error The error throws by the server.
    */
-  private onError(error: NodeJS.ErrnoException): never {
+  private onError(error: NodeJS.ErrnoException): void {
+    let err = error;
     if (error.syscall && error.syscall === 'listen') {
       const bind = typeof this.port === 'string' ? `Pipe ${this.port}` : `Port ${this.port}`;
 
       // handle specific listen errors with friendly messages
       switch (error.code) {
         case 'EACCES':
-          throw new Error(`${bind} requires elevated privileges`);
+          err = new Error(`${bind} requires elevated privileges`);
+          break;
         case 'EADDRINUSE':
-          throw new Error(`${bind} is already in use`);
-        default:
-          throw error;
+          err = new Error(`${bind} is already in use`);
+        // no default
       }
     }
 
-    throw error;
+    if (this.errorHandler) {
+      this.errorHandler(err);
+    } else {
+      throw err;
+    }
   }
 
   /**
@@ -159,16 +169,5 @@ export class Server {
   private onListening(addr: string | AddressInfo): void {
     const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
     logger(`Listening on ${bind}`);
-  }
-
-  /**
-   * Event listener for IOSocket connection
-   *
-   * @param sock The connected socket.
-   */
-  private onIOConnection(sock: SocketIO.Socket): void {
-    logger('New socket connection');
-    SocketManager.getInstance().socket(sock).service();
-    sock.on('disconnect', (reason) => logger('socket %s disconnected', sock.id, reason));
   }
 }

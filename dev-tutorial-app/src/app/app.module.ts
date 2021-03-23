@@ -15,9 +15,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 import { MatDialogModule } from '@angular/material/dialog';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -28,6 +29,8 @@ import { EditorComponent } from './tutorial/editor/editor.component';
 import { QuitWithoutSavingDialogComponent } from './tutorial/editor/editor.quit-dialog.component';
 import { SlideshowComponent } from './tutorial/slideshow/slideshow.component';
 import { EditorAddedDirective } from './tutorial/editor/editor.added.directive';
+import { RefreshTokenInterceptor } from './auth/refresh-token.interceptor';
+import { AuthGuardService } from './auth/auth-guard.service';
 
 const markedOptionsFactory = () => {
   const renderer = new MarkedRenderer();
@@ -92,6 +95,9 @@ const markedOptionsFactory = () => {
     FormsModule,
   ],
   providers: [
+    { provide: JwtHelperService, useFactory: () => new JwtHelperService() },
+    { provide: HTTP_INTERCEPTORS, useClass: RefreshTokenInterceptor, multi: true },
+    AuthGuardService,
   ],
   bootstrap: [AppComponent]
 })
