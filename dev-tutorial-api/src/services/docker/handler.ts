@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 import { Writable } from 'stream';
-import * as debug from 'debug';
 import { Exec } from 'dockerode';
 import { TtyLog } from './ttylog';
+import { LoggerFactory } from '../logger/logger';
 
-export const log = debug('app:docker');
+const logger = LoggerFactory.getLogger('app:docker-handler');
 
 /**
  * Docker attached exec handler
@@ -28,7 +28,7 @@ export class DockerAttachedHandler extends EventEmitter {
   }
 
   resize(size: { h: number; w: number; }): void {
-    log('resizing exec:', size);
+    logger.debug('resizing exec:', size);
     void this.exec.resize(size);
   }
 

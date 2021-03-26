@@ -1,4 +1,3 @@
-import * as debug from 'debug';
 import { EventEmitter } from 'events';
 import { Validators } from '../validators/abstract/validators';
 import { Hook } from './hook';
@@ -10,9 +9,9 @@ import { TtyLog } from '../docker/ttylog';
 import { ISocketService } from './socket-interface';
 import { Validation } from './socket-validation';
 import { SocketError as ErrorEvent } from './socket-error';
+import { LoggerFactory } from '../logger/logger';
 
-const logger = debug('app:socket');
-const hookLog = debug('app:hook');
+const logger = LoggerFactory.getLogger('app:socket:service');
 
 /**
  * Socket service to use terminal
@@ -80,18 +79,18 @@ export class SocketService implements ISocketService {
       validators.push(ValidatorDescriptorsParser.create(this, slide.validators));
     }
     // When validator are done, emit next and set next validator (next slide)
-    logger('setting validator');
+    logger.debug('setting validator');
     this.validation.setValidators(validators[0]);
     for (let i = 0; i < validators.length - 1; i++) {
       validators[i].once('valid', () => {
-        logger('next');
+        logger.debug('next');
         this.validation.setValidators(validators[i + 1]);
         this.socket.emit('next');
       });
     }
     // the last validator send 'completed' instead of next
     validators[validators.length - 1].on('valid', () => {
-      logger('completed');
+      logger.debug('completed');
       this.socket.emit('completed');
     });
   }
@@ -106,7 +105,7 @@ export class SocketService implements ISocketService {
     for (const hook of this.hooks) {
       if (hook.test(cmd)) {
         hook.process(cmd).catch((reason) => {
-          hookLog('hook processing error', reason);
+          logger.error('hook processing error', reason);
         });
         return hook.shouldCancel();
       }

@@ -1,15 +1,14 @@
 #!/usr/bin/env node
-
 import * as http from 'http';
-import * as debug from 'debug';
 import * as io from 'socket.io';
 import { createHttpTerminator } from 'http-terminator';
 import { AddressInfo } from 'net';
 import { SocketManager } from './services/socket/socket-manager';
 import { Application } from './app';
 import { IdentifiedSocket, socketAuth } from './middleware/auth';
+import { LoggerFactory } from './services/logger/logger';
 
-const logger = debug('app:server');
+const logger = LoggerFactory.getLogger('app:server');
 
 /**
  * The main server.
@@ -85,7 +84,7 @@ export class Server {
       this.socketServer
         .use(socketAuth)
         .on('connection', (sock: IdentifiedSocket) => {
-          sock.on('disconnect', (reason) => logger('socket %s disconnected', sock.id, reason));
+          sock.on('disconnect', (reason) => logger.info('socket %s disconnected', sock.id, reason));
           manager.socket(sock);
         })
         .on('error', (err: Error) => this.onError(err));
@@ -101,7 +100,7 @@ export class Server {
    * @returns A promise that servers will be stopped properly
    */
   async stop(): Promise<void[]> {
-    logger('Stopping servers...');
+    logger.info('Stopping servers...');
     await this.application.unload();
     return Promise.all(this.serverTerminators.map((term) => term.terminate()));
   }
@@ -168,6 +167,6 @@ export class Server {
    */
   private onListening(addr: string | AddressInfo): void {
     const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-    logger(`Listening on ${bind}`);
+    logger.info(`Listening on ${bind}`);
   }
 }

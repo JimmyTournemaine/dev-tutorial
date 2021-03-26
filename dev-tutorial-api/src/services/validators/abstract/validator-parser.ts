@@ -1,4 +1,3 @@
-import * as debug from 'debug';
 import { ISocketService } from '../../socket/socket-interface';
 import { PreValidator } from './validator-pre';
 import { Validators } from './validators';
@@ -6,8 +5,9 @@ import { ValidatorSequence } from './validator-sequence';
 import { ValidatorSet } from './validator-set';
 import { ValidatorFactory } from './validator-factory';
 import { DescriptorMapping, descriptorMapping } from '../mapping';
+import { LoggerFactory } from '../../logger/logger';
 
-const logger = debug('app:validation');
+const logger = LoggerFactory.getLogger('app:validation:parser');
 
 /**
  * Will generate generators from tutorials descriptor 'tutorial.json'.
@@ -39,10 +39,10 @@ export class ValidatorDescriptorsParser {
             throw new Error('Illegal validator. Validator tagged as prevalidator must be a PreValidator instance.');
           }
           prevalidator = validator;
-          logger('prevalidator: %s (from %s)', validator.constructor.name, desc);
+          logger.debug('prevalidator: %s (from %s)', validator.constructor.name, desc);
         } else {
           validators.push(validator);
-          logger('validator: %s (from %s)', validator.constructor.name, desc);
+          logger.debug('validator: %s (from %s)', validator.constructor.name, desc);
         }
       }
       validationSeq.push(new ValidatorSet(prevalidator, validators));

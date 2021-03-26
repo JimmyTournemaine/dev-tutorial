@@ -1,7 +1,7 @@
 import { Done } from 'mocha';
-import * as debug from 'debug';
+import { LoggerFactory } from '../services/logger/logger';
 
-const logger = debug('test:utils');
+const logger = LoggerFactory.getLogger('test:partial-done');
 
 /**
  * Allow to handle multiple "done" callbacks to create steps.
@@ -17,7 +17,7 @@ class PartialDone {
       this.mochaDone(new Error(`error at ${this.value}/${this.expected}, reason: ${reason}`));
       return;
     }
-    logger('%d of %d done', this.value + 1, this.expected);
+    logger.debug('%d of %d done', this.value + 1, this.expected);
     if (++this.value === this.expected) {
       this.mochaDone();
     }

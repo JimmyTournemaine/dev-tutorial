@@ -1,8 +1,7 @@
 /* eslint-disable func-names */
-import { expect } from 'chai';
 import * as io from 'socket.io-client';
 import * as fs from 'fs';
-import * as debug from 'debug';
+import { expect } from 'chai';
 import { agent as request, Response } from 'supertest';
 import { fail } from 'assert';
 import { Server } from './server';
@@ -11,8 +10,9 @@ import { environment } from './environments/environment';
 import { createUser } from './app.spec';
 import { Token } from './models/token';
 import { partial } from './utils/partial-done.utils.test';
+import { LoggerFactory } from './services/logger/logger';
 
-const logger = debug('test:server');
+const logger = LoggerFactory.getLogger('test:server');
 
 // Randomize input to simulate input chunks
 const randomizeInput = (input: string, callback: (chunk: string) => void): void => {
@@ -117,7 +117,7 @@ describe('[IT] Server', () => {
 
         ({ accessToken: token } = await createUser(server.app));
         socket = io('http://localhost:3001', { query: { token: token.token } });
-        socket.on('error', (err: Error) => { logger(err); });
+        socket.on('error', (err: Error) => { logger.debug(err); });
       });
 
       afterEach(() => {
@@ -132,7 +132,7 @@ describe('[IT] Server', () => {
             part.done();
           } catch (error) {
             // will get 'uname\r' then 'Linux' from the docker container
-            logger(`show: ${show}`);
+            logger.debug(`show: ${show}`);
           }
         });
         socket.on('attached', (id: string) => {
@@ -156,7 +156,7 @@ describe('[IT] Server', () => {
           }
         });
         socket.once('attached', (id: string) => {
-          logger('on attached', id);
+          logger.debug('on attached', id);
           expect(id).to.equals(tutoId);
           part.done();
 
@@ -219,7 +219,7 @@ describe('[IT] Server', () => {
           part.done();
         });
         socket.on('attached', () => {
-          logger('attached');
+          logger.debug('attached');
           setTimeout(() => socket.emit('cmd', 'edit testfile.txt\r'), 200);
         });
         socket.emit('attach', tutoId);

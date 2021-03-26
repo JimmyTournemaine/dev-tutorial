@@ -1,10 +1,10 @@
 import { AsyncWorker, ErrorCallback, queue, QueueObject } from 'async';
-import * as debug from 'debug';
 import { TtyLog } from '../docker/ttylog';
 import { ValidationBatch } from './socket-validation-batch';
 import { Validators } from '../validators/abstract/validators';
+import { LoggerFactory } from '../logger/logger';
 
-const batchLog = debug('app:socket-validation');
+const logger = LoggerFactory.getLogger('app:validation');
 
 export class Validation {
   private batch: ValidationBatch = new ValidationBatch();
@@ -21,13 +21,13 @@ export class Validation {
   }
 
   async validateBatch(batch: ValidationBatch, callback: ErrorCallback<Error>): Promise<void> {
-    batchLog('validate', batch.ttylog);
+    logger.debug('validate', batch.ttylog);
     await batch.validate(this.validators);
     callback();
   }
 
   setValidators(validators: Validators): void {
-    batchLog('set validators');
+    logger.debug('set validators');
     this.validators = validators;
   }
 
@@ -36,7 +36,7 @@ export class Validation {
   }
 
   ttylog(ttylog: TtyLog): void {
-    batchLog('ttylog', ttylog);
+    logger.debug('ttylog', ttylog);
     this.batch.ttylog = ttylog;
     this.end();
   }

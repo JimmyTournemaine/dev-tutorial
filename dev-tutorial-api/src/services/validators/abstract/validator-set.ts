@@ -1,9 +1,9 @@
-import * as debug from 'debug';
+import { LoggerFactory } from '../../logger/logger';
 import { TtyLog } from '../../docker/ttylog';
 import { PostValidator } from './validator-post';
 import { PreValidator } from './validator-pre';
 
-const logger = debug('app:validation');
+const logger = LoggerFactory.getLogger('app:validator:set');
 
 /**
  * A set of validators.
@@ -30,12 +30,12 @@ export class ValidatorSet {
    * @returns Is valid.
    */
   prevalidate(cmd: string): boolean {
-    logger('prevalidation started', cmd);
+    logger.debug('prevalidation started', cmd);
 
     // optionnal prevalidation (but preferrable)
     this.prevalidated = this.prevalidator ? this.prevalidator.validate(cmd) : true;
 
-    logger('prevalidation completed', this.prevalidated);
+    logger.debug('prevalidation completed', this.prevalidated);
 
     return this.prevalidated;
   }
@@ -48,10 +48,10 @@ export class ValidatorSet {
    */
   async validate(output: string, ttylog: TtyLog): Promise<void> {
     if (this.prevalidated) {
-      logger('validation started');
+      logger.debug('validation started');
       await this.validating(output, ttylog);
     } else {
-      logger('validation skipped');
+      logger.debug('validation skipped');
     }
   }
 
@@ -69,9 +69,9 @@ export class ValidatorSet {
         const process = Promise.resolve(validator.isValid({ output, ttylog })).then((valid) => {
           if (valid) {
             this.validated++;
-            logger('%s is valid (validated=%d/%s)', validator.constructor.name, this.validated, this.validators.length);
+            logger.debug('%s is valid (validated=%d/%s)', validator.constructor.name, this.validated, this.validators.length);
           } else {
-            logger('%s is NOT valid (validated=%d/%s)', validator.constructor.name, this.validated, this.validators.length);
+            logger.debug('%s is NOT valid (validated=%d/%s)', validator.constructor.name, this.validated, this.validators.length);
           }
           return valid;
         });
@@ -89,7 +89,7 @@ export class ValidatorSet {
    * @returns The validation state.
    */
   isValid(): boolean {
-    logger('is valid ? pre=%s, post=%s/%s', this.prevalidated, this.validated, this.validators.length);
+    logger.debug('is valid ? pre=%s, post=%s/%s', this.prevalidated, this.validated, this.validators.length);
     return this.prevalidated && this.validated === this.validators.length;
   }
 }

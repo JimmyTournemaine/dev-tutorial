@@ -1,4 +1,7 @@
 import { Server } from './server';
+import { LoggerFactory } from './services/logger/logger';
+
+const logger = LoggerFactory.getLogger('app:index');
 
 let extraDirs = [];
 const extraDirsEnv = process.env.DEV_API_EXTRA_TUTORIALS;
@@ -7,11 +10,11 @@ if (extraDirsEnv) {
 }
 
 process.on('unhandledRejection', (reason: Error) => {
-  console.error('Unhandled Rejection:', reason);
+  logger.error('Unhandled Rejection:', reason);
 });
 
 new Server(...extraDirs)
   .boot()
   .catch((err: Error) => {
-    console.error('Unexpected error', err);
+    logger.error('Unexpected error', err);
   });

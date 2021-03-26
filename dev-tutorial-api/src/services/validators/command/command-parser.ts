@@ -1,9 +1,9 @@
 import * as parser from 'bash-parser';
-import * as debug from 'debug';
+import { LoggerFactory } from '../../logger/logger';
 import { Command } from './command';
 import { CommandBuilder } from './command-builder';
 
-const logger = debug('app:command');
+const logger = LoggerFactory.getLogger('app:command:parser');
 
 export class CommandParser {
   static SHORT_OPT = /^-[a-z0-9]+/;
@@ -11,7 +11,7 @@ export class CommandParser {
   static LONG_OPT = /^--[a-z0-9-]+/;
 
   static parse(cmd: string): Command {
-    logger(cmd);
+    logger.debug(cmd);
 
     const ast = parser(cmd);
     let command: parser.Command;
@@ -47,7 +47,7 @@ export class CommandParser {
             builder.arg(text);
           }
         } else {
-          logger('Ignored node (not handled yet)', node);
+          logger.debug('Ignored node (not handled yet)', node);
         }
       }
     }

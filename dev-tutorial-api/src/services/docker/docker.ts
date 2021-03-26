@@ -1,9 +1,8 @@
-import { Readable, Writable } from 'stream';
 // dockerode peer dependency typed in @types
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { Readable, Writable } from 'stream';
 import { Modem } from 'docker-modem';
 import * as Docker from 'dockerode';
-import * as debug from 'debug';
 import * as tar from 'tar-stream';
 import * as path from 'path';
 import * as tmp from 'tmp';
@@ -11,8 +10,9 @@ import * as fs from 'fs';
 import { DockerAttachedHandler } from './handler';
 import { DemuxStream } from './stream';
 import { DockerCache, StateChangedEvent } from './cache';
+import { LoggerFactory } from '../logger/logger';
 
-const log = debug('app:docker');
+const logger = LoggerFactory.getLogger('app:docker');
 
 export interface IDockerService {
   findContainer(tutoId: string): Promise<Docker.Container>;
@@ -112,7 +112,7 @@ export class DockerService implements IDockerService {
     const containers = await this.docker.listContainers({ all: true });
     const match = containers.find((value: Docker.ContainerInfo) => value.Names.indexOf(`/${tutoId}`) !== -1);
     if (match) {
-      log(`${tutoId}: container missing from cache`);
+      logger.debug(`${tutoId}: container missing from cache`);
       return this.docker.getContainer(match.Id);
     }
 
@@ -205,7 +205,7 @@ export class DockerService implements IDockerService {
         AttachStderr: true,
       }))
       .then((exec: Docker.Exec) => {
-        log(`${tutoId}: exec '${command.replace('%', '%%')}'`);
+        logger.debug(`${tutoId}: exec '${command.replace('%', '%%')}'`);
         return exec.start({});
       })
       .then((stream: Readable) => {
@@ -240,7 +240,7 @@ export class DockerService implements IDockerService {
           DockerService.getInstance().findContainer(tutoId)
             .then((container: Docker.Container) => {
               // Write tar in the container for extraction
-              log(`${tutoId}: writing ${filePath}`);
+              logger.debug(`${tutoId}: writing ${filePath}`);
               return container.putArchive(pack, { path: path.dirname(filePath) }, (e: Error) => {
                 if (e) {
                   reject(e);
