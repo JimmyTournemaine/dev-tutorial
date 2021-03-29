@@ -1,8 +1,8 @@
-import * as debug from 'debug';
 import { EventEmitter } from 'events';
 import * as Dockerode from 'dockerode';
+import { LoggerFactory } from '../logger/logger';
 
-export const log = debug('app:docker');
+const logger = LoggerFactory.getLogger('app:docker-cache');
 
 /**
  * An enumeration of docker cache item possible states.
@@ -68,7 +68,7 @@ export class DockerCache {
 
     this.cache.set(tutoId, item);
     this.emiter.emit('changed', { tutoId, state });
-    log(`${tutoId}: ${state}`);
+    logger.info(`${tutoId}: ${state}`);
   }
 
   /**
@@ -78,7 +78,7 @@ export class DockerCache {
    * @returns True if the container has been removed.
    */
   remove(tutoId: string): boolean {
-    log(`${tutoId}: container removed`);
+    logger.info(`${tutoId}: container removed from cache`);
 
     return this.cache.delete(tutoId);
   }

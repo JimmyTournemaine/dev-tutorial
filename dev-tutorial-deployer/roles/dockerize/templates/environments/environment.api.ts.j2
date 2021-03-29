@@ -9,11 +9,11 @@ export const environment = {
   mongodb: '{{ dockerize_api_mongodb }}',
   tokens: {
     accessToken: {
-      secret: '{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}',
+      secret: '{{ dockerize_api_token_access_secret | default(lookup('password', '/dev/null chars=ascii_lowercase,digits length=32')) }}',
       expiresIn: {{ dockerize_api_token_access_expiresIn }},
     },
     refreshToken: {
-      secret: '{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}',
+      secret: '{{ dockerize_api_token_refresh_secret | default(lookup('password', '/dev/null chars=ascii_lowercase,digits length=32')) }}',
       expiresIn: {{ dockerize_api_token_refresh_expiresIn }},
     }
   }

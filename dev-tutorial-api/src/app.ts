@@ -2,16 +2,17 @@ import * as express from 'express';
 import * as cors from 'cors';
 import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
-import * as debug from 'debug';
 import * as mongoose from 'mongoose';
 import { RequestListener } from 'http';
+import { Transform } from 'stream';
 import { environment } from './environments/environment';
 import { TutorialService as tuto } from './services/tutorial/tutorial';
 import { DockerService as docker } from './services/docker/docker';
 import { router as tutoRouter } from './routes/tutorial';
 import { router as userRouter } from './routes/user';
+import { LoggerFactory } from './services/logger/logger';
 
-const logger = debug('app:access');
+const logger = LoggerFactory.getLogger('app:application');
 
 export class Application {
   app: express.Application;
@@ -25,7 +26,14 @@ export class Application {
   }
 
   setup(): void {
-    this.app.use(morgan('combined', { stream: { write: (msg) => logger(msg) } }));
+    this.app.use(morgan('combined', {
+      stream: new Transform({
+        transform: (chunk: string|Buffer, encoding, callback) => {
+          chunk.toString().split('\n').filter((v) => v).forEach((v) => logger.http(v));
+          callback();
+        }
+      })
+    }));
     this.app.use(cors());
     this.app.use(express.raw({ type: 'application/octet-stream' }));
     this.app.use(express.json({}));

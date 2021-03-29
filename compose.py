@@ -149,8 +149,7 @@ class Dockerize(Command):
                     self._log_transform(
                         "docker logs --follow --since "
                         + start_time
-                        + " dev-tutorial-api-"
-                        + self.environment,
+                        + " dev-tutorial-api",
                         "api",
                     ),
                 ),
@@ -161,8 +160,7 @@ class Dockerize(Command):
                     self._log_transform(
                         "docker logs --follow --since "
                         + start_time
-                        + " dev-tutorial-app-"
-                        + self.environment,
+                        + " dev-tutorial-app",
                         "app",
                     ),
                 ),
@@ -179,30 +177,33 @@ class Dockerize(Command):
         [t.join() for t in threads]
 
     def _post_actions(self):
+        if not self.dry_run and "ci" != self.environment:
+            if len(self.services) == 0 or "app" in self.services:
+                if "dev" == self.environment:
+                    webbrowser.open("http://localhost:4200/home")
+                elif "test" == self.environment:
+                    webbrowser.open("http://localhost:9876/debug.html")
 
-        if "dev" == self.environment:
-            if not self.dry_run:
-                webbrowser.open("http://localhost:4200/")
-                copies = (
-                    multiprocessing.Process(
-                        target=self.exec,
-                        args=(
-                            "docker cp "
-                            + f"dev-tutorial-api-{self.environment}:/usr/src/app/api/node_modules"
-                            + " ./dev-tutorial-api/",
-                        ),
+            copies = (
+                multiprocessing.Process(
+                    target=self.exec,
+                    args=(
+                        "docker cp"
+                        + " dev-tutorial-api:/usr/src/app/api/node_modules"
+                        + " ./dev-tutorial-api/",
                     ),
-                    multiprocessing.Process(
-                        target=self.exec,
-                        args=(
-                            "docker cp "
-                            + f"dev-tutorial-app-{self.environment}:/usr/src/app/app-ui/node_modules"
-                            + " ./dev-tutorial-app/",
-                        ),
+                ),
+                multiprocessing.Process(
+                    target=self.exec,
+                    args=(
+                        "docker cp"
+                        + " dev-tutorial-app:/usr/src/app/app-ui/node_modules"
+                        + " ./dev-tutorial-app/",
                     ),
-                )
-                [t.start() for t in copies]
-                [t.join() for t in copies]
+                ),
+            )
+            [t.start() for t in copies]
+            [t.join() for t in copies]
 
     def _log_transform(self, logCommand, container):
         if container == "api":
@@ -294,10 +295,13 @@ class Docs(Command):
         tags = ("all", "clean") if clean else ()
         args = ("docsgen_force=yes", "docs_restart=yes") if force else ()
         Deployer.forPlaybooks(
-            ["playbooks/docsgen.yml", "playbooks/docs.yml"], tags, args,
-            self.verbose, self.dry_run
+            ["playbooks/docsgen.yml", "playbooks/docs.yml"],
+            tags,
+            args,
+            self.verbose,
+            self.dry_run,
         ).start()
-        webbrowser.open('http://localhost:8000')
+        webbrowser.open("http://localhost:8000")
 
     def status(self, state):
         Deployer.forPlaybook(
@@ -306,8 +310,8 @@ class Docs(Command):
             verbose=self.verbose,
             dry_run=self.dry_run,
         ).start()
-        if state == 'started':
-            webbrowser.open('http://localhost:8000')
+        if state == "started":
+            webbrowser.open("http://localhost:8000")
 
 
 def main(argv):

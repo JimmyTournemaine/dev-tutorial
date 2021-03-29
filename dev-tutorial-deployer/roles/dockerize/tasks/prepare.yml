@@ -15,7 +15,7 @@
     - "'linux' != deployer_host_system"
   tags: always
 
-- name: Generate environment files
+- name: Generate backend environment file
   template:
     src: environments/environment.api.ts.j2
     dest: "{{ deployer_local_workspace }}/dev-tutorial-api/src/environments/environment.ts"

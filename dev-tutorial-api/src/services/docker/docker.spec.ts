@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import * as fs from 'fs';
-import { debug } from 'debug';
 import { DockerService as docker } from './docker';
 import { DemuxStream } from './stream';
 import { environment } from '../../environments/environment';
+import { LoggerFactory } from '../logger/logger';
 
-const logger = debug('test:docker');
+const logger = LoggerFactory.getLogger('test:docker');
 
 describe('[IT] Docker Service', () => {
   describe('Docker service initialization', () => {
@@ -38,20 +38,20 @@ describe('[IT] Docker Service', () => {
 
     it('should start a tutorial container, then stop and remove it', async () => {
       // Start
-      logger('starting');
+      logger.debug('starting');
       const container = await docker.getInstance().run(tutoId);
       expect(container).not.to.equal(undefined);
       expect(container).to.have.property('id');
 
       // Check start status
-      logger('inspect');
+      logger.debug('inspect');
       const inspect = await container.inspect();
       expect(inspect).to.have.nested.property('State.Status').that.equals('running');
       expect(inspect).to.have.nested.property('State.Running').that.equals(true);
       expect(inspect).to.have.nested.property('State.Dead').that.equals(false);
 
       // Stop/Remove
-      logger('destroy');
+      logger.debug('destroy');
       await docker.getInstance().destroy(tutoId);
     });
   });

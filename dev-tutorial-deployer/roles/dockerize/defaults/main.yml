@@ -14,10 +14,7 @@ dockerize_force_app_container: "{{ dockerize_force_app or dockerize_force_contai
 
 # Expected state of the container : present or started
 dockerize_containers_state: started
-dockerize_containers_autoremove: yes
-
-# Should we wait for container initialization before moving to the next one
-dockerize_wait_for_init: yes
+dockerize_containers_autoremove: no
 
 # Containers environment variables
 dockerize_container_env_backend:
@@ -25,6 +22,8 @@ dockerize_container_env_backend:
 
 # Environment variables
 dockerize_api_production: yes
+dockerize_api_port: 3000
+dockerize_api_socket_port: 3001
 dockerize_api_docker: # depends of the os, see tasks/prepare.yml
 dockerize_api_mongodb: "mongodb://dev-tutorial-mongo-{{ deployer_env }}:27017/dev_tutorial_api"
 dockerize_api_token_access_expiresIn: 10
@@ -32,7 +31,6 @@ dockerize_api_token_refresh_expiresIn: 604800
 
 dockerize_app_production: yes
 dockerize_app_port: 4200
-dockerize_app_api_host: "http://dev-tutorial-api-{{ deployer_env }}"
-dockerize_app_api_port: 3000
-dockerize_app_socket_port: 3001
+dockerize_app_karma_port: 9876
+dockerize_app_api_host: "http://dev-tutorial-api"
 dockerize_app_disable_terminal: no

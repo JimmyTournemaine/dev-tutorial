@@ -1,12 +1,12 @@
 import { Socket } from 'socket.io';
-import * as debug from 'debug';
 import * as io from 'socket.io';
 import { ISocketService } from './socket-interface';
 import { SocketService } from './socket';
 import { CacheItemState } from '../docker/cache';
 import { IdentifiedSocket } from '../../middleware/auth';
+import { LoggerFactory } from '../logger/logger';
 
-const logger = debug('app:socket');
+const logger = LoggerFactory.getLogger('app:socket:manager');
 
 export interface ISocketManager {
   socket(sock: Socket): void;
@@ -34,7 +34,7 @@ export class SocketManager implements ISocketManager {
     const user = socket.ident.userId;
 
     if (this.services.has(user)) {
-      logger('Known user, joining existing room', { user, socket: socket.id });
+      logger.debug('Known user, joining existing room', { user, socket: socket.id });
       const service = this.services.get(user);
       // Switch sockets
       const oldSocket = service.socket;
@@ -46,7 +46,7 @@ export class SocketManager implements ISocketManager {
         }
       }
     } else {
-      logger('New user, creating service for socket', { user, socket: socket.id });
+      logger.debug('New user, creating service for socket', { user, socket: socket.id });
       this.services.set(user, new SocketService(socket));
     }
   }

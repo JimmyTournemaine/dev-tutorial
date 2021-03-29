@@ -1,6 +1,6 @@
-import * as debug from 'debug';
+import { LoggerFactory } from '../logger/logger';
 
-const logger = debug('app:hook');
+const logger = LoggerFactory.getLogger('app:hook');
 
 interface HookOptions {
   name: 'edit';
@@ -21,7 +21,7 @@ export class Hook {
   }
 
   async process(cmd: string): Promise<void> {
-    logger(`processing ${this.options.name}`);
+    logger.debug(`processing ${this.options.name}`);
     return this.options.action(this.options.regexp.exec(cmd));
   }
 }
