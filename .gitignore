@@ -27,8 +27,8 @@ report/
 /compose.spec
 ## Ansible
 .dockerignore
-Dockerfile*
-!/dev-tutorial-deployer/**/Dockerfile.*
+Dockerfile
+!/dev-tutorial-deployer/Dockerfile
 /*/src/environments/
 /dev-tutorial-app/src/proxy.conf.js
 docs/
