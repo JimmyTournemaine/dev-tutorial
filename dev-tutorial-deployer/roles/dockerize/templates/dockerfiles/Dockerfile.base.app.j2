@@ -1,6 +1,0 @@
-# {{ ansible_managed }}
-FROM node:15
-WORKDIR /usr/src/app/app-ui
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install

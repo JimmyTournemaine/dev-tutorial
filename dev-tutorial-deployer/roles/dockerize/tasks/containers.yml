@@ -1,7 +1,7 @@
 ---
 - name: Create the containers network
   docker_network:
-    name: "dev-tutorial-network-{{ deployer_env }}"
+    name: "dev-tutorial-network"
   tags:
     - build
     - api
@@ -15,10 +15,8 @@
     restart: "{{ dockerize_containers_state == 'started' and dockerize_force }}"
     auto_remove: "{{ dockerize_containers_autoremove }}"
     log_driver: none
-    ports:
-      - "27017:27017"
     networks:
-      - name: "dev-tutorial-network-{{ deployer_env }}"
+      - name: "dev-tutorial-network"
     networks_cli_compatible: no
   register: db_cont_metadata
   tags:
@@ -27,25 +25,25 @@
 
 - name: Create the backend container
   docker_container:
-    name: "dev-tutorial-api-{{ deployer_env }}"
-    image: "dev-tutorial-api-{{ dockerize_backend_dockerfile_type }}"
+    name: "dev-tutorial-api"
+    image: "dev-tutorial-api"
     state: "{{ dockerize_containers_state }}"
     restart: "{{ True in restart_conditions }}"
     auto_remove: "{{ dockerize_containers_autoremove }}"
-    command: "{{ dockerize_backend_command | default(omit) }}"
+    command: "{{ dockerize_backend_command }}"
     tty: yes
     volumes: "{{ volumes }}"
     ports:
-      - "3000:3000"
-      - "3001:3001"
+      - "{{ dockerize_api_port }}:{{ dockerize_api_port }}"
+      - "{{ dockerize_api_socket_port }}:{{ dockerize_api_socket_port }}"
     networks:
-      - name: "dev-tutorial-network-{{ deployer_env }}"
+      - name: "dev-tutorial-network"
     networks_cli_compatible: no
     env: "{{ dockerize_container_env_backend }}"
   vars:
     restart_conditions:
       - "{{ dockerize_containers_state == 'restarted' }}"
-      - "{{ dockerize_force_api_container }}"
+      - "{{ dockerize_force_api_container | bool }}"
       - "{{ backend_env is changed }}"
     default_volumes:
       - "{{ deployer_hosted_workspace }}/dev-tutorial-api:/usr/src/app/api"
@@ -57,24 +55,10 @@
     - build
     - api
 
-- name: Wait for backend inititalization
-  uri:
-    url: http://{{ dockerize_host }}:3000/api/tuto
-  register: _result
-  until: _result.status == 200
-  retries: 10
-  delay: 5
-  when:
-    - "dockerize_containers_state == 'started'"
-    - "dockerize_wait_for_init"
-  tags:
-    - build
-    - api
-
 - name: Create the frontend container
   docker_container:
-    name: "dev-tutorial-app-{{ deployer_env }}"
-    image: "dev-tutorial-app-{{ dockerize_frontend_dockerfile_type }}"
+    name: "dev-tutorial-app"
+    image: "dev-tutorial-app"
     state: "{{ dockerize_containers_state }}"
     restart: "{{ True in restart_conditions }}"
     auto_remove: "{{ dockerize_containers_autoremove }}"
@@ -85,30 +69,17 @@
       - "/usr/src/app/app-ui/node_modules"
     ports:
       - "{{ dockerize_app_port }}:{{ dockerize_app_port }}"
+      - "{{ dockerize_app_karma_port }}:{{ dockerize_app_karma_port }}"
     networks:
-      - name: "dev-tutorial-network-{{ deployer_env }}"
+      - name: "dev-tutorial-network"
     networks_cli_compatible: no
   vars:
     restart_conditions:
       - "{{ dockerize_containers_state == 'started' }}"
-      - "{{ dockerize_force_app_container }}"
+      - "{{ dockerize_force_app_container | bool }}"
       - "{{ frontend_env is changed }}"
       - "{{ frontend_proxy is changed }}"
   register: frontend_cont_metadata
-  tags:
-    - build
-    - app
-
-- name: Wait for frontend inititalization
-  uri:
-    url: http://{{ dockerize_host }}:4200
-  register: _result
-  until: _result.status == 200
-  retries: 15
-  delay: 30
-  when:
-    - "dockerize_containers_state == 'started'"
-    - "dockerize_wait_for_init"
   tags:
     - build
     - app

@@ -4,7 +4,7 @@
 
 ### Requirements
 
-* Python >= 2 (or using the compose bundle)
+* Python >= 2 (or use the compose bundle)
 * Docker Engine API >= 1.40
 
 * MacOS: a socat container will automatically start to expose the Docker daemon on port 2375
@@ -24,7 +24,7 @@ Here is the list of endpoints :
 * Application: [http://localhost:4200]
 * API Documentation: [http://localhost:4200/api-docs] (proxy) or [http://localhost:3000/api-docs] (direct link)
 
-The `dev` environment allow you to use direct links but any other environment could close the backend access.
+The development environment allow you to use direct links but any other environment could close the backend access.
 
 ## Development
 
@@ -36,7 +36,9 @@ The `dev` environment allow you to use direct links but any other environment co
 To force image rebuild, you can use the following command :
 
 ```bash
-./compose.py dockerize <dev|test> -a dockerize_force=yes
+./compose.py dockerize <env> -a dockerize_force=yes
+./compose.py dockerize <env> -a dockerize_force_api=yes
+./compose.py dockerize <env> -a dockerize_force_api_image=yes
 ```
 
 Many options are available to force some rebuilding or restarting. See `docker_force` variables in the deployer at `dev-tutorial-deployer/roles/dockerize/defaults/main.yml`.
@@ -59,13 +61,9 @@ To get the current API documentation, run `compose.py docs`
 rm -rf ./dev-tutorial-api/node_modules
 rm -rf ./dev-tutorial-app/node_modules
 
-# Dev containers
-docker cp dev-tutorial-api-dev:/usr/src/app/api/node_modules ./dev-tutorial-api/
-docker cp dev-tutorial-app-dev:/usr/src/app/app-ui/node_modules ./dev-tutorial-app/
-
-# Test containers
-docker cp dev-tutorial-api-test:/usr/src/app/api/node_modules ./dev-tutorial-api/
-docker cp dev-tutorial-app-test:/usr/src/app/app-ui/node_modules ./dev-tutorial-app/
+# Fetch dependencies
+docker cp dev-tutorial-api:/usr/src/app/api/node_modules ./dev-tutorial-api/
+docker cp dev-tutorial-app:/usr/src/app/app-ui/node_modules ./dev-tutorial-app/
 ```
 
 _Note : the `dockerize` script already retrieve dependencies after a successful `dev` environment startup._

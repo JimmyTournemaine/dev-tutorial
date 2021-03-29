@@ -25,32 +25,10 @@
     - app
     - dockerfiles
 
-- name: Get the backend Dockerfile template
-  set_fact:
-    dockerize_backend_dockerfile_type: "{{ item | basename | regex_replace('Dockerfile\\.([a-z]+)\\..+', '\\1') }}"
-  with_first_found:
-    - "{{ role_path }}/templates/dockerfiles/Dockerfile.{{ deployer_env }}.api.j2"
-    - "{{ role_path }}/templates/dockerfiles/Dockerfile.base.api.j2"
-  tags:
-    - build
-    - api
-    - dockerfiles
-
-- name: Get the frontend Dockerfile template
-  set_fact:
-    dockerize_frontend_dockerfile_type: "{{ item | basename | regex_replace('Dockerfile\\.([a-z]+)\\..+', '\\1') }}"
-  with_first_found:
-    - "{{ role_path }}/templates/dockerfiles/Dockerfile.{{ deployer_env }}.app.j2"
-    - "{{ role_path }}/templates/dockerfiles/Dockerfile.base.app.j2"
-  tags:
-    - build
-    - app
-    - dockerfiles
-
 - name: Generate the backend Dockerfile
   template:
-    src: "dockerfiles/Dockerfile.{{ dockerize_backend_dockerfile_type }}.api.j2"
-    dest: "{{ deployer_local_workspace }}/dev-tutorial-api/Dockerfile.{{ dockerize_backend_dockerfile_type }}"
+    src: "dockerfiles/Dockerfile.api.j2"
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-api/Dockerfile"
     mode: 0644
   register: backend_dockerfile
   tags:
@@ -60,8 +38,8 @@
 
 - name: Generate the frontend Dockerfile
   template:
-    src: "dockerfiles/Dockerfile.{{ dockerize_frontend_dockerfile_type }}.app.j2"
-    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/Dockerfile.{{ dockerize_frontend_dockerfile_type }}"
+    src: "dockerfiles/Dockerfile.app.j2"
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/Dockerfile"
     mode: 0644
   register: frontend_dockerfile
   tags:
@@ -73,9 +51,8 @@
 
 - name: Build the backend image
   docker_image:
-    name: "dev-tutorial-api-{{ dockerize_backend_dockerfile_type }}"
+    name: "dev-tutorial-api"
     build:
-      dockerfile: "Dockerfile.{{ dockerize_backend_dockerfile_type }}"
       path: "{{ deployer_local_workspace }}/dev-tutorial-api"
       pull: "{{ rebuild }}"
       rm: yes
@@ -94,9 +71,8 @@
 
 - name: Build the frontend image
   docker_image:
-    name: "dev-tutorial-app-{{ dockerize_frontend_dockerfile_type }}"
+    name: "dev-tutorial-app"
     build:
-      dockerfile: "Dockerfile.{{ dockerize_frontend_dockerfile_type }}"
       path: "{{ deployer_local_workspace }}/dev-tutorial-app"
       pull: "{{ rebuild }}"
       rm: yes

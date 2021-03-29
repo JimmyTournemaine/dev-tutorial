@@ -4,13 +4,13 @@ import * as cookieParser from 'cookie-parser';
 import * as morgan from 'morgan';
 import * as mongoose from 'mongoose';
 import { RequestListener } from 'http';
+import { Transform } from 'stream';
 import { environment } from './environments/environment';
 import { TutorialService as tuto } from './services/tutorial/tutorial';
 import { DockerService as docker } from './services/docker/docker';
 import { router as tutoRouter } from './routes/tutorial';
 import { router as userRouter } from './routes/user';
 import { LoggerFactory } from './services/logger/logger';
-import { Transform } from 'stream';
 
 const logger = LoggerFactory.getLogger('app:application');
 

@@ -1,7 +1,7 @@
 // dockerode peer dependency typed in @types
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Readable, Writable } from 'stream';
 import { Modem } from 'docker-modem';
+import { Readable, Writable } from 'stream';
 import * as Docker from 'dockerode';
 import * as tar from 'tar-stream';
 import * as path from 'path';
