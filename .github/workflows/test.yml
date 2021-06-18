@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - name: Run tests
-        run: ./bin/compose/compose.py dockerize ci
+        run: ./bin/compose/compose.py dockerize ci -v
       - name: Publish Test Report
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
