@@ -1,3 +1,6 @@
+import os
+import sys
+
 class Docker:
     def __init__(self, executer):
         self.executer = executer
@@ -30,6 +33,10 @@ class Docker:
 class DockerExecBuilder:
     interactive = False
     tty = False
+
+    def __init__(self):
+        if os.isatty(sys.stdout.fileno()):
+            self.set_tty().set_interactive()
 
     def set_container(self, container):
         self.container = container

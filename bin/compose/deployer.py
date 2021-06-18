@@ -74,7 +74,7 @@ class Deployer:
         builder = DockerRunBuilder()
         builder.set_autoremove().set_name(self.CONTAINER).set_image(
             self.IMAGE
-        ).set_daemon().set_tty().add_env("HOST_SYSTEM", sys.platform).add_env(
+        ).set_daemon().add_env("HOST_SYSTEM", sys.platform).add_env(
             "WORKSPACE_HOSTED", self.host_workspace
         ).add_env(
             "WORKSPACE_LOCAL", self.deployer_workspace
@@ -89,9 +89,8 @@ class Deployer:
         self.docker.run(builder)
 
     def execute(self, deployer_command_builder):
-
         builder = DockerExecBuilder()
-        builder.set_container(self.CONTAINER).set_tty().set_interactive().set_command(
+        builder.set_container(self.CONTAINER).set_command(
             deployer_command_builder.follow_docker_exec_context(
                 self.executer.exec_context
             ).build()

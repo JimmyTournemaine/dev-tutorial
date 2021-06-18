@@ -58,7 +58,7 @@ class ActionModule(ActionBase):
             image = client.images.get(image_name)
             time = parse(str(image.attrs["Created"]))
         except docker.errors.ImageNotFound:
-            time = datetime.fromtimestamp(0)
+            time = datetime.fromtimestamp(0, timezone.utc)
 
         return time
 
