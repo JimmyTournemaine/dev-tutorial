@@ -1,0 +1,7 @@
+---
+- name: Cleanup
+  import_tasks: cleanup.yml
+  tags: [never, cleanup]
+
+- name: Run the linter
+  import_tasks: lint.yml

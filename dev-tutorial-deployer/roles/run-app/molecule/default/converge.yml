@@ -1,0 +1,15 @@
+---
+- name: Converge
+  hosts: localhost
+  vars:
+    deployer_env: molecule
+    deployer_host_system: "{{ lookup('env', 'HOST_SYSTEM') }}"
+    deployer_local_workspace: "{{ lookup('env', 'WORKSPACE_LOCAL') }}"
+    deployer_hosted_workspace: "{{ lookup('env', 'WORKSPACE_HOSTED') }}"
+    run_app_image: dev-tutorial-app-molecule
+    run_app_container: dev-tutorial-app-molecule
+    run_app_api_host: dev-tutorial-api-molecule
+    run_app_command: yarn start --host 0.0.0.0 --no-progress
+  roles:
+    - role: run-common
+    - role: run-app

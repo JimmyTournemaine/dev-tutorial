@@ -1,0 +1,19 @@
+---
+- name: Generate the backend Dockerfile
+  template:
+    src: "Dockerfile.j2"
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-api/Dockerfile"
+    mode: 0644
+
+- name: Build the backend image
+  docker_image:
+    name: "{{ build_api_image }}"
+    build:
+      path: "{{ deployer_local_workspace }}/dev-tutorial-api"
+      pull: no
+      rm: yes
+    changes:
+      - package.json
+      - yarn.lock
+    state: present
+    source: build

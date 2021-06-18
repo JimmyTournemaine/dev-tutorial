@@ -1,0 +1,4 @@
+---
+deploy_app_image: "tzimy/dev-tutorial-app-prod"
+deploy_app_container: dev-tutorial-front
+deploy_app_network: dev-tutorial-network

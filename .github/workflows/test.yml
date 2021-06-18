@@ -4,31 +4,14 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
-      - uses: actions/setup-node@v2
-      - name: Prepare linters
-        run: |
-          ./compose.py dockerize ci -t prepare
-          yarn --cwd ./dev-tutorial-api install
-          yarn --cwd ./dev-tutorial-app install
-          echo '{}' > .eslintrc.json
-      - uses: nvuillam/mega-linter@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - name: Run tests
-        run: ./compose.py dockerize ci -s api
+        run: ./bin/compose/compose.py dockerize ci
       - name: Publish Test Report
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
-          files: "**/report/test-*.xml"
+          files: "**/report/TESTS-*.xml"

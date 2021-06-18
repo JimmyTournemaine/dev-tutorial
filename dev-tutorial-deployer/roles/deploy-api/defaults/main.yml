@@ -1,0 +1,5 @@
+---
+deploy_api_image: tzimy/dev-tutorial-api-prod
+deploy_api_container: dev-tutorial-api
+deploy_api_db_container: dev-tutorial-mongo-prod
+deploy_api_network: dev-tutorial-network

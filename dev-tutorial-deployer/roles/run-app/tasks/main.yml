@@ -1,0 +1,44 @@
+---
+# Setup the environment configuration
+
+- name: Check the environment configuration
+  template:
+    src: environment.ts.j2
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/src/environments/environment.ts"
+    mode: 0644
+  register: frontend_env
+  tags: prepare
+
+- name: Check the Angular proxy configuration
+  template:
+    src: proxy.conf.js.j2
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/src/proxy.conf.js"
+    mode: 0644
+  register: frontend_proxy
+  tags: prepare
+
+# Run the container
+
+- name: Create the frontend container
+  docker_container:
+    name: "{{ run_app_container }}"
+    image: "{{ run_app_image }}"
+    state: started
+    restart: "{{ True in restart_conditions }}"
+    auto_remove: yes
+    command: "{{ run_app_command | mandatory }}"
+    tty: yes
+    volumes:
+      - "{{ deployer_hosted_workspace }}/dev-tutorial-app:/usr/src/app/app-ui"
+      - "/usr/src/app/app-ui/node_modules"
+    ports:
+      - "{{ run_app_port }}:{{ run_app_port }}"
+      - "{{ run_app_karma_port }}:{{ run_app_karma_port }}"
+    networks:
+      - name: "{{ run_common_network }}"
+    networks_cli_compatible: no
+  vars:
+    restart_conditions:
+      - "{{ run_app_force | bool }}"
+      - "{{ frontend_env is changed }}"
+      - "{{ frontend_proxy is changed }}"

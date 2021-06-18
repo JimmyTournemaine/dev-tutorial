@@ -1,0 +1,3 @@
+---
+package_api_push: yes
+package_api_image: tzimy/dev-tutorial-api-prod

@@ -1,0 +1,34 @@
+---
+- name: Verify
+  hosts: localhost
+  pre_tasks:
+    - name: Add the future generated container
+      add_host:
+        name: dev-tutorial-api-molecule
+        ansible_connection: docker
+        ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Get docker host info
+      docker_host_info:
+        verbose_output: yes
+        containers: yes
+        containers_filters:
+          status: running
+      register: result
+
+    - name: Make sure that application containers are running
+      assert:
+        that:
+          - "'/dev-tutorial-api-molecule' in containers"
+          - "'/dev-tutorial-mongo-molecule' in containers"
+      vars:
+        containers: "{{ result.containers | map(attribute='Names') | flatten }}"
+
+    - name: Make sure the app starts
+      uri:
+        url: "http://localhost:3000/api/tuto"
+      register: _result
+      until: _result.status == 200
+      retries: 10
+      delay: 5
+      delegate_to: dev-tutorial-api-molecule

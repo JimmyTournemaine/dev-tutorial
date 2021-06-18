@@ -7,18 +7,27 @@
   "slides": [
     {
       "src": "markdown/1-bienvenue.md",
-      "validators": [{
-        "input": {"cmd": "touch", "args": ["/test.txt$/"]},
-        "creates": {"path": "/root/test.txt", "type": "file"}
-      }]
-    },{
+      "validators": [
+        {
+          "input": { "cmd": "touch", "args": ["/test.txt$/"] },
+          "creates": { "path": "/root/test.txt", "type": "file" }
+        }
+      ]
+    },
+    {
       "src": "markdown/2-file-edition.md",
-      "validators": [{
-        "input": {"cmd": "edit"}
-      }, {
-        "creates": {"path": "/root/test.txt", "type": "file", "minLength": 10}
-      }]
-      
+      "validators": [
+        {
+          "input": { "cmd": "edit" }
+        },
+        {
+          "creates": {
+            "path": "/root/test.txt",
+            "type": "file",
+            "minLength": 10
+          }
+        }
+      ]
     }
   ]
 }

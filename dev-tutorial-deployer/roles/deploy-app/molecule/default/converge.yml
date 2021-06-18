@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: localhost
+  roles:
+    - role: deploy-app
+      deploy_app_image: dev-tutorial-app-prod-molecule
+      deploy_app_container: dev-tutorial-front-molecule

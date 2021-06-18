@@ -1,0 +1,53 @@
+---
+- name: Prepare the local container
+  hosts: localhost
+  vars:
+    deployer_env: molecule
+    deployer_host_system: "{{ lookup('env', 'HOST_SYSTEM') }}"
+    deployer_local_workspace: "{{ lookup('env', 'WORKSPACE_LOCAL') }}"
+    deployer_hosted_workspace: "{{ lookup('env', 'WORKSPACE_HOSTED') }}"
+    build_api_image: dev-tutorial-api-molecule
+    run_api_image: dev-tutorial-api-molecule
+    run_api_container: dev-tutorial-api-molecule
+    run_api_command: yarn serve
+    run_api_token_access_secret: ThisIsAMoleculeAccessSecret
+    run_api_token_refresh_secret: ThisIsAMoleculeRefreshSecret
+  pre_tasks:
+    - name: Register the deployer
+      add_host:
+        name: deployer
+        ansible_connection: local
+        ansible_python_interpreter: /usr/bin/python3
+    - name: Register docker hosts
+      add_host:
+        name: "{{ item }}"
+        ansible_connection: docker
+        ansible_python_interpreter: /usr/bin/python3
+      loop:
+        - "{{ run_api_container }}"
+  roles:
+    - role: build-common
+      project_paths: ["{{ deployer_local_workspace }}/dev-tutorial-api"]
+    - role: build-api
+    - role: run-common
+    - role: run-api
+
+- name: Prepare the production packaging
+  hosts: dev-tutorial-api-molecule
+  vars:
+    deployer_local_workspace: "{{ lookup('env', 'WORKSPACE_LOCAL') }}"
+    package_api_push: no
+    package_api_image: dev-tutorial-api-prod-molecule
+  roles:
+    - role: package-api
+
+- name: Remove temporary objects to prevent conflicts
+  hosts: localhost
+  tasks:
+    - name: Remove temporary container
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - dev-tutorial-api-molecule
+        - dev-tutorial-mongo-molecule

@@ -1,0 +1,11 @@
+all:
+  hosts:
+    deployer:
+      deployer_env: test
+      run_api_command: yarn test
+      run_app_command: yarn test --no-progress
+      run_app_production: false
+      run_api_token_access_secret: esd5isvyy12g5sg3lorisb8n389kgktg
+      run_api_token_refresh_secret: 49ur5zzpocrqwfvtzjcvp89q7nlnqozf
+      run_api_env:
+        DEBUG: "server:*,app:access,docker:*"

@@ -18,13 +18,17 @@ test-results.xml
 # Tests
 report/
 .nyc_output/
+*.stryker-tmp
+
 ## Mega-Linter
 /.eslintrc.*
+
 ## Python
-/__pycache__
+__pycache__
 /build
 /dist
 /compose.spec
+
 ## Ansible
 .dockerignore
 Dockerfile

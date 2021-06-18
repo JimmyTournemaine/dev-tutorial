@@ -88,7 +88,7 @@ describe('Tutorial Service Testing', () => {
         done();
       });
     });
-    it('should get a null on unknown tutorial', (done) => {
+    it('should get a null on unknown tutorial (callback)', (done) => {
       const service = TutorialService.getInstance();
       void service.getTutorial('unknown', (err, tutorial) => {
         if (err) { done(err); return; }

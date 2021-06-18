@@ -1,0 +1,8 @@
+# Ansible
+ansible_connection: local
+ansible_python_interpreter: /usr/bin/python3
+
+# Deployer node
+deployer_host_system: "{{ lookup('env', 'HOST_SYSTEM') }}"
+deployer_local_workspace: "{{ lookup('env', 'WORKSPACE_LOCAL') }}"
+deployer_hosted_workspace: "{{ lookup('env', 'WORKSPACE_HOSTED') }}"

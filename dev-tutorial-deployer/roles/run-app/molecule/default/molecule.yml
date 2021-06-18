@@ -1,0 +1,10 @@
+---
+dependency:
+  name: galaxy
+  enabled: False
+platforms:
+  - name: instance
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

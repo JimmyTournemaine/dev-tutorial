@@ -1,0 +1,25 @@
+- name: Cleanup
+  hosts: localhost
+  tasks:
+    - name: Remove other containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - dev-tutorial-api
+        - dev-tutorial-api-molecule
+        - dev-tutorial-back-molecule
+        - dev-tutorial-mongo-dev
+        - dev-tutorial-mongo-test
+        - dev-tutorial-mongo-ci
+        - dev-tutorial-mongo-molecule
+
+    - name: Delete previous images
+      docker_image:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - dev-tutorial-api
+        - dev-tutorial-api-molecule
+        - dev-tutorial-api-prod
+        - dev-tutorial-api-prod-molecule

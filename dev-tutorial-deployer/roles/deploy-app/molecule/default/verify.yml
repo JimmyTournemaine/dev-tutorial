@@ -1,0 +1,38 @@
+---
+- name: Verify
+  hosts: localhost
+  vars:
+    front_container: dev-tutorial-front-molecule
+  pre_tasks:
+    - name: Add generated container
+      add_host:
+        name: "{{ front_container }}"
+        ansible_connection: docker
+        ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Get docker host info
+      docker_host_info:
+        verbose_output: yes
+        containers: yes
+        containers_filters:
+          status: running
+      register: result
+
+    - name: Make sure that application containers are running
+      assert:
+        that:
+          - "('/' + front_container) in containers"
+      vars:
+        containers: "{{ result.containers | map(attribute='Names') | flatten }}"
+
+    - name: Wait for frontend port
+      wait_for:
+        port: 80
+        timeout: 10
+        state: started
+      delegate_to: "{{ front_container }}"
+
+    - name: Make sure the app is started
+      uri:
+        url: "http://localhost/"
+      delegate_to: "{{ front_container }}"

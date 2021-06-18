@@ -1,0 +1,19 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Get docker host info
+      docker_host_info:
+        verbose_output: yes
+        images: yes
+      register: result
+
+    - name: Make sure that the image exist
+      assert:
+        that:
+          - "'dev-tutorial-app-molecule:latest' in images"
+      vars:
+        images: "{{ result.images | map(attribute='RepoTags') | flatten }}"

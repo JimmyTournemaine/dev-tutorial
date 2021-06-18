@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: localhost
+  roles:
+    - role: deploy-api
+      deploy_api_image: dev-tutorial-api-prod-molecule
+      deploy_api_container: dev-tutorial-back-molecule
+      deploy_api_db_container: dev-tutorial-mongo-molecule

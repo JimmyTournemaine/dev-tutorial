@@ -1,0 +1,2 @@
+---
+- import_playbook: ../../../build-app/molecule/default/converge.yml

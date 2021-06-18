@@ -1,0 +1,12 @@
+---
+run_api_image: dev-tutorial-api
+run_api_container: dev-tutorial-api
+run_api_db_container: "dev-tutorial-mongo-{{ deployer_env }}"
+run_api_env: {}
+run_api_force: no
+run_api_production: yes
+run_api_port: 3000
+run_api_socket_port: 3001
+run_api_mongodb: "mongodb://{{ run_api_db_container }}:27017/dev_tutorial_api"
+run_api_token_access_expiresIn: 120
+run_api_token_refresh_expiresIn: 604800

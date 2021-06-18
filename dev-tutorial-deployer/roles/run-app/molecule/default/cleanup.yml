@@ -1,0 +1,15 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Remove the containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - dev-tutorial-app-molecule
+
+- import_playbook: ../../../build-app/molecule/default/cleanup.yml

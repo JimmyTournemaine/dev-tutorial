@@ -1,0 +1,10 @@
+---
+- name: Stop the linter container
+  docker_container:
+    name: megalinter
+    state: absent
+
+- name: Cleanup lint report
+  file:
+    path: "{{ deployer_local_workspace }}/report"
+    state: absent

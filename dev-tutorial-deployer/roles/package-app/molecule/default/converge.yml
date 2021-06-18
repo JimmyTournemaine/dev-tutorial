@@ -1,0 +1,23 @@
+---
+- name: Setup host
+  hosts: localhost
+  tasks:
+    - name: Add deployer container to inventory
+      add_host:
+        name: deployer
+        ansible_connection: local
+      changed_when: False
+
+    - name: Add prepared container to inventory
+      add_host:
+        name: dev-tutorial-app-molecule
+        ansible_connection: docker
+        ansible_python_interpreter: /usr/bin/python3
+      changed_when: False
+
+- name: Converge
+  hosts: dev-tutorial-app-molecule
+  roles:
+    - role: package-app
+      package_app_push: no
+      package_app_image: dev-tutorial-app-prod-molecule

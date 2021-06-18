@@ -1,0 +1,15 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Destroy images
+      docker_image:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - ansible
+        - dev
+        - git

@@ -1,0 +1,11 @@
+---
+- name: Remove generated files
+  file:
+    path: "{{ deployer_local_workspace }}/dev-tutorial-app/Dockerfile"
+    state: absent
+
+- name: Remove the local image
+  docker_image:
+    name: "{{ build_app_image }}"
+    state: absent
+    force_absent: yes

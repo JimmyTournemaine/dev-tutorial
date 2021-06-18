@@ -1,6 +1,6 @@
 ---
 - name: Expose the project documentation
-  hosts: localhost
+  hosts: deployer
   tasks:
     - name: Manage the docs server
       docker_container:

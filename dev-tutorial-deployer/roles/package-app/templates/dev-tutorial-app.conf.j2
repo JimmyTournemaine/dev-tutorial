@@ -1,0 +1,18 @@
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    location /api {
+        proxy_pass http://{{ package_app_api_container }}:3000/api;
+    }
+
+    location /socket.io {
+        proxy_pass http://{{ package_app_api_container }}:3001/socket.io;
+    }
+
+    location / {
+        root   /usr/share/nginx/dev-tutorial-app;
+        try_files $uri $uri/ /index.html =404;
+    }
+}

@@ -1,0 +1,47 @@
+---
+- name: Make sure rsync is installed
+  package:
+    name: rsync
+
+- name: Make sure rsync is intalled on the deployer
+  package:
+    name: rsync
+  delegate_to: deployer
+
+- name: Build the production directory
+  command:
+    cmd: yarn ng build --prod
+    chdir: /usr/src/app/app-ui
+  changed_when: False # always changed, there is a change if the next step is "changed" as well.
+
+- name: Fetch the package
+  synchronize:
+    src: /usr/src/app/app-ui/dist/dev-tutorial-app
+    dest: /tmp/app
+    mode: pull
+
+- name: Build the production image
+  delegate_to: deployer
+  block:
+    - name: Generate the Dockerfile
+      template:
+        src: Dockerfile.j2
+        dest: /tmp/app/Dockerfile
+      vars:
+        app_package: dev-tutorial-app
+
+    - name: Generate the NGINX configuration
+      template:
+        src: dev-tutorial-app.conf.j2
+        dest: /tmp/app/dev-tutorial-app.conf
+
+    - name: Build the image
+      docker_image:
+        name: "{{ package_app_image }}"
+        build:
+          path: /tmp/app
+          pull: no
+        push: "{{ package_app_push | bool }}"
+        source: build
+        changes:
+          - dev-tutorial-app.conf

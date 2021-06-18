@@ -1,0 +1,41 @@
+---
+- name: Verify
+  hosts: localhost
+  vars:
+    back_container: dev-tutorial-back-molecule
+  pre_tasks:
+    - name: Add generated container
+      add_host:
+        name: "{{ back_container }}"
+        ansible_connection: docker
+        ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Get docker host info
+      docker_host_info:
+        verbose_output: yes
+        containers: yes
+        containers_filters:
+          status: running
+      register: result
+
+    - name: Make sure the application containers are running
+      assert:
+        that:
+          - "('/' + back_container) in containers"
+      vars:
+        containers: "{{ result.containers | map(attribute='Names') | flatten }}"
+
+    - name: Wait for frontend port
+      wait_for:
+        port: "{{ item }}"
+        timeout: 10
+        state: started
+      loop:
+        - 3000
+        - 3001
+      delegate_to: "{{ back_container }}"
+
+    - name: Make sure the app is started
+      uri:
+        url: "http://localhost:3000/api/tuto"
+      delegate_to: "{{ back_container }}"

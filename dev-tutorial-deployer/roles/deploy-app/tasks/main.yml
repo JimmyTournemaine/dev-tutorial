@@ -1,0 +1,17 @@
+---
+- name: Pull the production image
+  docker_image:
+    name: "{{ deploy_app_image }}"
+    source: pull
+
+- name: Deploy the production image
+  docker_container:
+    name: "{{ deploy_app_container }}"
+    image: "{{ deploy_app_image }}"
+    state: started
+    auto_remove: yes
+    ports:
+      - "80:80"
+    networks:
+      - name: "{{ deploy_app_network }}"
+    networks_cli_compatible: no

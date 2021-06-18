@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: localhost
+  vars:
+    deployer_env: molecule
+    deployer_host_system: "{{ lookup('env', 'HOST_SYSTEM') }}"
+    deployer_local_workspace: "{{ lookup('env', 'WORKSPACE_LOCAL') }}"
+    deployer_hosted_workspace: "{{ lookup('env', 'WORKSPACE_HOSTED') }}"
+    run_api_image: dev-tutorial-api-molecule
+    run_api_container: dev-tutorial-api-molecule
+    run_api_command: yarn serve
+    run_api_token_access_secret: ThisIsAMoleculeAccessSecret
+    run_api_token_refresh_secret: ThisIsAMoleculeRefreshSecret
+  roles:
+    - role: run-common
+    - role: run-api

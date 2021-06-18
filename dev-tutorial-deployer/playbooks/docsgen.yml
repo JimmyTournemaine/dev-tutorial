@@ -1,8 +1,12 @@
 ---
 - name: Generate the project documentation
-  hosts: localhost
+  hosts: deployer
   tags: generate
   pre_tasks:
+    - name: Pull a node image
+      docker_image:
+        name: node:14
+        source: pull
     - name: Run a node container
       docker_container:
         name: dev-tutorial-docsgen

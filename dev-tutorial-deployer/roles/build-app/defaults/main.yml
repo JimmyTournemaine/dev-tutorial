@@ -1,0 +1,3 @@
+---
+build_app_image: dev-tutorial-app
+build_app_force: no

@@ -1,0 +1,57 @@
+---
+- name: Run the containers
+  hosts: deployer
+  roles:
+    - { role: run-common, tags: [api, app] }
+    - { role: run-api, tags: api }
+    - { role: run-app, tags: app }
+
+- name: Run backend tests
+  hosts: dev-tutorial-api
+  tags: api
+  tasks:
+    - name: Run CI tests
+      command: yarn test-ci
+      ignore_errors: yes
+      register: test_results
+
+- name: Run frontend tests
+  hosts: dev-tutorial-app
+  tags: app
+  tasks:
+    - name: Get Google Chrome repository signin key
+      apt_key:
+        url: https://dl.google.com/linux/linux_signing_key.pub
+        state: present
+
+    - name: Get Google Chrome repository
+      apt_repository:
+        repo: deb http://dl.google.com/linux/chrome/deb/ stable main
+        state: present
+        filename: google-chrome
+
+    - name: Install Google Chrome headless
+      apt:
+        name: google-chrome-stable
+        state: present
+
+    - name: Run CI tests
+      command: yarn test-ci --no-progress
+      ignore_errors: yes
+      register: test_results
+
+- name: Remove the test containers
+  hosts: dev-tutorial-api,dev-tutorial-app
+  tasks:
+    - name: Stop the containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - dev-tutorial-api
+        - dev-tutorial-app
+
+    - name: Failed on tests errors
+      fail:
+        msg: "{{ test_results.stderr }}"
+      when: "test_results is failed"

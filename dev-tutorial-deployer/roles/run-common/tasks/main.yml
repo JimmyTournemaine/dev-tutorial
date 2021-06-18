@@ -1,0 +1,4 @@
+---
+- name: Create the containers network
+  docker_network:
+    name: "{{ run_common_network }}"

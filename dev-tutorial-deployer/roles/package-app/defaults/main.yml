@@ -1,0 +1,4 @@
+---
+package_app_push: yes
+package_app_image: tzimy/dev-tutorial-app-prod
+package_app_api_container: dev-tutorial-api
