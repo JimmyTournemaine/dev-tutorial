@@ -84,7 +84,7 @@ class Deployer:
             f"{self.host_workspace}/dev-tutorial-deployer", "/etc/ansible"
         ).add_volume(
             self.host_workspace, self.deployer_workspace
-        )
+        ).set_command("sleep infinity")
 
         self.docker.run(builder)
 
