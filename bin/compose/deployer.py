@@ -57,11 +57,12 @@ class Deployer:
             cmd += " --password $DOCKER_TOKEN"
             self.executer.exec_context.set_next_verbose(False)
 
+        if login is None or passwd is None:
+            builder.set_interactive().set_tty()
+
         self.docker.exec(
             DockerExecBuilder()
             .set_container(self.CONTAINER)
-            .set_interactive()
-            .set_tty()
             .set_command(cmd)
         )
 
