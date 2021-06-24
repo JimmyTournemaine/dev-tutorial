@@ -7,9 +7,11 @@
   register: tutorial_directories
 
 - name: Build the tutorials images
-  docker_build_on_changes:
+  docker_image:
     name: "{{ item | basename }}"
-    path: "{{ item }}"
+    build:
+      path: "{{ item }}"
+      pull: no
     state: present
     changes:
       - package.json

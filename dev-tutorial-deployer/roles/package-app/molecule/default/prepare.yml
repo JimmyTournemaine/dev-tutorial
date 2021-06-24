@@ -1,3 +1,5 @@
 ---
 - import_playbook: ../../../build-app/molecule/default/converge.yml
 - import_playbook: ../../../run-app/molecule/default/converge.yml
+  no_log: "{{ molecule_no_log }}"
+  gather_facts: no

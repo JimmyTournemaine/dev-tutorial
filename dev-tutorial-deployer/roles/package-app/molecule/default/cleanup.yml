@@ -2,13 +2,14 @@
 - name: Destroy
   hosts: localhost
   connection: local
-  gather_facts: false
+  gather_facts: no
   no_log: "{{ molecule_no_log }}"
   tasks:
     - name: Destroy images
       docker_image:
         name: dev-tutorial-app-prod-molecule
         state: absent
+        force_absent: yes
 
 - import_playbook: ../../../run-app/molecule/default/cleanup.yml
 - import_playbook: ../../../build-app/molecule/default/cleanup.yml

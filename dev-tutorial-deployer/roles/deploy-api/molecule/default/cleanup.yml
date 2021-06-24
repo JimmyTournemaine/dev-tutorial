@@ -1,5 +1,7 @@
 - name: Cleanup
   hosts: localhost
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
   tasks:
     - name: Remove other containers
       docker_container:

@@ -82,9 +82,7 @@ class Deployer:
             "/var/run/docker.sock", "/var/run/docker.sock"
         ).add_volume(
             f"{self.host_workspace}/dev-tutorial-deployer", "/etc/ansible"
-        ).add_volume(
-            self.host_workspace, self.deployer_workspace
-        ).set_command("sleep infinity")
+        ).add_network("host").set_command("sleep infinity")
 
         self.docker.run(builder)
 
@@ -135,7 +133,7 @@ class DarwinDeployer(Deployer):
             DockerRunBuilder()
             .set_daemon()
             .set_name("tcp-connect")
-            .bind_port("2375")
+            .bind_port(2375)
             .add_volume("/var/run/docker.sock", "/var/run/docker.sock")
             .set_image("alpine/socat")
             .set_command(
@@ -203,15 +201,15 @@ class DeployerPlaybookCommandBuilder(DeployerCommandBuilder):
         self.check = False
 
     def add_playbook(self, name):
-        self.playbooks.append(f"playbooks/{name}.yml")
+        self.playbooks.append(f"{name}.yml")
         return self
 
     def add_inventory(self, name):
         # Add the default inventory first
         if len(self.inventories) == 0:
-            self.inventories.append("hosts.yml")
+            self.inventories.append("../hosts.yml")
 
-        self.inventories.append(f"inventories/{name}.yml")
+        self.inventories.append(f"../inventories/{name}.yml")
         return self
 
     def add_tag(self, tag):

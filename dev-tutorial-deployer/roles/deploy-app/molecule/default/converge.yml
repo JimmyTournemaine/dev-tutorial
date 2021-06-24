@@ -1,6 +1,7 @@
 ---
 - name: Converge
   hosts: localhost
+  no_log: "{{ molecule_no_log }}"
   roles:
     - role: deploy-app
       deploy_app_image: dev-tutorial-app-prod-molecule

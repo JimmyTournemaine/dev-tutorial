@@ -2,6 +2,11 @@
 - name: Expose the project documentation
   hosts: deployer
   tasks:
+    - name: Pull the server image
+      docker_image:
+        name: nginx
+        source: pull
+
     - name: Manage the docs server
       docker_container:
         name: dev-tutorial-docs

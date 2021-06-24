@@ -3,7 +3,8 @@
 
 - name: Verify
   hosts: localhost
-  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  gather_facts: no
   tasks:
     - name: Get docker host info
       docker_host_info:

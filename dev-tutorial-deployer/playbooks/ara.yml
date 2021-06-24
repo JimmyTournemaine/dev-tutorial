@@ -1,0 +1,65 @@
+---
+- name: ARA setup
+  hosts: deployer
+  vars:
+    ara_port: 12000
+  tasks:
+    - name: Get the ARA server image
+      docker_image:
+        name: quay.io/recordsansible/ara-api:latest
+        source: pull
+    
+    - name: Start the ARA server
+      docker_container:
+        name: dev-tutorial-deployer-ara
+        image: quay.io/recordsansible/ara-api:latest
+        auto_remove: yes
+        ports:
+          - "{{ ara_port }}:8000"
+
+    - name: Make sure ARA server is accessible
+      uri:
+        url: "http://localhost:{{ ara_port }}"
+        status_code: 200
+      
+    - name: Install ARA
+      pip:
+        name: ara
+        state: latest
+      
+    - name: Copy the global ansible configuration
+      copy:
+        src: /etc/ansible/ansible.cfg
+        dest: ~/.ansible.cfg
+
+    - name: Setup the ara callback
+      ini_file:
+        path: ~/.ansible.cfg
+        section: defaults
+        option: callback_plugins
+        value: "{{ lookup('pipe', 'python3 -m ara.setup.callback_plugins') }}"
+
+    - name: Setup the ara properties
+      ini_file:
+        path: ~/.ansible.cfg
+        section: ara
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+      with_dict:
+        api_client: http
+        api_server: "http://127.0.0.1:{{ ara_port }}"
+
+- name: ARA cleanup
+  hosts: deployer
+  tags: [never, cleanup]
+  tasks:
+    - name: Remove the ARA server
+      docker_container:
+        name: dev-tutorial-deployer-ara
+        state: absent
+      tags: cleanup
+
+    - name: Remove the Ansible configuration
+      file:
+        path: ~/.ansible.cfg
+        state: absent

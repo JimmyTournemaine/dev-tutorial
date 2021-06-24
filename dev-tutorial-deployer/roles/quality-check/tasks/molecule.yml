@@ -1,0 +1,25 @@
+---
+- name: Ensure no_log is set
+  lineinfile:
+    path: "{{ item }}"
+    regexp: "^  no_log:"
+    line: !unsafe '  no_log: "{{ molecule_no_log }}"'
+    insertafter: "^  hosts:"
+  when: "(lookup('file', item) | from_yaml | first).hosts is defined"
+  with_items:
+    - "{{ '/etc/ansible/roles/*/molecule/*/cleanup.yml' | fileglob }}"
+    - "{{ '/etc/ansible/roles/*/molecule/*/converge.yml' | fileglob }}"
+    - "{{ '/etc/ansible/roles/*/molecule/*/prepare.yml' | fileglob }}"
+    - "{{ '/etc/ansible/roles/*/molecule/*/verify.yml' | fileglob }}"
+
+- name: Ensure gather_facts is deactivate (except for converge)
+  lineinfile:
+    path: "{{ item }}"
+    regexp: "^  gather_facts:"
+    line: !unsafe "  gather_facts: no"
+    insertafter: "^  hosts:"
+  when: "(lookup('file', item) | from_yaml | first).hosts is defined"
+  with_items:
+    - "{{ '/etc/ansible/roles/*/molecule/*/cleanup.yml' | fileglob }}"
+    - "{{ '/etc/ansible/roles/*/molecule/*/prepare.yml' | fileglob }}"
+    - "{{ '/etc/ansible/roles/*/molecule/*/verify.yml' | fileglob }}"

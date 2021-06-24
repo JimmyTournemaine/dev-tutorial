@@ -88,7 +88,7 @@ class ActionModule(ActionBase):
         super(ActionModule, self).run(tmp, task_vars)
 
         image_name = module_args["name"]
-        is_build = "build" == module_args["source"]
+        is_build = "build" == module_args.get("source", None)
 
         if is_build:
             image_created_at = self.image_timestamp(image_name)

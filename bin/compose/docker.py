@@ -81,8 +81,9 @@ class DockerRunBuilder:
         self.autoremove = True
         self.env = {}
         self.volumes = {}
-        self.ports = list()
+        self.ports = {}
         self.command = ""
+        self.networks = []
 
     def set_name(self, name):
         self.name = name
@@ -120,8 +121,14 @@ class DockerRunBuilder:
         self.volumes[source] = target
         return self
 
-    def bind_port(self, port):
-        self.ports.append(port)
+    def add_network(self, network_name):
+        self.networks.append(network_name)
+        return self
+
+    def bind_port(self, port, target=None):
+        if target is None:
+            target = port
+        self.ports[target] = port
         return self
 
     def build(self):
@@ -153,8 +160,11 @@ class DockerRunBuilder:
         for key, value in self.volumes.items():
             args += f"-v {key}:{value} "
 
-        for port in self.ports:
-            args += f"-p {port}:{port} "
+        for port, target in self.ports.items():
+            args += f"-p {port}:{target} "
+
+        for network in self.networks:
+            args+= f"--network={network} "
 
         # Build the command
         return f"docker run {args} {self.image} {self.command}"

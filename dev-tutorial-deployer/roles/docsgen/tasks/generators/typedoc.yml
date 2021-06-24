@@ -11,4 +11,4 @@
       --hideGenerator
       --readme none
       src
-    creates: "../docs/html/tsdoc-{{ task_item }}"
+    # creates: "../docs/html/tsdoc-{{ task_item }}"

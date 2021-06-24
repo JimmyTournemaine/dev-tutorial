@@ -47,7 +47,8 @@
 
 - name: Stop the test container
   hosts: localhost
-  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  gather_facts: no
   tasks:
     - name: Stop the test container
       docker_container:

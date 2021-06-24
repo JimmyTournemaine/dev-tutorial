@@ -40,8 +40,16 @@
       ignore_errors: yes
       register: test_results
 
-- name: Remove the test containers
+- name: Check results
   hosts: dev-tutorial-api,dev-tutorial-app
+  tasks:
+    - name: Fail on tests errors
+      fail:
+        msg: "{{ test_results.stderr }}"
+      when: "test_results is failed"
+
+- name: Remove the test containers
+  hosts: deployer
   tasks:
     - name: Stop the containers
       docker_container:
@@ -50,8 +58,3 @@
       loop:
         - dev-tutorial-api
         - dev-tutorial-app
-
-    - name: Failed on tests errors
-      fail:
-        msg: "{{ test_results.stderr }}"
-      when: "test_results is failed"

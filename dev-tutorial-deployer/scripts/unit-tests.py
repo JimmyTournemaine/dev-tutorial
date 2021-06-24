@@ -79,6 +79,10 @@ basedir = base_directory()
 roles = list_roles(basedir)
 report = Report()
 
+# Setup env variable (molecule do not load custom plugins) 
+os.environ["ANSIBLE_ACTION_PLUGINS"] = "/etc/ansible/plugins/action"
+os.environ["ANSIBLE_FILTER_PLUGINS"] = "/etc/ansible/plugins/filter"
+
 # Is a roles list specified ? Test all otherwise
 selected_roles = sys.argv[1:]
 if len(selected_roles) > 0:

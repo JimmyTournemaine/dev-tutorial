@@ -1,6 +1,8 @@
 ---
 - name: Verify
   hosts: localhost
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
   pre_tasks:
     - name: Add the future generated container
       add_host:

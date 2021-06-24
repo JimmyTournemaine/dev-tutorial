@@ -17,6 +17,7 @@
 
 - name: Converge
   hosts: dev-tutorial-app-molecule
+  no_log: "{{ molecule_no_log }}"
   roles:
     - role: package-app
       package_app_push: no
