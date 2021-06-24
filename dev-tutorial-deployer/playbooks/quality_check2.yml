@@ -1,7 +1,0 @@
----
-- name: Prepare the local development environment
-  hosts: deployer
-  tasks:
-    - import_role:
-        name: quality-check
-        tasks_from: molecule
