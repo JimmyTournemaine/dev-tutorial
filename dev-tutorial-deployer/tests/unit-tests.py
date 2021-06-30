@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import abc
+from genericpath import exists
+import logging
 import os
 import sys
 
@@ -25,6 +27,23 @@ def list_roles(basedir):
 def role_path(basedir, role_name):
     return f"{basedir}/../roles/{role_name}"
 
+def symlink(src, dest):
+    if not os.path.exists(src):
+        raise FileNotFoundError(f"{src} does not exist")
+    if os.path.exists(dest):
+        logging.warning(f"'{dest}' already exists")
+    else:
+        # Make the symlink relative (to not brake volume host)
+        cwd = os.getcwd()
+        dest_wd = os.path.dirname(dest) 
+        source = os.path.relpath(src, dest_wd)
+        destination = os.path.relpath(dest, dest_wd)
+
+        logging.info(f" from {dest_wd}, {source} -> {destination}")
+        os.chdir(dest_wd)
+        os.symlink(source, destination)
+        os.chdir(cwd)
+
 
 def run_molecule(role_path, subcommand):
     scenario_name = None  # --all
@@ -39,14 +58,14 @@ def run_molecule(role_path, subcommand):
     basedir = base_directory()
     
     # Merge group_vars
-    for group_var in os.listdir(f"../group_vars"):
-        os.symlink(f"{basedir}/../group_vars/{group_var}", f"{basedir}/group_vars/{group_var}")
+    for group_var in os.listdir(f"{basedir}/../group_vars"):
+        symlink(f"{basedir}/../group_vars/{group_var}", f"{basedir}/group_vars/{group_var}")
 
     # Copy the standard molecule.yml in scenarios that haven't one
     for scenario in os.listdir(f"{role_path}/molecule/"):
         scenario_path = f"{role_path}/molecule/{scenario}"
-        if os.path.isdir(scenario_path) and "molecule.yml" not in os.listdir(scenario_path):
-            os.symlink(f"{basedir}/molecule.yml", f"{scenario_path}/molecule.yml")
+        if (os.path.isdir(scenario_path)):
+            symlink(f"{basedir}/molecule.yml", f"{scenario_path}/molecule.yml")
 
     # Run
     os.chdir(role_path)
@@ -86,7 +105,6 @@ class TapPrinter(ReportPrinter):
         with open(self.report_path, "w") as f:
             f.write(f"1..{len(roles)}\n")
             f.write("\n".join(report.results))
-
 
 basedir = base_directory()
 roles = list_roles(basedir)
