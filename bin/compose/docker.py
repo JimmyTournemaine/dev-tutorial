@@ -31,10 +31,10 @@ class Docker:
 
 
 class DockerExecBuilder:
-    interactive = False
-    tty = False
-
     def __init__(self):
+        self.interactive = False
+        self.tty = False
+
         if os.isatty(sys.stdout.fileno()):
             self.set_tty().set_interactive()
 

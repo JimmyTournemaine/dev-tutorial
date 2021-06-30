@@ -1,6 +1,5 @@
 all:
   hosts:
-    # The local deployer itself
     deployer:
       deployer_env: prod
       run_api_token_access_secret: lagv9f6whb4yd6oiyqxxabb2f4u0prw0
@@ -10,7 +9,4 @@ all:
   children:
     frontend:
       hosts:
-        # The application frontend
         dev-tutorial-front:
-          ansible_connection: docker
-          ansible_python_interpreter: /usr/bin/python3

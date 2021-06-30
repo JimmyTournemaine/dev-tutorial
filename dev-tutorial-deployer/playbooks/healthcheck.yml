@@ -20,7 +20,7 @@
         url: "http://localhost:3000/api/tuto"
 
 - name: Backend applications healthcheck
-  hosts: frontend
+  hosts: frontends
   tags: app
   tasks:
     - name: Wait for frontend application ports

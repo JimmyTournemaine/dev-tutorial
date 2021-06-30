@@ -7,7 +7,7 @@ platforms:
 provisioner:
   name: ansible
   ansible_args:
-    - --inventory=/etc/ansible/hosts.yml
+    - --inventory=/etc/ansible/inventories/molecule.yml
   env:
     ANSIBLE_ACTION_PLUGINS: /etc/ansible/plugins/action
     ANSIBLE_FILTER_PLUGINS: /etc/ansible/plugins/filter

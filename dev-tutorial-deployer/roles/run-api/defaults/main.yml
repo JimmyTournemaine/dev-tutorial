@@ -1,7 +1,11 @@
 ---
-run_api_image: dev-tutorial-api
-run_api_container: dev-tutorial-api
-run_api_db_container: "dev-tutorial-mongo-{{ deployer_env }}"
+run_api_image: "{{ deployer_image_api }}"
+run_api_container: "{{ deployer_container_api }}"
+run_api_db_image: "{{ deployer_image_db }}"
+run_api_db_container: "{{ deployer_container_db }}"
+run_api_networks:
+  - name: "{{ deployer_network_db }}"
+  - name: "{{ deployer_network_api }}"
 run_api_env: {}
 run_api_force: no
 run_api_production: yes

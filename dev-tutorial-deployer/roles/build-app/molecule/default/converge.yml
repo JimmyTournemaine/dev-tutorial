@@ -2,12 +2,6 @@
 - name: Converge
   hosts: localhost
   no_log: "{{ molecule_no_log }}"
-  vars:
-    deployer_env: molecule
-    deployer_host_system: "{{ lookup('env', 'HOST_SYSTEM') }}"
-    deployer_local_workspace: "{{ lookup('env', 'WORKSPACE_LOCAL') }}"
-    deployer_hosted_workspace: "{{ lookup('env', 'WORKSPACE_HOSTED') }}"
-    build_app_image: dev-tutorial-app-molecule
   roles:
     - role: build-common
       project_paths:

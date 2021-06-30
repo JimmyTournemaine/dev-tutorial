@@ -13,8 +13,5 @@ all:
   children:
     frontend:
       hosts:
-        # The local dev application frontend
         dev-tutorial-app:
-          ansible_connection: docker
-          ansible_python_interpreter: /usr/bin/python3
           healthcheck_app_port: 4200

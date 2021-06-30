@@ -19,7 +19,6 @@ coverage/
 # Tests
 report/
 .nyc_output/
-*.stryker-tmp
 
 ## Mega-Linter
 /.eslintrc.*

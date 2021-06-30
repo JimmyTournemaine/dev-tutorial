@@ -36,6 +36,19 @@ def run_molecule(role_path, subcommand):
         "driver_name": DEFAULT_DRIVER,
     }
 
+    basedir = base_directory()
+    
+    # Merge group_vars
+    for group_var in os.listdir(f"../group_vars"):
+        os.symlink(f"{basedir}/../group_vars/{group_var}", f"{basedir}/group_vars/{group_var}")
+
+    # Copy the standard molecule.yml in scenarios that haven't one
+    for scenario in os.listdir(f"{role_path}/molecule/"):
+        scenario_path = f"{role_path}/molecule/{scenario}"
+        if os.path.isdir(scenario_path) and "molecule.yml" not in os.listdir(scenario_path):
+            os.symlink(f"{basedir}/molecule.yml", f"{scenario_path}/molecule.yml")
+
+    # Run
     os.chdir(role_path)
     base.execute_cmdline_scenarios(scenario_name, args, command_args)
 

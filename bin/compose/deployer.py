@@ -1,6 +1,6 @@
 import os
 import sys
-
+from abc import ABC, abstractmethod
 from docker import Docker, DockerExecBuilder, DockerRunBuilder
 
 
@@ -57,14 +57,13 @@ class Deployer:
             cmd += " --password $DOCKER_TOKEN"
             self.executer.exec_context.set_next_verbose(False)
 
+        builder = DockerExecBuilder()
+        builder.set_container(self.CONTAINER).set_command(cmd)
+        
         if login is None or passwd is None:
             builder.set_interactive().set_tty()
 
-        self.docker.exec(
-            DockerExecBuilder()
-            .set_container(self.CONTAINER)
-            .set_command(cmd)
-        )
+        self.docker.exec(builder)
 
     def stop(self):
         self.executer.exec_context.set_next_exit_on_error(False)
@@ -72,7 +71,7 @@ class Deployer:
 
     def start(self):
         builder = DockerRunBuilder()
-        builder.set_autoremove().set_name(self.CONTAINER).set_image(
+        builder.set_name(self.CONTAINER).set_image(
             self.IMAGE
         ).set_daemon().add_env("HOST_SYSTEM", sys.platform).add_env(
             "WORKSPACE_HOSTED", self.host_workspace
@@ -82,6 +81,8 @@ class Deployer:
             "/var/run/docker.sock", "/var/run/docker.sock"
         ).add_volume(
             f"{self.host_workspace}/dev-tutorial-deployer", "/etc/ansible"
+        ).add_volume(
+            self.host_workspace, self.deployer_workspace
         ).add_network("host").set_command("sleep infinity")
 
         self.docker.run(builder)
@@ -160,10 +161,11 @@ class DeployerFactory:
         return classname(executer)
 
 
-class DeployerCommandBuilder:
+class DeployerCommandBuilder(ABC):
     def __init__(self):
         self.login_required = False
 
+    @abstractmethod
     def build(self):
         pass
 
@@ -186,7 +188,7 @@ class DeployerShellCommandBuilder(DeployerCommandBuilder):
     def build(self):
         return self.command
 
-    def follow_docker_exec_context(self, exec_context):
+    def follow_docker_exec_context(self, _):
         return self
 
 

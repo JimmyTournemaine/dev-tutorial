@@ -1,8 +1,6 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
 - name: Verify
-  hosts: localhost
+  hosts: deployer
   no_log: "{{ molecule_no_log }}"
   gather_facts: no
   tasks:
@@ -15,6 +13,6 @@
     - name: Make sur that images exist
       assert:
         that:
-          - "'dev-tutorial-api-molecule:latest' in images"
+          - "(deployer_image_api + ':latest') in images"
       vars:
         images: "{{ result.images | map(attribute='RepoTags') | flatten }}"

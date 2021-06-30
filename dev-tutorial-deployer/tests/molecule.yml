@@ -1,13 +1,8 @@
 ---
-dependency:
-  name: galaxy
-  enabled: False
 driver:
   name: delegated
   options:
     managed: False
-    ansible_connection_options:
-      ansible_connection: local
 platforms:
   - name: instance
     groups:

@@ -55,9 +55,6 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@stryker-mutator/core": "^4.5.1",
-    "@stryker-mutator/mocha-runner": "^4.5.1",
-    "@stryker-mutator/typescript-checker": "^4.5.1",
     "@types/async": "^3.2.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.5",

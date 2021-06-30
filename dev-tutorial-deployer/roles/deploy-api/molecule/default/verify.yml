@@ -1,16 +1,8 @@
 ---
 - name: Verify
-  hosts: localhost
+  hosts: deployer
   gather_facts: no
   no_log: "{{ molecule_no_log }}"
-  vars:
-    back_container: dev-tutorial-back-molecule
-  pre_tasks:
-    - name: Add generated container
-      add_host:
-        name: "{{ back_container }}"
-        ansible_connection: docker
-        ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Get docker host info
       docker_host_info:
@@ -23,7 +15,7 @@
     - name: Make sure the application containers are running
       assert:
         that:
-          - "('/' + back_container) in containers"
+          - "('/' + api_container_prod) in containers"
       vars:
         containers: "{{ result.containers | map(attribute='Names') | flatten }}"
 
@@ -35,9 +27,9 @@
       loop:
         - 3000
         - 3001
-      delegate_to: "{{ back_container }}"
+      delegate_to: "{{ api_container_prod }}"
 
     - name: Make sure the app is started
       uri:
         url: "http://localhost:3000/api/tuto"
-      delegate_to: "{{ back_container }}"
+      delegate_to: "{{ api_container_prod }}"

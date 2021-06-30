@@ -1,2 +1,3 @@
 ---
-run_common_network: dev-tutorial-network
+deploy_common_network_db: "{{ deployer_network_db }}"
+deploy_common_network_api: "{{ deployer_network_api }}"

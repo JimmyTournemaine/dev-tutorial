@@ -17,9 +17,9 @@
 
 # Run the database
 
-- name: Pull the mongodb image
+- name: Pull the database image
   docker_image:
-    name: mongo
+    name: "{{ run_api_db_image }}"
     source: pull
 
 - name: Run the database container
@@ -29,8 +29,7 @@
     state: started
     auto_remove: yes
     log_driver: none
-    networks:
-      - name: "{{ run_common_network }}"
+    networks: "{{ run_api_networks }}"
     networks_cli_compatible: no
 
 # Run the Dev'Tutorial API

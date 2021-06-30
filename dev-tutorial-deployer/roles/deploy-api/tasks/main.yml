@@ -21,10 +21,8 @@
     image: "{{ deploy_api_image }}"
     state: started
     auto_remove: yes
-    # command: "sleep infinity"
     ports:
       - "3000:3000"
       - "3001:3001"
-    networks:
-      - name: "{{ deploy_api_network }}"
+    networks: "{{ deploy_api_networks }}"
     networks_cli_compatible: no

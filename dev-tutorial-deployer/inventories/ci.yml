@@ -5,12 +5,6 @@ all:
       run_api_command: sleep infinity
       run_app_command: sleep infinity
       run_app_production: false
-  children:
-    frontend:
-      hosts:
-        # The local dev application frontend
-        dev-tutorial-app:
-          ansible_connection: docker
-          ansible_python_interpreter: /usr/bin/python3
-          run_api_command: yarn test-ci
-          run_app_command: yarn test-ci --no-progress
+    dev-tutorial-app:
+      run_api_command: yarn test-ci
+      run_app_command: yarn test-ci --no-progress

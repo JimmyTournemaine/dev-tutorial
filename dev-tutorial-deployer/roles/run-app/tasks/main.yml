@@ -35,10 +35,9 @@
       - "{{ run_app_port }}:{{ run_app_port }}"
       - "{{ run_app_karma_port }}:{{ run_app_karma_port }}"
     networks:
-      - name: "{{ run_common_network }}"
+      - name: "{{ run_app_network }}"
     networks_cli_compatible: no
   vars:
     restart_conditions:
-      - "{{ run_app_force | bool }}"
       - "{{ frontend_env is changed }}"
       - "{{ frontend_proxy is changed }}"

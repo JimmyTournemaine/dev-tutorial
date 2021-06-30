@@ -3,7 +3,7 @@
   lineinfile:
     path: "{{ item }}"
     regexp: "^  no_log:"
-    line: !unsafe '  no_log: "{{ molecule_no_log }}"'
+    line: '{% raw %}  no_log: "{{ molecule_no_log }}"{% endraw %}'
     insertafter: "^  hosts:"
   when: "(lookup('file', item) | from_yaml | first).hosts is defined"
   with_items:
@@ -16,7 +16,7 @@
   lineinfile:
     path: "{{ item }}"
     regexp: "^  gather_facts:"
-    line: !unsafe "  gather_facts: no"
+    line: "  gather_facts: no"
     insertafter: "^  hosts:"
   when: "(lookup('file', item) | from_yaml | first).hosts is defined"
   with_items:

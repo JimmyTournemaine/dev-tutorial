@@ -13,9 +13,6 @@
       path: "{{ item }}"
       pull: no
     state: present
-    changes:
-      - package.json
-      - yarn.lock
   loop: "{{ tutorial_directories.files | map(attribute='path') | list }}"
   loop_control:
     label: "{{ item | basename }}"

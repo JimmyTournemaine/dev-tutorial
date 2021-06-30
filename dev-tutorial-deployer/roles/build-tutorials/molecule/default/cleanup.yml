@@ -1,6 +1,6 @@
 ---
-- name: Destroy
-  hosts: localhost
+- name: Cleanup
+  hosts: deployer
   connection: local
   gather_facts: no
   no_log: "{{ molecule_no_log }}"

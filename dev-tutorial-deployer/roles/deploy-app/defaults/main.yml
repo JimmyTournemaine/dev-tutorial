@@ -1,4 +1,4 @@
 ---
-deploy_app_image: "tzimy/dev-tutorial-app-prod"
-deploy_app_container: dev-tutorial-front
-deploy_app_network: dev-tutorial-network
+deploy_app_image: "{{ deployer_image_prod_app }}"
+deploy_app_container: "{{ deployer_container_prod_app }}"
+deploy_app_network: "{{ deployer_network_api }}"
