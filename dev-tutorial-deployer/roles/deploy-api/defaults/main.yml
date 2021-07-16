@@ -1,7 +1,7 @@
 ---
-deploy_api_image: "{{ deployer_image_prod_api }}"
+deploy_api_image_api: "{{ deployer_image_prod_api }}"
+deploy_api_image_db: "{{ deployer_image_db }}"
 deploy_api_container: "{{ deployer_container_prod_api }}"
 deploy_api_db_container: "{{ deployer_container_db }}"
-deploy_api_networks:
-  - name: "{{ deployer_network_db }}"
-  - name: "{{ deployer_network_api }}"
+deploy_api_network_db: "{{ deployer_network_db }}"
+deploy_api_network_api: "{{ deployer_network_api }}"

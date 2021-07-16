@@ -1,7 +1,0 @@
----
-- name: Pull a production image
-  hosts: deployer
-  tasks:
-    docker_image:
-      name: "{{ app_prod_image }}"
-      pull: yes

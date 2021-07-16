@@ -1,8 +1,8 @@
 ---
+dependency:
+  enabled: False
 driver:
   name: delegated
-  options:
-    managed: False
 platforms:
   - name: instance
     groups:

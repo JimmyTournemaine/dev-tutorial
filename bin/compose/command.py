@@ -1,6 +1,5 @@
 import argparse
 
-from commands.common import CommonCommand
 from commands.deploy import DeployCommand
 from commands.deployer import DeployerCommand
 from commands.dockerize import DockerizeCommand
@@ -31,14 +30,13 @@ class CommandManager:
 
     def create_parsers(self):
         subparsers = self.parser.add_subparsers()
-        common_parser = CommonCommand().create_parser()
 
         for command_class in self.command_classes:
             command = command_class()
-            command.create_parser(subparsers, common_parser)
+            command.create_parser(subparsers)
 
             self.commands.append(command)
 
     def run(self, argv):
-        args = self.parser.parse_args()
+        args = self.parser.parse_args(argv)
         args.func(args)

@@ -2,7 +2,7 @@
 # This is an example playbook to execute Ansible tests.
 
 - name: Verify
-  hosts: localhost
+  hosts: instance
   no_log: "{{ molecule_no_log }}"
   gather_facts: no
   tasks:

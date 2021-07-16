@@ -1,4 +1,5 @@
 from commands.abstract import Command
+from commands.common import BaseDeployerCommand
 from commands.exception import InvalidCommandException
 from deployer import DeployerFactory, DeployerShellCommandBuilder
 
@@ -6,6 +7,9 @@ from deployer import DeployerFactory, DeployerShellCommandBuilder
 class TestDeployerCommand(Command):
     def __init__(self):
         super().__init__("test-deployer", "Run a deployer unit test")
+
+    def parent_command(self):
+        return BaseDeployerCommand
 
     def setup_parser(self):
         self.parser.add_argument(
@@ -19,6 +23,14 @@ class TestDeployerCommand(Command):
             action="store_true",
             help="Run all the tests",
         )
+        self.parser.add_argument(
+            "--command", default="test", help="the molecule command"
+        )
+        self.parser.add_argument(
+            "--scenario",
+            default=None,
+            help="the scenario to run (run all scenario if not provided)",
+        )
 
     def run(self, args):
 
@@ -29,7 +41,11 @@ class TestDeployerCommand(Command):
             )
 
         # Run the deployer
-        command = "./scripts/unit-tests.py "
+        command = f"../tests/unit-tests.py --command {args.command} "
+
+        if args.scenario is not None:
+            command += f" --scenario {args.scenario}"
+
         if len(args.roles) > 0:
             command += " ".join(args.roles)
 

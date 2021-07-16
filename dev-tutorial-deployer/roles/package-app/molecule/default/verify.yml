@@ -1,6 +1,6 @@
 ---
 - name: Verify the image
-  hosts: localhost
+  hosts: deployer_instance
   gather_facts: false
   tasks:
     - name: Get docker host info
@@ -12,22 +12,22 @@
     - name: Make sure the image exists
       assert:
         that:
-          - "'dev-tutorial-app-prod-molecule:latest' in images"
+          - "(deployer_image_prod_app + ':latest') in images"
       vars:
         images: "{{ result.images | map(attribute='RepoTags') | flatten }}"
 
     - name: Start a container from this image
       docker_container:
         name: dev-tutorial-app-prod-verify
-        image: dev-tutorial-app-prod-molecule
-        auto_remove: yes
+        image: "{{ deployer_image_prod_app }}"
+        etc_hosts:
+          dev-tutorial-api-molecule: 127.0.0.1 # NGINX will test proxy hosts at startup
         state: started
 
     - name: Add container to inventory
       add_host:
         name: dev-tutorial-app-prod-verify
-        ansible_connection: docker
-        ansible_python_interpreter: /usr/bin/python3
+        groups: containers
 
 - name: Verify the container aspect
   hosts: dev-tutorial-app-prod-verify
@@ -38,7 +38,7 @@
         path: /usr/share/nginx/dev-tutorial-app
       register: static_app
 
-    - name: Make sure the application is embedded
+    - name: Make sure everything is embedded
       assert:
         that:
           - "static_app.stat.exists"
@@ -46,7 +46,7 @@
           - "static_app.stat.isdir"
 
 - name: Stop the test container
-  hosts: localhost
+  hosts: deployer_instance
   no_log: "{{ molecule_no_log }}"
   gather_facts: no
   tasks:

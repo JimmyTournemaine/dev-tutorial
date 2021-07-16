@@ -1,14 +1,8 @@
 ---
 - name: Verify
-  hosts: localhost
+  hosts: instance
   gather_facts: no
   no_log: "{{ molecule_no_log }}"
-  pre_tasks:
-    - name: Add the future generated container
-      add_host:
-        name: dev-tutorial-api-molecule
-        ansible_connection: docker
-        ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Get docker host info
       docker_host_info:
@@ -21,8 +15,8 @@
     - name: Make sure that application containers are running
       assert:
         that:
-          - "'/dev-tutorial-api-molecule' in containers"
-          - "'/dev-tutorial-mongo-molecule' in containers"
+          - "('/' + deployer_container_api) in containers"
+          - "('/' + deployer_container_db) in containers"
       vars:
         containers: "{{ result.containers | map(attribute='Names') | flatten }}"
 
@@ -33,4 +27,4 @@
       until: _result.status == 200
       retries: 10
       delay: 5
-      delegate_to: dev-tutorial-api-molecule
+      delegate_to: "{{ deployer_container_api }}"

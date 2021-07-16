@@ -1,12 +1,16 @@
 import os
 
 from commands.abstract import Command
+from commands.common import BaseDeployerCommand
 from deployer import DeployerFactory, DeployerPlaybookCommandBuilder
 
 
 class LintCommand(Command):
     def __init__(self):
         super().__init__("lint", "Build and run a ready-to-use environment")
+
+    def parent_command(self):
+        return BaseDeployerCommand
 
     def setup_parser(self):
         self.parser.add_argument(

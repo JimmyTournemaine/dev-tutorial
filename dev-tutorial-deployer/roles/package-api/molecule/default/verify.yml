@@ -1,6 +1,6 @@
 ---
 - name: Verify the image
-  hosts: localhost
+  hosts: deployer_instance
   gather_facts: false
   tasks:
     - name: Get docker host info
@@ -43,7 +43,7 @@
         path: /usr/src/dev-tutorial-api/tutorials
       register: tutorials
 
-    - name: Get any embedded tutorials stats
+    - name: Get one embedded tutorials stats
       stat:
         path: /usr/src/dev-tutorial-api/tutorials/ansible
       register: one_tutorial

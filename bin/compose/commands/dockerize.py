@@ -3,12 +3,17 @@ import webbrowser
 from datetime import datetime
 
 from commands.abstract import Command
+from commands.common import BaseDeployerCommand
 from deployer import DeployerFactory, DeployerPlaybookCommandBuilder
+from utils import Utils
 
 
 class DockerizeCommand(Command):
     def __init__(self):
         super().__init__("dockerize", "Build and run a ready-to-use environment")
+
+    def parent_command(self):
+        return BaseDeployerCommand
 
     def setup_parser(self):
         self.parser.add_argument(
@@ -68,7 +73,7 @@ class DockerizeCommand(Command):
         if "ci" != args.environment:
             # Open the application
             if (
-                args.open_browser
+                not Utils.is_tty()
                 and not args.dry_run
                 and (len(args.services) == 0 or "app" in args.services)
             ):
@@ -114,6 +119,7 @@ class LogTransform:
         self.win_color = win_color
 
     def transform(self, cmd):
+        print(sys.platform)
         if "win32" == sys.platform:
             log_transform = (
                 "powershell \"{} | % {{ Write-Host -NoNewline -ForegroundColor {} '{} | '; Write-Host $_ }}\""
@@ -134,8 +140,3 @@ class ApiLogTransform(LogTransform):
 class AppLogTransform(LogTransform):
     def __init__(self):
         super().__init__("frontend", "32", "DarkYellow")
-
-
-class OtherLogTransform(LogTransform):
-    def __init__(self):
-        super().__init__("other", "31", "Red")

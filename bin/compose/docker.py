@@ -1,18 +1,19 @@
-import os
-import sys
+from utils import Utils
+
 
 class Docker:
     def __init__(self, executer):
         self.executer = executer
 
     def build_image(self, name, directory):
-        self.executer.run(f"docker build -t {name} {directory}")
+        return self.executer.run(f"docker build -t {name} {directory}")
 
     def is_running(self, container):
         self.executer.exec_context.set_next_exit_on_error(False)
-        return 0 == self.executer.run(
+        exit_code = self.executer.run(
             f"docker container inspect {container} >/dev/null 2>&1"
         )
+        return 0 == exit_code
 
     def exec(self, docker_exec_builder):
         self.executer.run(docker_exec_builder.build())
@@ -35,7 +36,7 @@ class DockerExecBuilder:
         self.interactive = False
         self.tty = False
 
-        if os.isatty(sys.stdout.fileno()):
+        if Utils.is_tty():
             self.set_tty().set_interactive()
 
     def set_container(self, container):
@@ -164,7 +165,7 @@ class DockerRunBuilder:
             args += f"-p {port}:{target} "
 
         for network in self.networks:
-            args+= f"--network={network} "
+            args += f"--network={network} "
 
         # Build the command
         return f"docker run {args} {self.image} {self.command}"

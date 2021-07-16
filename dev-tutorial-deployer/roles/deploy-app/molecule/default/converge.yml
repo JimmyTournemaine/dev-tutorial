@@ -1,8 +1,8 @@
 ---
 - name: Converge
-  hosts: localhost
+  hosts: instance
   no_log: "{{ molecule_no_log }}"
+  vars:
+    deployer_image_prod_app: tzimy/dev-tutorial-app-prod
   roles:
     - role: deploy-app
-      deploy_app_image: "{{ app_prod_image }}"
-      deploy_app_container: dev-tutorial-front-molecule

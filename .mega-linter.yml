@@ -6,7 +6,7 @@
 DEFAULT_BRANCH: main
 APPLY_FIXES: none
 DISABLE:
-  # - HTML # wait new version (.htmlintrc not functional)
+  #- HTML # wait new version (.htmlhintrc not functional)
   - SPELL
   - JAVASCRIPT # Only typescript is used
   - OPENAPI # ansible generated template
@@ -21,7 +21,9 @@ UPDATED_SOURCES_REPORTER: false
 # Linter specific
 ANSIBLE_DIRECTORY: dev-tutorial-deployer
 CSS_STYLELINT_FILTER_REGEX_EXCLUDE: "(docs|.*/coverage|.*/dist)/.*" # ignore generated docs
+HTML_HTMLHINT_FILTER_REGEX_EXCLUDE: "(docs|.*/coverage|.*/dist)/.*" # ignore generated docs
+HTML_HTMLHINT_CONFIG_FILE: LINTER_DEFAULT
 SPELL_CSPELL_ARGUMENTS: --local "en,fr" # add fr to locales
 SPELL_MISSPELL_FILTER_REGEX_EXCLUDE: '.*\.fr\..*' # mispell cannot lint french
 TYPESCRIPT_ES_CONFIG_FILE: LINTER_DEFAULT
-YAML_V8R_DISABLE_ERRORS: "(build.yml|deploy.yml)" # https://github.com/chris48s/v8r/pull/87
+YAML_V8R_FILTER_REGEX_EXCLUDE: "(build.yml|deploy.yml)" # https://github.com/chris48s/v8r/pull/92

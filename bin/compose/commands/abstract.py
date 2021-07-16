@@ -1,19 +1,22 @@
+from abc import ABC, abstractmethod
+
+from commands.common import BaseCommand
 from commands.exception import InvalidCommandException
-from executer import Executer, ExecutionContext
+from executer import Executer
 
 
-class Command:
+class Command(ABC):
     def __init__(self, name, help_message):
         self.name = name
         self.help_message = help_message
 
-    def use_common_parser(self):
-        return True
+    def parent_command(self):
+        return BaseCommand
 
-    def create_parser(self, subparsers, common_parser):
+    def create_parser(self, subparsers):
         self.parser = subparsers.add_parser(
             self.name,
-            parents=([common_parser] if self.use_common_parser() else []),
+            parents=[self.parent_command()().create_parser(None)],
             help=self.help_message,
         )
 
@@ -24,12 +27,7 @@ class Command:
         pass
 
     def parse(self, args):
-        if self.use_common_parser():
-            exec_context = ExecutionContext(args.verbose, args.dry_run)
-        else:
-            exec_context = ExecutionContext()  # use defaults
-
-        self.executer = Executer(exec_context)
+        self.executer = Executer(self.parent_command().setup_context(args))
 
         try:
             self.run(args)
@@ -37,5 +35,6 @@ class Command:
             self.parser.print_help()
             print("\n\033[91m" + str(e) + "\033[0m")
 
+    @abstractmethod
     def run(self, args):
-        pass
+        pass  # pragma: no cover

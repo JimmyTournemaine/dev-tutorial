@@ -6,5 +6,5 @@ COPY tutorials/ /usr/src/dev-tutorial-api/tutorials/
 COPY package.json /usr/src/dev-tutorial-api/
 COPY yarn.lock /usr/src/dev-tutorial-api/
 WORKDIR /usr/src/dev-tutorial-api
-RUN yarn install
+RUN yarn install && yarn cache clean
 CMD yarn start

@@ -1,6 +1,6 @@
 ---
 - name: Prepare the local container
-  hosts: deployer
+  hosts: instance
   roles:
     - role: build-common
       project_paths: ["{{ deployer_local_workspace }}/dev-tutorial-api"]
@@ -9,19 +9,19 @@
     - role: run-api
 
 - name: Prepare the production packaging
-  hosts: backend
+  hosts:
+    - instance
+    - dev-tutorial-api-molecule
   roles:
     - role: package-api
 
-- name: Remove temporary objects to prevent conflicts
-  hosts: deployer
-  gather_facts: no
-  no_log: "{{ molecule_no_log }}"
+- name: Prevent port conflicts
+  hosts: instance
   tasks:
-    - name: Remove temporary container
+    - name: Cleanup containers
       docker_container:
         name: "{{ item }}"
         state: absent
       loop:
-        - "{{ api_image }}"
-        - "{{ db_image }}"
+        - "{{ deployer_container_api }}"
+        - "{{ deployer_container_db }}"

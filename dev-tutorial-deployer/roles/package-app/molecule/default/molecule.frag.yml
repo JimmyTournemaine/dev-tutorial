@@ -1,0 +1,8 @@
+---
+platforms:
+  - name: instance
+    groups:
+      - containers
+  - name: deployer_instance
+    groups:
+      - molecule_deployer

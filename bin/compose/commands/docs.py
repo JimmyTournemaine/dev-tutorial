@@ -1,26 +1,25 @@
 import webbrowser
 
 from commands.abstract import Command
+from commands.common import BaseDeployerCommand
 from commands.exception import InvalidCommandException
 from deployer import DeployerFactory, DeployerPlaybookCommandBuilder
+from utils import Utils
 
 
 class DocsCommand(Command):
     def __init__(self):
         super().__init__("docs", "Generate and expose API documentations")
 
-    def use_common_parser(self):
-        return False
-
-    def create_parser(self, subparsers, common_parser):
-        super().create_parser(subparsers, common_parser)
+    def create_parser(self, subparsers):
+        super().create_parser(subparsers)
 
         self.parser.set_defaults()
 
         docs_subparsers = self.parser.add_subparsers()
-        DocsGenerateCommand().create_parser(docs_subparsers, common_parser)
-        DocsServerStartCommand().create_parser(docs_subparsers, common_parser)
-        DocsServerStopCommand().create_parser(docs_subparsers, common_parser)
+        DocsGenerateCommand().create_parser(docs_subparsers)
+        DocsServerStartCommand().create_parser(docs_subparsers)
+        DocsServerStopCommand().create_parser(docs_subparsers)
 
     def run(self, args):
         raise InvalidCommandException()
@@ -29,6 +28,9 @@ class DocsCommand(Command):
 class DocsGenerateCommand(Command):
     def __init__(self):
         super().__init__("generate", "Generate API documentations")
+
+    def parent_command(self):
+        return BaseDeployerCommand
 
     def setup_parser(self):
         self.parser.add_argument(
@@ -70,14 +72,17 @@ class DocsGenerateCommand(Command):
         deployer.run(builder)
 
         # Open the documentation
-        if args.open_browser:
+        if Utils.is_tty():
             webbrowser.open("http://localhost:8000")
 
 
 class DocsServerCommand(Command):
     def __init__(self, name, expected_state, help_message):
         super().__init__(name, help_message)
-        self.expect_state = expected_state
+        self.expected_state = expected_state
+
+    def parent_command(self):
+        return BaseDeployerCommand
 
     def run(self, args):
         # Deployer run builder
@@ -92,7 +97,7 @@ class DocsServerCommand(Command):
         deployer.run(builder)
 
         # Open the documentation
-        if args.open_browser and self.expected_state == "started":
+        if Utils.is_tty() and self.expected_state == "started":
             webbrowser.open("http://localhost:8000")
 
 

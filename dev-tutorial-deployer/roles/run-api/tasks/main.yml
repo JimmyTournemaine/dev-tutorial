@@ -29,7 +29,8 @@
     state: started
     auto_remove: yes
     log_driver: none
-    networks: "{{ run_api_networks }}"
+    networks:
+      - name: "{{ run_api_network_db }}"
     networks_cli_compatible: no
 
 # Run the Dev'Tutorial API
@@ -54,7 +55,8 @@
       - "{{ run_api_port }}:{{ run_api_port }}"
       - "{{ run_api_socket_port }}:{{ run_api_socket_port }}"
     networks:
-      - name: "{{ run_common_network }}"
+      - name: "{{ run_api_network_db }}"
+      - name: "{{ run_api_network_api }}"
     networks_cli_compatible: no
     env: "{{ run_api_env }}"
   vars:

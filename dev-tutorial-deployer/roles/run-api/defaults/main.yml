@@ -3,9 +3,8 @@ run_api_image: "{{ deployer_image_api }}"
 run_api_container: "{{ deployer_container_api }}"
 run_api_db_image: "{{ deployer_image_db }}"
 run_api_db_container: "{{ deployer_container_db }}"
-run_api_networks:
-  - name: "{{ deployer_network_db }}"
-  - name: "{{ deployer_network_api }}"
+run_api_network_db: "{{ deployer_network_db }}"
+run_api_network_api: "{{ deployer_network_api }}"
 run_api_env: {}
 run_api_force: no
 run_api_production: yes

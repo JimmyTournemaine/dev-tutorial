@@ -8,7 +8,7 @@
       docker_image:
         name: quay.io/recordsansible/ara-api:latest
         source: pull
-    
+
     - name: Start the ARA server
       docker_container:
         name: dev-tutorial-deployer-ara
@@ -20,17 +20,21 @@
     - name: Make sure ARA server is accessible
       uri:
         url: "http://localhost:{{ ara_port }}"
-        status_code: 200
-      
-    - name: Install ARA
+      register: _result
+      until: _result.status == 200
+      retries: 10
+
+    - name: Install ARA client
       pip:
-        name: ara
-        state: latest
-      
+        name: ara>1.5<2
+        state: present
+
     - name: Copy the global ansible configuration
       copy:
         src: /etc/ansible/ansible.cfg
         dest: ~/.ansible.cfg
+        owner: "{{ ansible_user_id }}"
+        mode: 0640
 
     - name: Setup the ara callback
       ini_file:
@@ -38,6 +42,8 @@
         section: defaults
         option: callback_plugins
         value: "{{ lookup('pipe', 'python3 -m ara.setup.callback_plugins') }}"
+        owner: "{{ ansible_user_id }}"
+        mode: 0640
 
     - name: Setup the ara properties
       ini_file:
@@ -45,6 +51,8 @@
         section: ara
         option: "{{ item.key }}"
         value: "{{ item.value }}"
+        owner: "{{ ansible_user_id }}"
+        mode: 0640
       with_dict:
         api_client: http
         api_server: "http://127.0.0.1:{{ ara_port }}"

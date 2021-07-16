@@ -1,6 +1,6 @@
 ---
 - name: Converge
-  hosts: deployer
+  hosts: instance
   no_log: "{{ molecule_no_log }}"
   roles:
     - role: build-common

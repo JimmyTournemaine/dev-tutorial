@@ -1,8 +1,10 @@
 import argparse
 
+from executer import DeployerExecutionContext, ExecutionContext
 
-class CommonCommand:
-    def create_parser(self):
+
+class BaseCommand:
+    def create_parser(self, _):
         parser = argparse.ArgumentParser(add_help=False)
 
         parser.add_argument(
@@ -16,12 +18,26 @@ class CommonCommand:
             "-v", "--verbose", action="store_true", help="make actions more verbose"
         )
 
+        return parser
+
+    @staticmethod
+    def setup_context(args):
+        return ExecutionContext(args.verbose, args.dry_run)
+
+
+class BaseDeployerCommand(BaseCommand):
+    def create_parser(self, _):
+        parser = super().create_parser(_)
+
         parser.add_argument(
-            "-B",
-            "--no-browser",
+            "--no-build",
             action="store_false",
-            dest="open_browser",
-            help="to never open a browser on post actions",
+            dest="deployer_build",
+            help="to not build the deployer from sources",
         )
 
         return parser
+
+    @staticmethod
+    def setup_context(args):
+        return DeployerExecutionContext(args.verbose, args.dry_run, args.deployer_build)

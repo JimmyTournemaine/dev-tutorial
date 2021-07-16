@@ -45,6 +45,12 @@ class ExecutionContext:
         self.next_exit_on_error = exit_on_error
 
 
+class DeployerExecutionContext(ExecutionContext):
+    def __init__(self, verbose=False, dry_run=False, build=True):
+        super().__init__(verbose, dry_run)
+        self.build = build
+
+
 class Executer:
     def __init__(self, exec_context):
         self.exec_context = exec_context

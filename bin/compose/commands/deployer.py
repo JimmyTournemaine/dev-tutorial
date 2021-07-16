@@ -1,4 +1,5 @@
 from commands.abstract import Command
+from commands.common import BaseDeployerCommand
 from commands.exception import InvalidCommandException
 from deployer import DeployerFactory, DeployerShellCommandBuilder
 
@@ -8,6 +9,9 @@ class DeployerCommand(Command):
         super().__init__(
             "deployer", "Run custom deployer commands (get a shell with sh for instance"
         )
+
+    def parent_command(self):
+        return BaseDeployerCommand
 
     def setup_parser(self):
         self.parser.add_argument(

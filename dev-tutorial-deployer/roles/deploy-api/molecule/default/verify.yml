@@ -1,6 +1,6 @@
 ---
 - name: Verify
-  hosts: deployer
+  hosts: instance
   gather_facts: no
   no_log: "{{ molecule_no_log }}"
   tasks:
@@ -15,21 +15,21 @@
     - name: Make sure the application containers are running
       assert:
         that:
-          - "('/' + api_container_prod) in containers"
+          - "('/' + deployer_container_prod_api) in containers"
       vars:
         containers: "{{ result.containers | map(attribute='Names') | flatten }}"
 
-    - name: Wait for frontend port
+    - name: Wait for frontend ports
       wait_for:
         port: "{{ item }}"
-        timeout: 10
+        timeout: 120
         state: started
       loop:
         - 3000
         - 3001
-      delegate_to: "{{ api_container_prod }}"
+      delegate_to: "{{ deployer_container_prod_api }}"
 
     - name: Make sure the app is started
       uri:
         url: "http://localhost:3000/api/tuto"
-      delegate_to: "{{ api_container_prod }}"
+      delegate_to: "{{ deployer_container_prod_api }}"

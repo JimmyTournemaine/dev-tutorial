@@ -1,6 +1,7 @@
 import os
 import sys
 from abc import ABC, abstractmethod
+
 from docker import Docker, DockerExecBuilder, DockerRunBuilder
 
 
@@ -25,6 +26,7 @@ class Deployer:
 
     def get_image_id(self):
         tmp_file = "/tmp/dev-tutorial-image.id"
+        self.executer.exec_context.set_next_dry_run(False)
         self.executer.run(
             'docker images --format "{{.ID}}" ' + self.IMAGE + " > " + tmp_file
         )
@@ -40,7 +42,8 @@ class Deployer:
         self.image_id = self.get_image_id()
 
     def build_image(self):
-        self.docker.build_image(self.IMAGE, "./dev-tutorial-deployer")
+        if self.executer.exec_context.build:
+            self.docker.build_image(self.IMAGE, "./dev-tutorial-deployer")
 
     def push(self):
         self.docker.push(self.IMAGE)
@@ -59,9 +62,6 @@ class Deployer:
 
         builder = DockerExecBuilder()
         builder.set_container(self.CONTAINER).set_command(cmd)
-        
-        if login is None or passwd is None:
-            builder.set_interactive().set_tty()
 
         self.docker.exec(builder)
 
@@ -71,11 +71,9 @@ class Deployer:
 
     def start(self):
         builder = DockerRunBuilder()
-        builder.set_name(self.CONTAINER).set_image(
-            self.IMAGE
-        ).set_daemon().add_env("HOST_SYSTEM", sys.platform).add_env(
-            "WORKSPACE_HOSTED", self.host_workspace
-        ).add_env(
+        builder.set_name(self.CONTAINER).set_image(self.IMAGE).set_daemon().add_env(
+            "HOST_SYSTEM", sys.platform
+        ).add_env("WORKSPACE_HOSTED", self.host_workspace).add_env(
             "WORKSPACE_LOCAL", self.deployer_workspace
         ).add_volume(
             "/var/run/docker.sock", "/var/run/docker.sock"
@@ -83,7 +81,11 @@ class Deployer:
             f"{self.host_workspace}/dev-tutorial-deployer", "/etc/ansible"
         ).add_volume(
             self.host_workspace, self.deployer_workspace
-        ).add_network("host").set_command("sleep infinity")
+        ).add_network(
+            "host"
+        ).set_command(
+            "sleep infinity"
+        )
 
         self.docker.run(builder)
 

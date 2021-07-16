@@ -1,27 +1,21 @@
 - name: Cleanup
-  hosts: localhost
+  hosts: instance
   gather_facts: no
   no_log: "{{ molecule_no_log }}"
   tasks:
-    - name: Remove other containers
+    - name: Cleanup containers
       docker_container:
         name: "{{ item }}"
         state: absent
       loop:
-        - dev-tutorial-api
-        - dev-tutorial-api-molecule
-        - dev-tutorial-back-molecule
-        - dev-tutorial-mongo-dev
-        - dev-tutorial-mongo-test
-        - dev-tutorial-mongo-ci
-        - dev-tutorial-mongo-molecule
+        - "{{ deployer_container_db }}"
+        - "{{ deployer_container_prod_api }}"
 
-    - name: Delete previous images
+    - name: Cleanup images
       docker_image:
         name: "{{ item }}"
         state: absent
       loop:
-        - dev-tutorial-api
-        - dev-tutorial-api-molecule
-        - dev-tutorial-api-prod
-        - dev-tutorial-api-prod-molecule
+        - "{{ deployer_image_db }}"
+        - "{{ deployer_image_prod_api }}"
+        - tzimy/dev-tutorial-api-prod

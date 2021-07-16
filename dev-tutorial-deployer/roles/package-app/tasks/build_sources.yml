@@ -1,0 +1,25 @@
+---
+- name: Get last build date
+  shell: echo "$(($(date +%s) - $(stat -c %Y /usr/src/app/app-ui/dist/dev-tutorial-app/index.html || echo 0)))"
+  register: dist_date
+  changed_when: False
+
+- name: Detect source changes
+  find:
+    paths: /usr/src/app/app-ui
+    recurse: yes
+    age: "-{{ dist_date.stdout }}s"
+    file_type: file
+  register: src_changes
+
+- name: Build the production directory
+  command:
+    cmd: yarn ng build --prod
+    chdir: /usr/src/app/app-ui
+  when: "src_changes.matched > 0"
+
+- name: Fetch the package
+  synchronize:
+    src: /usr/src/app/app-ui/dist/dev-tutorial-app
+    dest: /tmp/app
+    mode: pull

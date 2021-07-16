@@ -1,25 +1,8 @@
 ---
-- name: Setup host
-  hosts: localhost
-  tasks:
-    - name: Add deployer container to inventory
-      add_host:
-        name: deployer
-        ansible_connection: local
-        deployer_local_workspace: "{{ lookup('env', 'WORKSPACE_LOCAL') }}"
-      changed_when: False
-
-    - name: Add prepared container to inventory
-      add_host:
-        name: dev-tutorial-api-molecule
-        ansible_connection: docker
-        ansible_python_interpreter: /usr/bin/python3
-      changed_when: False
-
 - name: Converge
-  hosts: dev-tutorial-api-molecule
+  hosts:
+    - deployer_instance
+    - instance
   no_log: "{{ molecule_no_log }}"
   roles:
     - role: package-api
-      package_api_push: no
-      package_api_image: dev-tutorial-api-prod-molecule

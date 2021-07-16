@@ -1,0 +1,33 @@
+---
+- name: Generate the Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: /tmp/api/Dockerfile
+
+- name: Get required files from sources
+  copy:
+    src: "{{ deployer_local_workspace }}/dev-tutorial-api/{{ item }}"
+    dest: "/tmp/api/{{ item }}"
+  loop:
+    - package.json
+    - yarn.lock
+
+- name: Get required directories from sources
+  copy:
+    src: "{{ deployer_local_workspace }}/dev-tutorial-api/{{ item }}"
+    dest: "/tmp/api/"
+  loop:
+    - tutorials
+
+- name: Build the image
+  docker_image:
+    name: "{{ package_api_image }}"
+    build:
+      path: /tmp/api
+      pull: no
+    push: "{{ package_api_push | bool }}"
+    source: build
+    changes:
+      - package.json
+      - yarn.lock
+      - dist

@@ -1,10 +1,14 @@
 from commands.abstract import Command
+from commands.common import BaseDeployerCommand
 from deployer import DeployerFactory, DeployerPlaybookCommandBuilder
 
 
 class PackageCommand(Command):
     def __init__(self):
         super().__init__("package", "Package production images")
+
+    def parent_command(self):
+        return BaseDeployerCommand
 
     def run(self, args):
         # Deployer run builder

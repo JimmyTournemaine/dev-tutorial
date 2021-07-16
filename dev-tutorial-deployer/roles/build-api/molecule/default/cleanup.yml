@@ -1,11 +1,9 @@
 ---
 - name: Cleanup
-  hosts: deployer
+  hosts: instance
   gather_facts: no
   no_log: "{{ molecule_no_log }}"
   tasks:
-    - fail:
-        msg: "{{ deployer_image_api }}"
     - name: Destroy images
       docker_image:
         name: "{{ deployer_image_api }}"

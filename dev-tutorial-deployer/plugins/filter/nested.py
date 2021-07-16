@@ -5,13 +5,15 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
+
 
 def nested(node, kv):
     if isinstance(node, list):
         for i in node:
             for x in nested(i, kv):
-               yield x
+                yield x
     elif isinstance(node, dict):
         if kv in node:
             yield node[kv]
@@ -19,10 +21,9 @@ def nested(node, kv):
             for x in nested(j, kv):
                 yield x
 
+
 class FilterModule(object):
-    ''' Ansible custom filters '''
+    """ Ansible custom filters """
 
     def filters(self):
-        return {
-            'nested': nested
-        }
+        return {"nested": nested}

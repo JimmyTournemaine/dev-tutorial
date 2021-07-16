@@ -1,6 +1,6 @@
 ---
 - name: Verify
-  hosts: deployer
+  hosts: instance
   no_log: "{{ molecule_no_log }}"
   gather_facts: no
   tasks:
@@ -13,6 +13,6 @@
     - name: Make sure that the image exist
       assert:
         that:
-          - "'dev-tutorial-app-molecule:latest' in images"
+          - "(deployer_image_app + ':latest') in images"
       vars:
         images: "{{ result.images | map(attribute='RepoTags') | flatten }}"

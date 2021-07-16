@@ -1,6 +1,6 @@
 ---
 - name: Verify
-  hosts: deployer
+  hosts: instance
   no_log: "{{ molecule_no_log }}"
   gather_facts: no
   tasks:

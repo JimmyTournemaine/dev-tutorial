@@ -8,6 +8,7 @@ deployer_local_workspace: "{{ lookup('env', 'WORKSPACE_LOCAL') }}"
 deployer_hosted_workspace: "{{ lookup('env', 'WORKSPACE_HOSTED') }}"
 
 # Images
+deployer_image_db: mongo
 deployer_image_api: dev-tutorial-api
 deployer_image_app: dev-tutorial-app
 deployer_image_prod_api: tzimy/dev-tutorial-api-prod
@@ -18,6 +19,7 @@ deployer_network_db: dev-tutorial-network-db
 deployer_network_api: dev-tutorial-network-api
 
 # Containers
+deployer_container_db: "dev-tutorial-db-{{ deployer_env }}"
 deployer_container_api: dev-tutorial-api
 deployer_container_app: dev-tutorial-app
 deployer_container_prod_api: dev-tutorial-back

@@ -6,8 +6,5 @@
 - name: Check Ansible
   import_tasks: ansible.yml
 
-- name: Check Molecule
-  import_tasks: molecule.yml
-
 - name: Run the linter
   import_tasks: lint.yml

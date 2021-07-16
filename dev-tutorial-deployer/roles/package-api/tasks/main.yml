@@ -3,55 +3,10 @@
   package:
     name: rsync
 
-- name: Make sure rsync is intalled on the deployer
-  package:
-    name: rsync
-  delegate_to: deployer
+- name: Build sources
+  include_tasks: "build_sources.yml"
+  when: "inventory_hostname not in groups['deployer']"
 
-- name: Build the production directory
-  command:
-    cmd: yarn tsc
-    chdir: /usr/src/app/api
-  changed_when: False # always changed, there is a change if the next step is "changed" as well.
-
-- name: Fetch the package
-  synchronize:
-    src: /usr/src/app/api/dist
-    dest: /tmp/api
-    mode: pull
-
-- name: Build the production image
-  delegate_to: deployer
-  block:
-    - name: Generate the Dockerfile
-      template:
-        src: Dockerfile.j2
-        dest: /tmp/api/Dockerfile
-
-    - name: Get required files from sources
-      copy:
-        src: "{{ hostvars['deployer']['deployer_local_workspace'] }}/dev-tutorial-api/{{ item }}"
-        dest: "/tmp/api/{{ item }}"
-      loop:
-        - package.json
-        - yarn.lock
-
-    - name: Get required directories from sources
-      copy:
-        src: "{{ hostvars['deployer']['deployer_local_workspace'] }}/dev-tutorial-api/{{ item }}"
-        dest: "/tmp/api/"
-      loop:
-        - tutorials
-
-    - name: Build the image
-      docker_image:
-        name: "{{ package_api_image }}"
-        build:
-          path: /tmp/api
-          pull: no
-        push: "{{ package_api_push | bool }}"
-        source: build
-        changes:
-          - package.json
-          - yarn.lock
-          - dist
+- name: Build image
+  include_tasks: "build_image.yml"
+  when: "inventory_hostname in groups['deployer']"

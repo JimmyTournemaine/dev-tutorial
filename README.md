@@ -18,7 +18,7 @@
 If you have Python3 installed set the DEVTUTO_COMPOSE environment variable like the following  `export DEVTUTO_COMPOSE="$(pwd)/bin/compose/compose.py"`.
 Otherwise, you should download the bundled script for your OS in the last CI/CD build and set the `DEVTUTO_COMPOSE` variable accordingly.
 
-#### Compose
+#### Run with compose
 
 ```bash
 # Development environment (watching for changes)
@@ -37,7 +37,7 @@ The compose command will generally open your browser at the deployed application
 
 ## Documentation reference
 
-### Compose
+### Compose Tool
 
 Compose is the project CLI which relies on the *deployer* (the Ansible project named `dev-tutorial-deployer`) to build and run any environment, generate the documentation, etc.
 
@@ -67,7 +67,7 @@ Show the help message for the command
 $DEVTUTO_COMPOSE dockerize dev
 ```
 Run a local development environment :
-* `dev-tutorial-app`: The angular application container, watching for changes (http://localhost:4200)
+* `dev-tutorial-app`: The angular application container, watching for changes (<http://localhost:4200>)
 * `dev-tutorial-api`: The API, watching for changes
 
 ---
@@ -77,7 +77,7 @@ $DEVTUTO_COMPOSE dockerize test -s api # only API tests
 $DEVTUTO_COMPOSE dockerize test -s app # only Angular tests
 ```
 Run a local test environment :
-* `dev-tutorial-app`: The angular application test container, watching for changes to rerun Karma tests (http://localhost:9876).
+* `dev-tutorial-app`: The angular application test container, watching for changes to rerun Karma tests (<http://localhost:9876>).
 * `dev-tutorial-api`: The API, watching for changes to rerun Mocha tests
 
 ---
@@ -95,7 +95,7 @@ If all tests passed, you should then check your code quality using  the [lint co
 $DEVTUTO_COMPOSE docs generate
 $DEVTUTO_COMPOSE docs start
 ```
-Generate the complete project documentation from some documentation files, code documentation and specification, to expose a global project documentation at http://localhost:8000.
+Generate the complete project documentation from some documentation files, code documentation and specification, to expose a global project documentation at <http://localhost:8000>.
 
 #### Deployer
 
@@ -111,21 +111,20 @@ To open a shell or execute a specific command in the deployer container.
 ```bash
 $DEVTUTO_COMPOSE deployer 'ansible-playbook ara.yml'
 ```
-The ARA (ARA Records Ansible) can be enable any time using the `ara` playbook to record all the future Ansible plays (http://localhost:12000)
+The ARA (ARA Records Ansible) can be enable any time using the `ara` playbook to record all the future Ansible plays (<http://localhost:12000>)
 
 To deactivate and clean ARA, just run the previous command with `--tags=cleanup`.
 
-##### Unit tests
+##### Unit tests (molecule)
 
 ```bash
 # Run tests from the compose script
 $DEVTUTO_COMPOSE test-deployer <role_name>
 $DEVTUTO_COMPOSE test-deployer --all
 
-# Run tests from shell
+# Run tests from shell (to get more control)
 $DEVTUTO_COMPOSE deployer sh
-cd ../roles/<role_name>
-python3 -m molecule test
+../tests/unit-tests.py
 ```
 
 #### Lint
@@ -159,6 +158,25 @@ $DEVTUTO_COMPOSE deploy
 ```
 Deploy the production environment, on the local Docker daemon yet.
 
+#### Compose testing
+
+Pytest tests can be run to check that the compose CLI has not been broken.
+
+**Warning!** System calls are mocked, so "tests passed" does not means that the script will work as expected. This testing is focusing on statements coverage to make sure the code has no error in its logic and purposes.
+
+```bash
+docker run -it --rm -v "$(pwd)/bin:/usr/src" --workdir=/usr/src/compose python:3 bash
+pip install -U pytest pytest-mock pytest-cov
+python -m pytest --cov --no-cov-on-fail --cov-report=term-missing
+```
+
+Or using a one-shot command :
+```bash
+docker run --rm -t -v "$(pwd)/bin:/usr/src" --workdir=/usr/src/compose python:3 bash -c "
+pip install -U pytest pytest-mock pytest-cov
+python -m pytest --cov --no-cov-on-fail --cov-report=term-missing"
+```
+
 ## Development
 
 ### Dependencies
@@ -167,7 +185,7 @@ Deploy the production environment, on the local Docker daemon yet.
 
 * When you add a node dependency, you shall rebuild your environment (to update the docker image and recreating your container). The *deployer* is able to detect any change in dependencies when mounting an environment.
 
-```
+```plain
 your-host$ docker exec -it dev-tutorial-api bash
 container# yarn add <my-deps>
 container# ^D
