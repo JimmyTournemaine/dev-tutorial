@@ -1,6 +1,6 @@
 all:
   hosts:
-    deployer:
+    dev-tutorial-deployer:
       deployer_env: test
       run_api_command: yarn test
       run_app_command: yarn test --no-progress

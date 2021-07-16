@@ -1,6 +1,6 @@
 all:
   hosts:
-    deployer:
+    dev-tutorial-deployer:
       deployer_env: ci
       run_api_command: sleep infinity
       run_app_command: sleep infinity

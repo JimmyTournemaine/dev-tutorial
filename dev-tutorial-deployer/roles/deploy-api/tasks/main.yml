@@ -24,7 +24,6 @@
     image: "{{ deploy_api_image_api }}"
     state: started
     auto_remove: no
-    command: sleep infinity
     ports:
       - "3000:3000"
       - "3001:3001"
