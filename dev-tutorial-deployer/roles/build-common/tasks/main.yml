@@ -1,0 +1,7 @@
+---
+- name: Generate .dockerignore
+  template:
+    src: ".dockerignore.j2"
+    dest: "{{ item }}/.dockerignore"
+    mode: 0644
+  loop: "{{ project_paths }}"

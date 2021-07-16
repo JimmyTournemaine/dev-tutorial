@@ -1,0 +1,21 @@
+- name: Cleanup
+  hosts: instance
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Cleanup containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ deployer_container_db }}"
+        - "{{ deployer_container_prod_api }}"
+
+    - name: Cleanup images
+      docker_image:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ deployer_image_db }}"
+        - "{{ deployer_image_prod_api }}"
+        - tzimy/dev-tutorial-api-prod

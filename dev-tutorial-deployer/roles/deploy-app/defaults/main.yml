@@ -1,0 +1,4 @@
+---
+deploy_app_image: "{{ deployer_image_prod_app }}"
+deploy_app_container: "{{ deployer_container_prod_app }}"
+deploy_app_network: "{{ deployer_network_api }}"

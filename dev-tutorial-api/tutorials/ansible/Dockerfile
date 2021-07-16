@@ -4,6 +4,7 @@ RUN yum -y install epel-release-7 \
   && yum clean all \
   && adduser -m -s /bin/bash -U ansible \
   && echo 'ansible ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
+  && mkdir -p /etc/ansible \
   && chown -R ansible:ansible /etc/ansible
 USER ansible
 WORKDIR /etc/ansible

@@ -1,0 +1,11 @@
+---
+- name: Destroy
+  hosts: instance
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Destroy images
+      docker_image:
+        name: "{{ deployer_image_app }}"
+        state: absent
+        force_absent: yes

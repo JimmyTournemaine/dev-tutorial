@@ -1,0 +1,8 @@
+---
+- name: Destroy
+  hosts: deployer_instance
+  tasks:
+    - name: Destroy containers
+      docker_container:
+        name: instance
+        state: absent

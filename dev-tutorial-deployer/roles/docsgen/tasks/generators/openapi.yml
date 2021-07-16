@@ -3,9 +3,9 @@
   command:
     chdir: dev-tutorial-api
     cmd: swagger-jsdoc -d openapi.yml -o ../docs/openapi.yml src/**/*.ts
-    creates: ../docs/openapi.yml
+    # creates: ../docs/openapi.yml
 
 - name: Generate OpenAPI documentation
   command:
     cmd: redoc-cli bundle docs/openapi.yml -o docs/html/openapi/index.html
-    creates: docs/html/openapi
+    # creates: docs/html/openapi

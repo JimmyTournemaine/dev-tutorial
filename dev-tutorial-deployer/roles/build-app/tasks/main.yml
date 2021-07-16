@@ -1,0 +1,8 @@
+---
+- name: Cleanup
+  import_tasks: cleanup.yml
+  tags: [never, cleanup]
+
+- name: Build
+  import_tasks: build.yml
+  tags: app

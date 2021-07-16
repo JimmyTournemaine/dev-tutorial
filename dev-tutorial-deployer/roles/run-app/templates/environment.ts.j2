@@ -1,0 +1,7 @@
+/* {{ ansible_managed }} */
+export const environment = {
+  production: {{ run_app_production | string | lower }},
+  apiEndpoint: '/api',
+  socketEndpoint: '/',
+  disableTerminal: {{ run_app_disable_terminal | string | lower }},
+};

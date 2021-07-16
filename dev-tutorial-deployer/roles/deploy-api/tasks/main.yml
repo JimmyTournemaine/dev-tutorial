@@ -1,0 +1,33 @@
+---
+- name: Pull the production images
+  docker_image:
+    name: "{{ item }}"
+    source: pull
+  loop:
+    - "{{ deploy_api_image_api }}"
+    - "{{ deploy_api_image_db }}"
+
+- name: Deploy the production database
+  docker_container:
+    name: "{{ deploy_api_db_container }}"
+    image: mongo
+    state: started
+    auto_remove: yes
+    log_driver: none
+    networks:
+      - name: "{{ deploy_api_network_db }}"
+    networks_cli_compatible: no
+
+- name: Deploy the production image
+  docker_container:
+    name: "{{ deploy_api_container }}"
+    image: "{{ deploy_api_image_api }}"
+    state: started
+    auto_remove: no
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    networks:
+      - name: "{{ deploy_api_network_db }}"
+      - name: "{{ deploy_api_network_api }}"
+    networks_cli_compatible: no

@@ -1,0 +1,7 @@
+---
+- name: Run the containers
+  hosts: deployer
+  roles:
+    - { role: run-common, tags: [api, app] }
+    - { role: run-api, tags: api }
+    - { role: run-app, tags: app }

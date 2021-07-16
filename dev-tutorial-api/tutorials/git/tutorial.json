@@ -7,14 +7,13 @@
   "slides": [
     {
       "src": "markdown/1-introduction.md",
-      "validators": [
-        {"input": {"cmd": "git --version"}}
-      ]
-    }, {
+      "validators": [{ "input": { "cmd": "git --version" } }]
+    },
+    {
       "src": "markdown/2-git-flow.md",
       "validators": [
-        { "rc": { "exitCode": "0"}},
-        { "creates": {"path": "git-tuto", "type": "directory"}}
+        { "rc": { "exitCode": "0" } },
+        { "creates": { "path": "git-tuto", "type": "directory" } }
       ]
     }
   ]

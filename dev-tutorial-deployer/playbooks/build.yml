@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook.json
+---
+- name: Prepare the local development environment
+  hosts: deployer
+  roles:
+    - role: build-common
+      project_paths:
+        - "{{ deployer_local_workspace }}/dev-tutorial-api"
+        - "{{ deployer_local_workspace }}/dev-tutorial-app"
+      tags:
+        - api
+        - app
+
+    - role: build-api
+    - role: build-app

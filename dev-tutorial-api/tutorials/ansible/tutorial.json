@@ -7,25 +7,43 @@
   "slides": [
     {
       "src": "markdown/1-introduction.md",
-      "validators": [{
-        "input": {"cmd": "ansible", "args": ["-m", "ping"]},
-        "rc": {"exitCode": 0}
-      },{
-        "input": {"cmd": "ansible", "args": ["-m", "ping", "-a", "data=pang"]},
-        "rc": {"exitCode": 0}
-      }]
-    },{
+      "validators": [
+        {
+          "input": { "cmd": "ansible", "args": ["-m", "ping"] },
+          "rc": { "exitCode": 0 }
+        },
+        {
+          "input": {
+            "cmd": "ansible",
+            "args": ["-m", "ping", "-a", "data=pang"]
+          },
+          "rc": { "exitCode": 0 }
+        }
+      ]
+    },
+    {
       "src": "markdown/2-playbooks.md",
-      "validators": [{
-        "input": {"cmd": "ansible-galaxy", "args":["role", "init"]},
-        "creates": {"path": "/etc/ansible/roles/tomcat", "type": "directory"}
-      }]
-    },{
+      "validators": [
+        {
+          "input": { "cmd": "ansible-galaxy", "args": ["role", "init"] },
+          "creates": {
+            "path": "/etc/ansible/roles/tomcat",
+            "type": "directory"
+          }
+        }
+      ]
+    },
+    {
       "src": "markdown/3-roles.md",
-      "validators": [{
-        "input": {"cmd": "ansible-galaxy", "args":["role", "init"]},
-        "creates": {"path": "/etc/ansible/roles/tomcat", "type": "directory"}
-      }]
+      "validators": [
+        {
+          "input": { "cmd": "ansible-galaxy", "args": ["role", "init"] },
+          "creates": {
+            "path": "/etc/ansible/roles/tomcat",
+            "type": "directory"
+          }
+        }
+      ]
     }
   ]
 }

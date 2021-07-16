@@ -1,0 +1,26 @@
+---
+- name: Prepare the local container
+  hosts: instance
+  roles:
+    - role: build-common
+      project_paths: ["{{ deployer_local_workspace }}/dev-tutorial-app"]
+    - role: build-app
+    - role: run-common
+    - role: run-app
+
+- name: Prepare the production packaging
+  hosts:
+    - instance
+    - dev-tutorial-app-molecule
+  roles:
+    - role: package-app
+
+- name: Prevent port conflicts
+  hosts: instance
+  tasks:
+    - name: Cleanup containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ deployer_container_app }}"

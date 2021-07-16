@@ -1,7 +1,0 @@
-/* {{ ansible_managed }} */
-export const environment = {
-  production: {{ dockerize_app_production | string | lower }},
-  apiEndpoint: '/api',
-  socketEndpoint: '/',
-  disableTerminal: {{ dockerize_app_disable_terminal | string | lower }},
-};

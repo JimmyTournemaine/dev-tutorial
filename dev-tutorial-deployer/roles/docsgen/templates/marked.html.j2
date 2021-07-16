@@ -11,20 +11,57 @@
 
     body {
       background-color: white;
-      max-width: 790px;
       margin: 0 auto;
-      padding: 30px 0;
-    }
-
-    .markdown-body {
-      -ms-text-size-adjust: 100%;
-      -webkit-text-size-adjust: 100%;
+      padding: 30px 0 0 0;
       color: #333;
-      overflow: hidden;
       font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
       font-size: 16px;
       line-height: 1.6;
       word-wrap: break-word;
+    }
+    #wrapper {
+      display: flex;
+      justify-content: space-between;
+    }
+    .markdown-body,
+    #menu {
+      padding: 15px;
+    }
+    #menu {
+      width: 25%;
+      height: calc(100vh - 80px);
+      overflow: auto;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0px;
+      background: rgb(235, 235, 235);
+    }
+    #menu h1 {
+      color: rgb(46, 46, 46);
+      text-transform: uppercase;
+      text-align: center;
+    }
+    #menu ul {
+      padding-left: 2em;
+    }
+    #menu > ul, #menu > ul > ul {
+      padding-left: 0;
+    }
+    #menu ul, #menu li, #menu h1, #menu h2, #menu h3, #menu h4, #menu h5, #menu h6 {
+      margin: 0;
+    }
+    #menu li {
+      list-style: none;
+    }
+    #menu a {
+      text-decoration: inherit;
+      color: rgb(63, 63, 63);
+      font-weight: lighter;
+    }
+    .markdown-body {
+      width: 60%;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
     }
 
     .markdown-body a {
@@ -765,10 +802,58 @@
 </head>
 
 <body>
+  <div id="wrapper">
+  <nav id="menu">
+    <h1>Table of contents</h1>
+    <hr>
+  </nav>
   <article class="markdown-body">
     {{ markdown_body }}
   </article>
+</div>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
+  <script>
+    // Generate the TOC sidebar
+    var menu = document.getElementById("menu")
+    var mainUl = document.createElement('ul')
+    var ul = mainUl
+
+    var headings = document.querySelectorAll("h2, h3, h4, h5, h6")
+    headings.forEach(function(ele, i) {
+      if(i == 0) {
+        newUl = document.createElement('ul')
+        ul.appendChild(newUl)
+        ul = newUl
+      } else {
+        var previousLevel = parseInt(headings[i-1].tagName.charAt(1))
+        var currentLevel = parseInt(ele.tagName.charAt(1))
+
+        if(currentLevel > previousLevel) {
+          newUl = document.createElement('ul')
+          ul.appendChild(newUl)
+          ul = newUl
+        } else if (currentLevel < previousLevel) {
+          for(i=currentLevel; i<previousLevel; i++) {
+            ul = ul.parentElement
+          }
+        }
+      }
+      
+      var a = document.createElement('a')
+      a.href = '#' + ele.id
+      a.textContent = ele.textContent
+
+      var h = document.createElement(ele.tagName)
+      h.appendChild(a)
+
+      var li = document.createElement('li')
+      li.appendChild(h)
+
+      ul.appendChild(li)
+    });
+
+    menu.appendChild(mainUl)
+  </script>
 </body>
 </html>

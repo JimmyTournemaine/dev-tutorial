@@ -1,0 +1,2 @@
+---
+build_api_image: "{{ deployer_image_api }}"

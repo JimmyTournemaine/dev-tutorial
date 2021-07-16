@@ -1,0 +1,20 @@
+---
+dependency:
+  enabled: False
+driver:
+  name: delegated
+platforms:
+  - name: instance
+    groups:
+      - molecule_deployer
+provisioner:
+  name: ansible
+  inventory:
+    links:
+      hosts: ../../../../tests/hosts.yml
+      group_vars: ../../../../tests/group_vars
+  env:
+    ANSIBLE_ACTION_PLUGINS: /etc/ansible/plugins/action
+    ANSIBLE_FILTER_PLUGINS: /etc/ansible/plugins/filter
+verifier:
+  name: ansible

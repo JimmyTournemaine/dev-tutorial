@@ -1,0 +1,5 @@
+---
+- name: Prepare the local development environment
+  hosts: deployer
+  roles:
+    - role: quality-check

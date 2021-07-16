@@ -1,0 +1,14 @@
+---
+- name: Generate the backend production package
+  hosts:
+    - deployer
+    - dev-tutorial-api
+  roles:
+    - role: package-api
+
+- name: Generate the frontend production package
+  hosts:
+    - deployer
+    - dev-tutorial-app
+  roles:
+    - role: package-app

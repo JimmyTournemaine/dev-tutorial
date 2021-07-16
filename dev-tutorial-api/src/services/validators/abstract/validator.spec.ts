@@ -2,41 +2,13 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { PassThrough } from 'stream';
 import { DockerService } from '../../docker/docker';
-import { DemuxStream } from '../../docker/stream';
 import { SocketService } from '../../socket/socket';
 import { CreatesValidator } from '../docker/creates-validator';
 import { ExitCodeValidator } from '../exit-code/exit-code-validator';
 import { ValidatorDescriptorsParser } from './validator-parser';
 import { ValidatorFactory } from './validator-factory';
 import { PreValidator } from './validator-pre';
-
-class PassThroughDemuxStream extends DemuxStream {
-  constructor(mainStream: PassThrough) {
-    super(mainStream);
-
-    const stdout = new PassThrough();
-    const stderr = new PassThrough();
-
-    this.mainStream
-      .pipe(stdout)
-      .on('end', () => {
-        stdout.end();
-        stderr.end();
-      });
-
-    this.stdout = stdout;
-    this.stderr = stderr;
-  }
-
-  /**
-   * @override
-   */
-  onClose(listener: () => void): this {
-    this.mainStream.on('finish', listener);
-
-    return this;
-  }
-}
+import { PassThroughDemuxStream } from '../../../utils/demux-stream-passthrough.test';
 
 describe('Validation', () => {
   const ttylogExample = {

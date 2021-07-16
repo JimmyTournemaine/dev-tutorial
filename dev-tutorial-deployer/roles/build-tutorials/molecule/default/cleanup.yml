@@ -1,0 +1,16 @@
+---
+- name: Cleanup
+  hosts: instance
+  connection: local
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Destroy images
+      docker_image:
+        name: "{{ item }}"
+        state: absent
+        force_absent: yes
+      loop:
+        - ansible
+        - dev
+        - git

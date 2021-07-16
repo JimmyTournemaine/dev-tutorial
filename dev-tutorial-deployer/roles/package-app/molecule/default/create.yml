@@ -1,0 +1,14 @@
+---
+- name: Create
+  hosts: deployer_instance
+  no_log: "{{ molecule_no_log }}"
+  vars:
+    deployer_container_app: instance
+  roles:
+    - role: build-common
+      project_paths:
+        - "{{ deployer_local_workspace }}/dev-tutorial-app"
+    - role: build-app
+    - role: run-common
+    - role: run-app
+      run_app_command: sleep infinity

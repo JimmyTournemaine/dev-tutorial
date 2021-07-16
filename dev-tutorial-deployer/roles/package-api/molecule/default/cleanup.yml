@@ -1,0 +1,27 @@
+---
+- name: Cleanup instance
+  hosts: instance
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
+  ignore_unreachable: yes
+  tasks:
+    - name: Remove the build app
+      file:
+        path: /usr/src/app/api/dist
+        state: absent
+
+- name: Cleanup deployer
+  hosts: deployer_instance
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Remove the build app
+      file:
+        path: /tmp/api
+        state: absent
+
+    - name: Destroy images
+      docker_image:
+        name: "{{ deployer_image_prod_api }}"
+        state: absent
+        force_absent: yes

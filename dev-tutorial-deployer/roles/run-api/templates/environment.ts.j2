@@ -1,0 +1,20 @@
+/* {{ ansible_managed }} */
+export const environment = {
+  production: {{ run_api_production | string | lower }},
+  docker: {
+  {% for key, value in run_api_docker.items() %}
+  {{ key }}: {{ "'" + value + "'" if value is string else value }},
+  {% endfor -%}
+  },
+  mongodb: '{{ run_api_mongodb }}',
+  tokens: {
+    accessToken: {
+      secret: '{{ run_api_token_access_secret | default(lookup('password', '/dev/null chars=ascii_lowercase,digits length=32')) }}',
+      expiresIn: {{ run_api_token_access_expiresIn }},
+    },
+    refreshToken: {
+      secret: '{{ run_api_token_refresh_secret | default(lookup('password', '/dev/null chars=ascii_lowercase,digits length=32')) }}',
+      expiresIn: {{ run_api_token_refresh_expiresIn }},
+    }
+  }
+};

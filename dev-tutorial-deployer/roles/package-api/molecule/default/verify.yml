@@ -1,0 +1,72 @@
+---
+- name: Verify the image
+  hosts: deployer_instance
+  gather_facts: false
+  tasks:
+    - name: Get docker host info
+      docker_host_info:
+        verbose_output: yes
+        images: yes
+      register: result
+
+    - name: Make sure the image exists
+      assert:
+        that:
+          - "'dev-tutorial-api-prod-molecule:latest' in images"
+      vars:
+        images: "{{ result.images | map(attribute='RepoTags') | flatten }}"
+
+    - name: Start a container from this image
+      docker_container:
+        name: dev-tutorial-api-prod-verify
+        image: dev-tutorial-api-prod-molecule
+        auto_remove: yes
+        state: started
+
+    - name: Add container to inventory
+      add_host:
+        name: dev-tutorial-api-prod-verify
+        ansible_connection: docker
+        ansible_python_interpreter: /usr/bin/python3
+
+- name: Verify the container aspect
+  hosts: dev-tutorial-api-prod-verify
+  gather_facts: false
+  tasks:
+    - name: Get embedded application stats
+      stat:
+        path: /usr/src/dev-tutorial-api
+      register: node_api
+
+    - name: Get embedded tutorials stats
+      stat:
+        path: /usr/src/dev-tutorial-api/tutorials
+      register: tutorials
+
+    - name: Get one embedded tutorials stats
+      stat:
+        path: /usr/src/dev-tutorial-api/tutorials/ansible
+      register: one_tutorial
+
+    - name: Make sure everything is embedded
+      assert:
+        that:
+          - "node_api.stat.exists"
+          - "node_api.stat.isdir is defined"
+          - "node_api.stat.isdir"
+          - "tutorials.stat.exists"
+          - "tutorials.stat.isdir is defined"
+          - "tutorials.stat.isdir"
+          - "one_tutorial.stat.exists"
+          - "one_tutorial.stat.isdir is defined"
+          - "one_tutorial.stat.isdir"
+
+- name: Stop the test container
+  hosts: localhost
+  no_log: "{{ molecule_no_log }}"
+  gather_facts: no
+  tasks:
+    - name: Stop the test container
+      docker_container:
+        name: dev-tutorial-api-prod-verify
+        state: absent

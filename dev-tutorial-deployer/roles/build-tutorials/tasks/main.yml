@@ -1,0 +1,18 @@
+---
+- name: Find the tutorials directories
+  find:
+    paths: "{{ deployer_local_workspace }}/dev-tutorial-api/tutorials"
+    recurse: no
+    file_type: directory
+  register: tutorial_directories
+
+- name: Build the tutorials images
+  docker_image:
+    name: "{{ item | basename }}"
+    build:
+      path: "{{ item }}"
+      pull: no
+    state: present
+  loop: "{{ tutorial_directories.files | map(attribute='path') | list }}"
+  loop_control:
+    label: "{{ item | basename }}"

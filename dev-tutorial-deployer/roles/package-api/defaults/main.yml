@@ -1,0 +1,3 @@
+---
+package_api_push: yes
+package_api_image: "{{ deployer_image_prod_api }}"

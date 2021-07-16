@@ -1,0 +1,19 @@
+---
+- name: Generate the frontend Dockerfile
+  template:
+    src: "Dockerfile.j2"
+    dest: "{{ deployer_local_workspace }}/dev-tutorial-app/Dockerfile"
+    mode: 0644
+
+- name: Build the frontend image
+  docker_image:
+    name: "{{ build_app_image }}"
+    build:
+      path: "{{ deployer_local_workspace }}/dev-tutorial-app"
+      pull: no
+      rm: yes
+    state: present
+    source: build
+    changes:
+      - package.json
+      - yarn.lock

@@ -1,0 +1,22 @@
+- name: Generate the Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: /tmp/app/Dockerfile
+  vars:
+    app_package: dev-tutorial-app
+
+- name: Generate the NGINX configuration
+  template:
+    src: dev-tutorial-app.conf.j2
+    dest: /tmp/app/dev-tutorial-app.conf
+
+- name: Build the image
+  docker_image:
+    name: "{{ package_app_image }}"
+    build:
+      path: /tmp/app
+      pull: no
+    push: "{{ package_app_push | bool }}"
+    source: build
+    changes:
+      - dev-tutorial-app.conf

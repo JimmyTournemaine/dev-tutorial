@@ -1,0 +1,7 @@
+---
+- name: Create the containers network
+  docker_network:
+    name: "{{ item }}"
+  loop:
+    - "{{ run_common_network_db }}"
+    - "{{ run_common_network_api }}"

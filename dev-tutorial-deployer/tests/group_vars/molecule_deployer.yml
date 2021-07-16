@@ -1,0 +1,28 @@
+# General
+deployer_env: molecule
+
+# Images
+deployer_image_api: dev-tutorial-api-molecule
+deployer_image_app: dev-tutorial-app-molecule
+deployer_image_prod_api: dev-tutorial-api-prod-molecule
+deployer_image_prod_app: dev-tutorial-app-prod-molecule
+
+# Containers Networks
+deployer_network_db: dev-tutorial-network-db-molecule
+deployer_network_api: dev-tutorial-network-api-molecule
+
+# Containers
+deployer_container_api: dev-tutorial-api-molecule
+deployer_container_app: dev-tutorial-app-molecule
+deployer_container_prod_api: dev-tutorial-back-molecule
+deployer_container_prod_app: dev-tutorial-front-molecule
+
+# Prevent registry push
+package_api_push: no
+package_app_push: no
+
+# Environment specific
+run_api_command: yarn serve
+run_api_token_access_secret: ThisIsAMoleculeAccessSecret
+run_api_token_refresh_secret: ThisIsAMoleculeRefreshSecret
+run_app_command: yarn start --host 0.0.0.0 --no-progress

@@ -1,9 +1,6 @@
 {
   "threshold": 1,
-  "reporters": [
-    "html",
-    "markdown"
-  ],
+  "reporters": ["html", "markdown"],
   "ignore": [
     "**/node_modules/**",
     "**/dist/**",
@@ -11,6 +8,7 @@
     "**/.rbenv/**",
     "**/.venv'/**",
     "**/report/**",
+    "**/coverage/**",
     "**/*cache*/**",
     "**/*.spec.ts",
     "**/*.test.ts",

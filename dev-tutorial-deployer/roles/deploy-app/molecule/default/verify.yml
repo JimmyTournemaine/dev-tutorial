@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: instance
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Get docker host info
+      docker_host_info:
+        verbose_output: yes
+        containers: yes
+        containers_filters:
+          status: running
+      register: result
+
+    - name: Make sure the application containers are running
+      assert:
+        that:
+          - "('/' + deployer_container_prod_app) in containers"
+      vars:
+        containers: "{{ result.containers | map(attribute='Names') | flatten }}"
+
+    - name: Wait for frontend port
+      wait_for:
+        port: 80
+        timeout: 30
+        state: started
+      delegate_to: "{{ deployer_container_prod_app }}"
+
+    - name: Make sure the app is started
+      uri:
+        url: "http://localhost/home"
+      delegate_to: "{{ deployer_container_prod_app }}"

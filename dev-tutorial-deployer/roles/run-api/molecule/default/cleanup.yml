@@ -1,0 +1,29 @@
+---
+- name: Cleanup
+  hosts: instance
+  gather_facts: no
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: Cleanup containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ deployer_container_db }}"
+        - "{{ deployer_container_api }}"
+
+    - name: Cleanup networks
+      docker_network:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ deployer_network_db }}"
+        - "{{ deployer_network_api }}"
+
+    - name: Cleanup images
+      docker_image:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ deployer_image_api }}"
+        - "{{ deployer_image_db }}"

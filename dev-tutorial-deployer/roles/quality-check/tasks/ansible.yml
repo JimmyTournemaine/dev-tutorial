@@ -1,0 +1,18 @@
+---
+# Detect unused registered results
+- name: Get registered results using register
+  set_fact:
+    registered_results: "{{ results_or_default + parsed_yaml | nested('register') | list }}"
+  with_items:
+    - "{{ '/etc/ansible/roles/*/tasks/*.yml' | fileglob }}"
+  vars:
+    results_or_default: "{{ registered_results | default([]) }}"
+    parsed_yaml: "{{ lookup('file', item) | from_yaml }}"
+
+- name: Fail on unused registered result
+  fail:
+    msg: "Unused registered {{ item }}"
+  when: "count_uses | int < 2"
+  loop: "{{ registered_results }}"
+  vars:
+    count_uses: "{{ lookup('pipe', 'grep -r ' + item + ' /etc/ansible | wc -l') }}"

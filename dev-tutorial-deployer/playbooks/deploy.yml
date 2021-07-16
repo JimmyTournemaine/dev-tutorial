@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://json.schemastore.org/ansible-playbook.json
+---
+- name: Deploy the production environement
+  hosts: deployer
+  roles:
+    - role: deploy-common
+    - role: deploy-api
+    - role: deploy-app

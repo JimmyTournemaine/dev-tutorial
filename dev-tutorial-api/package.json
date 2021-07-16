@@ -9,8 +9,8 @@
     "start": "node dist/index.js",
     "lint": "eslint 'src/**/*.ts'",
     "serve": "nodemon -e ts --exec ts-node src/index.ts",
-    "test": "nodemon -e ts --exec \"nyc $npm_package_config_mocha --exit\"",
-    "test-ci": "nyc $npm_package_config_mocha --reporter xunit --reporter-option output=report/test-results.xml --exit"
+    "test": "nodemon -e ts --exec \"$npm_package_config_mocha\"",
+    "test-ci": "nyc $npm_package_config_mocha --reporter xunit --reporter-option output=report/TESTS-ALL.xml --exit"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
@@ -20,6 +20,9 @@
       "text"
     ],
     "default-exclude": true,
+    "include": [
+      "src/**/*.ts"
+    ],
     "exclude": [
       "src/index.ts",
       "**/*.spec.ts",

@@ -1,9 +1,0 @@
----
-- name: Prepare the CI environment
-  hosts: deployer
-  roles:
-    - role: dockerize
-      deployer_env: ci
-      dockerize_backend_command: yarn test-ci
-      dockerize_frontend_command: yarn test-ci
-      dockerize_api_token_access_expiresIn: 120

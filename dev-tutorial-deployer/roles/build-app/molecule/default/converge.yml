@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: instance
+  no_log: "{{ molecule_no_log }}"
+  roles:
+    - role: build-common
+      project_paths:
+        - "{{ deployer_local_workspace }}/dev-tutorial-app"
+    - role: build-app

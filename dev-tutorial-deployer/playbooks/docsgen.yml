@@ -1,8 +1,13 @@
 ---
 - name: Generate the project documentation
-  hosts: localhost
+  hosts: deployer
   tags: generate
   pre_tasks:
+    - name: Pull a node image
+      docker_image:
+        name: node:14
+        source: pull
+      tags: always
     - name: Run a node container
       docker_container:
         name: dev-tutorial-docsgen
@@ -15,12 +20,14 @@
           - "{{ deployer_hosted_workspace }}:/usr/src"
           - "/usr/src/dev-tutorial-api/node_modules"
           - "/usr/src/dev-tutorial-app/node_modules"
+      tags: always
     - name: Add container to inventory
       add_host:
         name: dev-tutorial-docsgen
         ansible_connection: docker
         ansible_python_interpreter: /usr/bin/python3
       changed_when: False
+      tags: always
   roles:
     - role: docsgen
       delegate_to: dev-tutorial-docsgen
