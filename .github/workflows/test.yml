@@ -11,10 +11,8 @@ jobs:
       - uses: actions/setup-python@v2
       - name: Run tests
         run: ./bin/compose/compose.py dockerize ci -v
-      - name: Run tests
-        if: always()
-        run: docker image list ; docker container list
       - name: Publish Test Report
+        if: always()
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           files: "**/report/TESTS-*.xml"
