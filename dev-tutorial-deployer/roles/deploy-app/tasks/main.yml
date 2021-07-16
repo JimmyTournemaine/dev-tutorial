@@ -10,7 +10,6 @@
     image: "{{ deploy_app_image }}"
     state: started
     auto_remove: yes
-    command: sleep infinity
     ports:
       - "80:80"
     networks:
