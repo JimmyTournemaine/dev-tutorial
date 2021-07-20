@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v2
       - name: Run linter
-        run: /bin/compose/compose.py lint --languages=${{ github.event.inputs.languages }}
+        run: bin/compose/compose.py lint --languages=${{ github.event.inputs.languages }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
