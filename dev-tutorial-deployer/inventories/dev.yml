@@ -13,6 +13,6 @@ all:
     dev-tutorial-app:
         healthcheck_app_port: 4200
   children:
-    frontend:
+    frontends:
       hosts:
         dev-tutorial-app:
