@@ -2,12 +2,12 @@
 const PROXY_CONFIG = [
   {
     context: ['/api'],
-    target: '{{ run_app_api_host }}:{{ run_api_port }}',
+    target: '{{ run_app_api_host }}:{{ run_app_api_port }}',
     secure: false,
   },
   {
     context: ['/socket.io'],
-    target: '{{ run_app_api_host }}:{{ run_api_socket_port }}',
+    target: '{{ run_app_api_host }}:{{ run_app_api_socket_port }}',
     secure: false,
     ws: true,
   },
