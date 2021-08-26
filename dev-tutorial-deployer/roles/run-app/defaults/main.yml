@@ -8,6 +8,6 @@ run_app_karma_port: 9876
 run_app_disable_terminal: no
 
 # API info
-run_app_api_host: "http://{{ run_app_container }}"
-run_api_port: 3000
-run_api_socket_port: 3001
+run_app_api_host: "http://{{ deployer_container_api }}"
+run_app_api_port: 3000
+run_app_api_socket_port: 3001

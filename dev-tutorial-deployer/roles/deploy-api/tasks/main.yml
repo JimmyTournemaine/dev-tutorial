@@ -23,7 +23,7 @@
     name: "{{ deploy_api_container }}"
     image: "{{ deploy_api_image_api }}"
     state: started
-    auto_remove: no
+    auto_remove: yes
     ports:
       - "3000:3000"
       - "3001:3001"

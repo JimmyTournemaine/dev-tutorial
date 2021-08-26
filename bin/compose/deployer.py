@@ -246,7 +246,7 @@ class DeployerPlaybookCommandBuilder(DeployerCommandBuilder):
             args += f"-i {inventory} "
 
         for var_name, value in self.extra_vars.items():
-            args += f"-e {var_name}={value} "
+            args += f"\"-e {var_name}={value}\" "
 
         if len(self.tags) > 0:
             taglist = ",".join(self.tags)

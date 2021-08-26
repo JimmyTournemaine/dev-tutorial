@@ -58,12 +58,18 @@ class DockerizeCommand(Command):
             .add_inventory(args.environment)
         )
 
-        for tag in args.tags + args.services:
-            builder.add_tag(tag)
-
         # Specific dev arguments
         if args.environment == "dev":
             builder.add_playbook("healthcheck").add_extra_var("healthcheck_wait", "yes")
+
+        # Custom tags
+        for tag in args.tags + args.services:
+            builder.add_tag(tag)
+
+        # Custom vars
+        for ansible_var in args.ansible_vars:
+            var_name, value = ansible_var.split("=")
+            builder.add_extra_var(var_name, f"'{value}'")
 
         # Run the deployer
         start_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%IZ")
@@ -119,7 +125,6 @@ class LogTransform:
         self.win_color = win_color
 
     def transform(self, cmd):
-        print(sys.platform)
         if "win32" == sys.platform:
             log_transform = (
                 "powershell \"{} | % {{ Write-Host -NoNewline -ForegroundColor {} '{} | '; Write-Host $_ }}\""

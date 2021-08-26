@@ -70,6 +70,12 @@ Run a local development environment :
 * `dev-tutorial-app`: The angular application container, watching for changes (<http://localhost:4200>)
 * `dev-tutorial-api`: The API, watching for changes
 
+To get more control over the running service, you can run commands like the following to run a container that is just waiting. Then, you can open a shell in the container and run what you want.
+For example to run the normal *api* but run the *app* container without starting the application, you can run :
+```
+$DEVTUTO_COMPOSE dockerize dev -a run_app_command='sleep infinity'
+```
+
 ---
 ```bash
 $DEVTUTO_COMPOSE dockerize test
@@ -190,6 +196,20 @@ your-host$ docker exec -it dev-tutorial-api bash
 container# yarn add <my-deps>
 container# ^D
 your-host$ $DEVTUTO_COMPOSE dockerize dev
+```
+
+### Security update
+
+The `yarn audit` command do not provide the `fix` option like `npm` do.
+To automatically fix issues, run the following commands.
+
+```bash
+npm i --package-lock-only
+npm audit fix
+rm yarn.lock
+yarn import
+rm package-lock.json
+yarn audit
 ```
 
 ### API
