@@ -3,7 +3,7 @@
 # You can pass the healthcheck_wait variable if you just start the containers
 #   to wait until application ports are reachables
 - name: Backend applications healthcheck
-  hosts: dev-tutorial-api
+  hosts: backends
   tags: api
   tasks:
     - name: Wait for backend application ports
@@ -12,20 +12,20 @@
         sleep: 5
         timeout: 60
         state: started
-      loop: [3000, 3001]
+      loop: ["{{ api_port }}", "{{ socket_port }}"]
       when: "healthcheck_wait is defined and healthcheck_wait | bool"
 
     - name: Backend check
       uri:
-        url: "http://localhost:3000/api/tuto"
+        url: "http://localhost:{{ api_port }}/api/tuto"
 
-- name: Backend applications healthcheck
+- name: Frontend applications healthcheck
   hosts: frontends
   tags: app
   tasks:
     - name: Wait for frontend application ports
       wait_for:
-        port: "{{ healthcheck_app_port | default(80) }}"
+        port: "{{ app_port | default(80) }}"
         sleep: 5
         timeout: 600
         state: started
@@ -35,4 +35,4 @@
       uri:
         url: "http://localhost:{{ port }}/"
       vars:
-        port: "{{ healthcheck_app_port | default(80) }}"
+        port: "{{ app_port | default(80) }}"

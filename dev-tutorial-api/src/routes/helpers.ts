@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { ErrorResponse } from '../models/error';
 
 type Handler = (req: Request, res: Response, next?: NextFunction) => Promise<void | Response<unknown>>;
 
@@ -21,7 +22,7 @@ export class PromiseHandler {
     try {
       return await this.originalHandler(req, res, next);
     } catch (err) {
-      return next(err);
+      next(err);
     }
   };
 }

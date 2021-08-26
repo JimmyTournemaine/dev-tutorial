@@ -1,5 +1,6 @@
 ---
 - name: Generate the backend production package
+  any_errors_fatal: true
   hosts:
     - deployer
     - dev-tutorial-api
@@ -7,6 +8,7 @@
     - role: package-api
 
 - name: Generate the frontend production package
+  any_errors_fatal: true
   hosts:
     - deployer
     - dev-tutorial-app

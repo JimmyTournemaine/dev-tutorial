@@ -1,31 +1,23 @@
 ---
 - name: Check for test coverage data
   stat:
-    path: dev-tutorial-api/.nyc_output
+    path: dev-tutorial-api/coverage/lcov-report
   register: coverage_data
 
 - name: Missing coverage data
   set_fact:
-    docsgen_warnings: "{{ docgen_warnings | default([]) + [{ generator: 'coverage', warn }] }}"
+    docsgen_warnings: "{{ docgen_warnings + [{ generator: 'coverage', warn }] }}"
   vars:
     warn: >
       Tests coverage has not been executed.
       No HTML report will be generated.
-      Please run coverage report using :
-      docker exec -it dev-tutorial-api-<env> yarn cover
+      Please run tests first.
       Then regenerate the documentation.
   when: not coverage_data.stat.exists
 
-- name: Remove temp reports
-  file:
-    path: /tmp/coverage
-    state: absent
-  changed_when: False
-  when: "docsgen_force | bool"
-
 - name: Generate test coverage HTML report
-  command:
-    chdir: dev-tutorial-api
-    cmd: nyc report --reporter html --report-dir /tmp/coverage --exclude-after-remap false
-    creates: /tmp/coverage
+  copy:
+    src: dev-tutorial-api/coverage/lcov-report/
+    dest: docs/html/coverage
+    remote_src: yes
   when: coverage_data.stat.exists

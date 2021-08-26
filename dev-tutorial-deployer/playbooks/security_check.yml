@@ -1,0 +1,20 @@
+---
+- name: Make sure frontends containers are reachables
+  hosts: frontends
+  gather_facts: no
+  tasks:
+    - name: Ping the container
+      ping:
+
+- name: Make sure containers are reachables
+  hosts: backends
+  gather_facts: no
+  tags: api
+  tasks:
+    - name: Ping the container
+      ping:
+
+- name: Run the containers
+  hosts: deployer
+  roles:
+    - zap-scan

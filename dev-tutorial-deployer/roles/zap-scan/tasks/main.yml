@@ -1,0 +1,77 @@
+---
+# Prepare
+
+- name: Make sure the ZAP report folder exists
+  file:
+    path: "{{ deployer_local_workspace }}/report/zap"
+    state: directory
+  tags: always
+
+- name: Pull the last OWASP ZAP image
+  docker_image:
+    name: "{{ zap_scan_image }}"
+    source: pull
+  tags: always
+
+- name: Add frontend targets to the ZAP network
+  docker_network:
+    name: "{{ zap_scan_network }}"
+    connected: "{{ groups['frontends'] }}"
+    appends: yes
+
+- name: Add backend targets to the ZAP network
+  docker_network:
+    name: "{{ zap_scan_network }}"
+    connected: "{{ groups['backends'] }}"
+    appends: yes
+  tags: api
+
+# Run the API scan
+
+- name: Get OpenAPI specification
+  slurp:
+    src: "{{ deployer_local_workspace }}/dev-tutorial-api/openapi-generated.yml"
+  register: openapi_specfile
+  tags: api
+
+- name: Set targets
+  set_fact:
+    servers: "{{ servers | default([]) + [{ 'url': url }] }}"
+  loop: "{{ groups['backends'] }}"
+  vars:
+    url: "http://{{ item }}:{{ hostvars[item]['api_port'] }}/api"
+  tags: api
+
+- name: Set the current servers URL
+  set_fact:
+    openapi_spec: "{{ original_specs | combine({ 'servers': servers }) }}"
+  vars:
+    original_specs: "{{ openapi_specfile['content'] | b64decode | from_yaml }}"
+  tags: api
+
+- name: Write OpenAPI specifications in a JSON file
+  copy:
+    dest: "{{ deployer_local_workspace }}/report/zap/openapi.json"
+    content: "{{ openapi_spec | to_json }}"
+  tags: api
+
+- name: Run api-scan
+  include_tasks:
+    file: run-scan.yml
+    apply:
+      tags: api
+  vars:
+    zap_command: zap-api-scan.py -t openapi.json -f openapi -r zapreport-api-scan.html  -x zapreport-api-scan.xml -J zapreport-api-scan.json
+  tags: api
+
+# Run full-scan
+
+- name: Run full-scan
+  include_tasks:
+    file: run-scan.yml
+  vars:
+    target_url: "http://{{ target_container }}:{{ hostvars[target_container]['app_port'] }}"
+    zap_command: zap-full-scan.py -t {{ target_url }} -r zapreport-full-scan.html -x zapreport-full-scan.xml -J zapreport-full-scan.json
+  loop: "{{ groups['frontends'] }}"
+  loop_control:
+    loop_var: target_container

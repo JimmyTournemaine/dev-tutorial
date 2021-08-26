@@ -8,6 +8,7 @@ from commands.lint import LintCommand
 from commands.molecule import TestDeployerCommand
 from commands.package import PackageCommand
 from commands.prune import PruneCommand
+from commands.security import SecurityCommand
 
 
 class CommandManager:
@@ -20,6 +21,7 @@ class CommandManager:
         LintCommand,
         PackageCommand,
         PruneCommand,
+        SecurityCommand,
         TestDeployerCommand,
     ]
 

@@ -14,9 +14,12 @@
  *         - name
  *         - message
  */
-export class ErrorResponse extends Error {
+export class ErrorResponse {
+  name = 'DEV_TUTO_ERROR';
+
+  message: string;
+
   constructor(cause: string|Error) {
-    super(typeof cause === 'string' ? cause : cause.message);
-    this.stack = undefined;
+    this.message = typeof cause === 'string' ? cause : cause.message;
   }
 }

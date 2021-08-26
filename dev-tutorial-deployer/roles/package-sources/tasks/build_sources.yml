@@ -1,0 +1,58 @@
+---
+- name: Previous build metadata
+  slurp:
+    src: "{{ package_sources_directory }}/dist/.metadata.yml"
+  register: metadata
+  ignore_errors: yes
+
+- name: Compute diff time
+  when: "metadata is not failed"
+  block:
+    - name: Get the diff time since last build
+      set_fact:
+        date_diff: "{{ (current_build | to_datetime - previous_build | to_datetime).total_seconds() | int }}"
+      vars:
+        previous_build: "{{ (metadata['content'] | b64decode | from_yaml).built_at }}"
+        current_build: "{{ ansible_date_time.date }} {{ ansible_date_time.time }}"
+
+    - name: Detect source changes
+      find:
+        paths: "{{ package_sources_changes | map('regex_replace', '(.+)', package_sources_directory + '/\\1') | list }}"
+        recurse: yes
+        age: "-{{ date_diff }}s"
+        file_type: file
+      register: src_changes
+
+    - name: Modified sources since last build
+      debug:
+        var: file_list
+      vars:
+        file_list: "{{ src_changes.files | map(attribute='path') | list }}"
+
+- name: Build the production directory
+  command:
+    cmd: "{{ package_sources_build_command }}"
+    chdir: "{{ package_sources_directory }}"
+  when: "metadata is failed or src_changes.matched > 0"
+  register: build
+
+- name: Get package.json infos
+  slurp:
+    src: "{{ package_sources_directory }}/package.json"
+  register: package_json
+
+- name: Write metadata
+  template:
+    src: .metadata.yml.j2
+    dest: "{{ package_sources_directory }}/dist/.metadata.yml"
+  when: "build is changed"
+  vars:
+    package_info: "{{ package_json['content']| b64decode | from_json }}"
+    name: "{{ package_info.name }}"
+    version: "{{ package_info.version }}"
+
+- name: Fetch the package
+  synchronize:
+    src: "{{ package_sources_directory }}/dist"
+    dest: "{{ package_sources_fetch_path }}"
+    mode: pull

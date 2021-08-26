@@ -12,7 +12,11 @@ class DeployCommand(Command):
 
     def run(self, args):
         # Deployer run builder
-        builder = DeployerPlaybookCommandBuilder().add_playbook("deploy")
+        builder = (
+            DeployerPlaybookCommandBuilder()
+            .add_playbook("deploy")
+            .add_inventory("prod")
+        )
 
         # Run the deployer
         deployer = DeployerFactory().create(self.executer)

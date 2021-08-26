@@ -106,33 +106,6 @@ export class TutorialController {
   }
 
   /**
-   * Get the slides
-   *
-   * @param {Request} req The request
-   * @param {Response} res The response
-   * @returns {Response} The response
-   *
-   * @deprecated You should get one slide at a time using slide() instead.
-   */
-  public static async content(req: Request, res: Response): Promise<void> {
-    const { slug } = req.params;
-    const tutoService = TutorialService.getInstance();
-    const tutorial = await tutoService.getTutorial(slug);
-
-    if (!tutorial) {
-      res.status(404).send(`Tutorial '${slug}' not found.`);
-      return;
-    }
-
-    const slides = [];
-    for (const slide of tutorial.slides) {
-      slides.push(fs.readFileSync(`tutorials/${slug}/${slide.src}`).toString());
-    }
-
-    res.json(slides);
-  }
-
-  /**
    * Returns static content from  the tutorials (icon, ...)
    *
    * @param req The request
@@ -229,12 +202,12 @@ export class TutorialController {
     const tutorial = await tutoService.getTutorial(slug);
 
     if (!tutorial) {
-      res.status(404).json({ error: `Tutorial '${slug}' not found` });
+      res.status(404).json(new ErrorResponse(`Tutorial '${slug}' not found`));
       return;
     }
 
     if (id < 1 || id > tutorial.slides.length) {
-      res.status(404).json({ error: `Slide ${id} not found for tutorial '${slug}'` });
+      res.status(404).json(new ErrorResponse(`Slide ${id} not found for tutorial '${slug}'`));
       return;
     }
 
@@ -265,8 +238,9 @@ export class TutorialController {
    *         schema:
    *           type: string
    *     requestBody:
+   *       required: true
    *       content:
-   *         text/*:
+   *         application/octet-stream:
    *           schema:
    *             type: string
    *             format: binary
@@ -450,7 +424,7 @@ export class TutorialController {
     const tutorial = await tutoService.getTutorial(slug);
 
     if (!tutorial) {
-      res.status(404).send(`Tutorial '${slug}' not found.`);
+      res.status(404).json(new ErrorResponse(`Tutorial '${slug}' not found.`));
       return;
     }
 

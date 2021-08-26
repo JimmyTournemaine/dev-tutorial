@@ -1,0 +1,21 @@
+---
+- name: Check for zap reports
+  stat:
+    path: "report/zap/zapreport-{{ task_item }}.html"
+  register: zap_data
+
+- name: Missing coverage data
+  set_fact:
+    docsgen_warnings: "{{ docgen_warnings + [{ generator: 'coverage', warn }] }}"
+  vars:
+    warn: >
+      Security scans has not been run.
+      Please run the security command first.
+  when: not zap_data.stat.exists
+
+- name: Generate test coverage HTML report
+  copy:
+    src: "report/zap/zapreport-{{ task_item }}.html"
+    dest: docs/html/zap/
+    remote_src: yes
+  when: zap_data.stat.exists

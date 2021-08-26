@@ -1,6 +1,7 @@
 import os
 import sys
 from abc import ABC, abstractmethod
+from tempfile import mkstemp
 
 from docker import Docker, DockerExecBuilder, DockerRunBuilder
 
@@ -25,13 +26,14 @@ class Deployer:
         return self.docker.is_running(self.CONTAINER)
 
     def get_image_id(self):
-        tmp_file = "/tmp/dev-tutorial-image.id"
+        fd, tmp_file = mkstemp()
         self.executer.exec_context.set_next_dry_run(False)
         self.executer.run(
             'docker images --format "{{.ID}}" ' + self.IMAGE + " > " + tmp_file
         )
         with open(tmp_file) as f:
             image_id = f.readline()
+        os.close(fd)
         os.remove(tmp_file)
         return image_id
 

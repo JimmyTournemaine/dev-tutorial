@@ -9,7 +9,7 @@
     name: "{{ deploy_app_container }}"
     image: "{{ deploy_app_image }}"
     state: started
-    auto_remove: yes
+    auto_remove: no
     ports:
       - "80:80"
     networks:

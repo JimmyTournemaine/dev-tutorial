@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema<UserModelInterface>({
   }
 });
 
-const statics = userSchema.statics as UserModelInterface;
+const statics = userSchema.statics as unknown as UserModelInterface;
 // static.build has to be defined before TutorialDescriptor declaration, otherwise build method does not exist
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 statics.build = (attr: IUser): UserDocument => new User(attr);

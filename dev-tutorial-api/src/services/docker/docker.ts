@@ -1,6 +1,4 @@
 // dockerode peer dependency typed in @types
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Modem } from 'docker-modem';
 import { Readable, Writable } from 'stream';
 import * as Docker from 'dockerode';
 import * as tar from 'tar-stream';
@@ -142,7 +140,7 @@ export class DockerService implements IDockerService {
     // Build the image
     const stream = await this.docker.buildImage({ context: `tutorials/${tutoId}`, src: ['Dockerfile'] }, { t: tutoId });
     await new Promise<void>((resolve, reject) => {
-      (this.docker.modem as Modem).followProgress(stream, (err: Error) => {
+      this.docker.modem.followProgress(stream, (err: Error) => {
         if (err) {
           reject(err);
         } else {
@@ -211,7 +209,7 @@ export class DockerService implements IDockerService {
       .then((stream: Readable) => {
         const demux = new DemuxStream(stream);
         if ('demuxStream' in this.docker.modem) {
-          (this.docker.modem as Modem).demuxStream(stream, demux.stdout, demux.stderr);
+          this.docker.modem.demuxStream(stream, demux.stdout, demux.stderr);
         }
         return demux;
       });

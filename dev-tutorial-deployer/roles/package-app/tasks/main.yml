@@ -1,11 +1,12 @@
 ---
-- name: Make sure rsync is installed
-  package:
-    name: rsync
-
 - name: Build sources
-  include_tasks: "build_sources.yml"
-  when: "inventory_hostname not in groups['deployer']"
+  include_role:
+    name: package-sources
+  vars:
+    package_sources_directory: /usr/src/app/app-ui
+    package_sources_changes: [node_modules, src]
+    package_sources_build_command: yarn build
+    package_sources_fetch_path: /tmp/app
 
 - name: Build image
   include_tasks: "build_image.yml"

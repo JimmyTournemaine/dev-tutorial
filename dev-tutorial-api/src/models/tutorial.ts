@@ -124,7 +124,7 @@ const tutorialSchema = new mongoose.Schema<TutorialDescriptorModelInterface>({
   },
 });
 
-const statics = tutorialSchema.statics as TutorialDescriptorModelInterface;
+const statics = tutorialSchema.statics as unknown as TutorialDescriptorModelInterface;
 // static.build has to be defined before TutorialDescriptor declaration, otherwise build method does not exist
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 statics.build = (attr: ITutorialDescriptor): TutorialDescriptorDocument => new TutorialDescriptor(attr);

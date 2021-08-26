@@ -6,7 +6,7 @@
 DEFAULT_BRANCH: main
 APPLY_FIXES: none
 DISABLE:
-  #- HTML # wait new version (.htmlhintrc not functional)
+  - HTML # wait new version (.htmlhintrc not functional)
   - SPELL
   - JAVASCRIPT # Only typescript is used
   - OPENAPI # ansible generated template
@@ -23,6 +23,7 @@ ANSIBLE_DIRECTORY: dev-tutorial-deployer
 CSS_STYLELINT_FILTER_REGEX_EXCLUDE: "(docs|.*/coverage|.*/dist)/.*" # ignore generated docs
 HTML_HTMLHINT_FILTER_REGEX_EXCLUDE: "(docs|.*/coverage|.*/dist)/.*" # ignore generated docs
 HTML_HTMLHINT_CONFIG_FILE: LINTER_DEFAULT
+PYTHON_BANDIT_FILTER_REGEX_EXCLUDE: ".*/tests/"
 SPELL_CSPELL_ARGUMENTS: --local "en,fr" # add fr to locales
 SPELL_MISSPELL_FILTER_REGEX_EXCLUDE: '.*\.fr\..*' # mispell cannot lint french
 TYPESCRIPT_ES_CONFIG_FILE: LINTER_DEFAULT

@@ -1,7 +1,7 @@
-from unittest import mock
 import sys
-import pytest
+from unittest import mock
 
+import pytest
 from compose import main
 
 

@@ -1,4 +1,9 @@
 ---
+- name: Filter generators
+  set_fact:
+    docsgen_generators: "{{ docsgen_generators | selectattr('name', 'in', generators) }}"
+  when: generators is defined
+
 - name: Check generation tools
   command: yarn global list
   register: yarn_global_list
@@ -14,21 +19,7 @@
     fullname: "{{ item.name + (('@' + item.version|string) if item.version is defined else '') }}"
   loop_control:
     label: "{{ fullname }}"
-  loop:
-    - { name: "@asyncapi/generator" }
-    - { name: "marked" }
-    - { name: "nyc" }
-    - { name: "redoc-cli" }
-    - { name: "redoc-asyncapi" }
-    - { name: "swagger-jsdoc", version: 6 }
-    - { name: "typescript" }
-    - { name: "typedoc" }
-
-- name: Remove previously generated doc
-  file:
-    path: docs
-    state: absent
-  when: "docsgen_force | bool"
+  loop: "{{ docsgen_generators | map(attribute='dependencies') | flatten | unique }}"
 
 - name: Ensure docs folder exists
   file:
@@ -47,7 +38,7 @@
   yarn:
     path: "{{ item }}"
   register: yarn_deps
-  changed_when: "'Already up-to-date' in yarn_deps"
+  changed_when: "'Already up-to-date' not in yarn_deps"
   loop:
     - dev-tutorial-api
     - dev-tutorial-app
@@ -57,13 +48,13 @@
     docsgen_warnings: []
 
 - name: Run documentation generators
-  include_tasks: "{{ genitem.file }}"
-  vars:
-    task_item: "{{ genitem.task_item | default(omit) }}"
+  include_tasks: "generators/{{ genitem.name }}.yml"
   loop: "{{ docsgen_generators }}"
   loop_control:
     loop_var: genitem
-    label: "{{ genitem.file | splitext | first }}"
+    label: "{{ genitem.name }}"
+  vars:
+    task_item: "{{ genitem.task_item | default(omit) }}"
 
 - name: Some generators cannot proceed
   debug:

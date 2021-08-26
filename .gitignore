@@ -9,6 +9,7 @@ dist/
 node_modules/
 test-results.xml
 coverage/
+*-generated.*
 
 # VSCode
 .editorconfig
@@ -38,3 +39,6 @@ Dockerfile
 /*/src/environments/
 /dev-tutorial-app/src/proxy.conf.js
 docs/
+
+# Sonarqube
+.scannerwork/

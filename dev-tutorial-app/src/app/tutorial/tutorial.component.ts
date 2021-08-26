@@ -116,13 +116,10 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
               do: () => { this.state = 'creating'; }
             })
           )
-          .subscribe((res) => {
-            console.log('lets go', res);
+          .subscribe(() => {
             this.initSocket();
             this.state = 'ready';
-          }, (err) => {
-            console.log('error sub', err);
-          }, () => console.log('completed sub'));
+          });
       }
     });
 
@@ -164,8 +161,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param model The modified model.
    */
   onEditorSave(model: NgxEditorModel): void {
-    this.ws.edit(this.tutoId, model.uri, model.value)
-      .subscribe(() => console.log('written'), console.error);
+    this.ws.edit(this.tutoId, model.uri, model.value).subscribe();
   }
 
   /**
@@ -210,20 +206,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => this.terminal.resize(), 2100); // wait animation end
       }
     });
-  }
-
-  /**
-   * FIXME: debugging purpose only
-   */
-  toggleEditMode(): void {
-    this.editMode = !this.editMode;
-  }
-
-  /**
-   * FIXME: debugging purpose only
-   */
-  nextSlide(): void {
-    this.slideshow.nextSlide();
   }
 
   private initSocket() {

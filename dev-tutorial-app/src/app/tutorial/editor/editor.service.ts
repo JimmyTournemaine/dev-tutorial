@@ -49,7 +49,6 @@ export class EditorService {
    * @param model The model which should be saved.
    */
   saveModel(model: NgxEditorModel): void {
-    console.log('saving', model);
     this.saveSubject.next(model);
   }
 

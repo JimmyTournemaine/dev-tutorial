@@ -149,6 +149,25 @@ $DEVTUTO_COMPOSE lint --linters ANSIBLE_ANSIBLE_LINT,YAML_YAMLLINT
 
 The full linters and languages list if available from the [Megalinter documentation](https://nvuillam.github.io/mega-linter/supported-linters/#languages)
 
+#### Security
+
+
+```bash
+$DEVTUTO_COMPOSE security <dev|prod>
+```
+Run security scan against running servers.
+You must have start a development or production environment beforehand.
+
+```bash
+# Full run
+$DEVTUTO_COMPOSE dockerize <dev|prod>
+$DEVTUTO_COMPOSE security <dev|prod>
+
+# Run only API security checks
+$DEVTUTO_COMPOSE dockerize -s api
+$DEVTUTO_COMPOSE security --api
+```
+
 #### Package
 
 ```bash

@@ -1,0 +1,29 @@
+---
+- name: Run ZAP scan
+  docker_container:
+    name: "{{ zap_scan_container }}"
+    image: "{{ zap_scan_image }}"
+    detach: no
+    cleanup: yes
+    restart: yes
+    state: started
+    command: "{{ zap_command }}"
+    volumes:
+      - "{{ deployer_hosted_workspace }}/report/zap:/zap/wrk/:rw"
+    networks:
+      - name: "{{ zap_scan_network }}"
+    networks_cli_compatible: no
+  register: _result
+  failed_when:
+    - "_result.status != 0" # Success
+    - "_result.status != 2" # At least one WARN and no FAILs
+
+- name: Print results
+  debug:
+    msg: "{{ report_text.split('\n') }}"
+  vars:
+    report_text: >
+      {{ _result.msg
+        | regex_search('(Total of [0-9]+ URLs)(\n(.+))*', multiline=True)
+        | regex_replace('\t', '  ')
+      }}

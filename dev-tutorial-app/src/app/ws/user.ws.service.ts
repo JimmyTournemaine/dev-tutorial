@@ -40,7 +40,6 @@ export class UserWebServices extends AbstractWebServices {
    * @returns An observable of the response containing the access token.
    */
   refresh(userId: string, username: string): Observable<HttpResponse<Token>> {
-    console.log('ws:refresh', userId, username);
     return this.putResponse<Token>('/user/refresh', { userId, username });
   }
 }

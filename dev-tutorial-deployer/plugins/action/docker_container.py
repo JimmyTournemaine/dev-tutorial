@@ -54,7 +54,11 @@ class ActionModule(ActionBase):
             # Get container info
             try:
                 container = client.containers.get(container_name)
-                module_args["recreate"] = image.id != container.image.id
+                if image.id != container.image.id:
+                    module_args["recreate"] = True
+                    display.warning(
+                        "New image available. Container will be recreated from the new image."
+                    )
             except docker.errors.NotFound:
                 display.vvvv(f"No such container {container_name}")
 

@@ -14,7 +14,6 @@ export const retryWhen: RetryOperator = <T>(strategy: RetryStrategy) => retry<T>
   return errorObservable.pipe(
     delayWhen(() => timer(strategy.delay || 0)),
     map((err: Error) => {
-      console.log('r', r);
       if (r-- === 0) {
         throw err;
       }

@@ -13,7 +13,8 @@
   docker_container:
     name: megalinter
     image: nvuillam/mega-linter:v4
-    auto_remove: yes
+    cleanup: yes
+    detach: no
     volumes:
       - "{{ deployer_hosted_workspace }}:/tmp/lint"
     env:
@@ -21,36 +22,15 @@
       APPLY_FIXES: "{{ code_check_apply_fixes | bool | ternary('all', 'none') }}"
       ENABLE_LINTERS: "{{ code_check_enable_linters }}"
       ENABLE: "{{ code_check_enable_languages }}"
+  ignore_errors: yes
+  register: _result
 
-- name: Wait for linter
-  docker_host_info:
-    verbose_output: yes
-    containers: yes
-    containers_filters:
-      status: running
-  register: result
-  until: "'/megalinter' not in containers"
-  retries: 99
-  delay: 60
+- name: Print results
+  debug:
+    var: report_lines
+  failed_when: "failures | length > 0"
   vars:
-    containers: "{{ result.containers | map(attribute='Names') | flatten }}"
-
-- name: Get linter errors
-  find:
-    age: "-{{ seconds_from_start }}s"
-    paths: "{{ deployer_local_workspace }}/report/linters_logs"
-    patterns: "ERROR-*.log"
-  register: linter_errors
-  vars:
-    seconds_from_start: "{{ ((now | to_datetime) - (started_at | to_datetime)).seconds }}"
-    started_at: "{{ ansible_date_time.date }} {{ ansible_date_time.time }}"
-    now: '{{ lookup(''pipe'', ''date +"%Y-%m-%d %H:%M:%S"'') }}'
-
-- name: "Fail on linter errors"
-  fail:
-    msg: "{{ count }} errors during linting: {{ linters_names }}"
-  when: "linter_errors.matched > 0"
-  vars:
-    count: "{{ linter_errors.matched }}"
-    linters_logs: "{{ linter_errors.files | map(attribute='path') | list }}"
-    linters_names: "{{ linters_logs | map('basename') | map('splitext') | map('first') | join(', ') }}"
+    result: "{{ _result is failed | ternary(_result.msg, _result.stdout) }}"
+    report_text: "{{ result | regex_search('(.+SUMMARY.+)(\n(.+))*', multiline=True) }}"
+    report_lines: "{{ report_text.split('\n') }}"
+    failures: "{{ report_lines | map('regex_search', '(❌ [A-Z]+)') | select | unique }}"

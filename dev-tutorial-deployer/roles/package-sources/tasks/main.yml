@@ -1,0 +1,8 @@
+---
+- name: Make sure rsync is installed
+  package:
+    name: rsync
+
+- name: Build sources
+  include_tasks: "build_sources.yml"
+  when: "inventory_hostname not in groups['deployer']"

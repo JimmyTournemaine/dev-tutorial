@@ -16,3 +16,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           files: "**/report/TESTS-*.xml"
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: "**/report/TESTS-*.xml"

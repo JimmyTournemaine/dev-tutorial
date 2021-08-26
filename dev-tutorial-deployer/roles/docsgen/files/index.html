@@ -133,6 +133,8 @@
                     <a href="#">Reports</a>
                     <ul>
                         <li><a href="./coverage/index.html">Coverage</a></li>
+                        <li><a href="./zap/zapreport-api-scan.html">ZAP API scan</a></li>
+                        <li><a href="./zap/zapreport-full-scan.html">ZAP full scan</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -171,7 +173,6 @@
                 $("nav ul li a").each(function () {
                     var href = $(this).attr('href');
                     if (location === absolute(window.location.href, href)) {
-                        console.log('click');
                         $(this).click();
                     }
                 });
@@ -190,6 +191,9 @@
                         width: wid,
                     })),
                 nav.find("ul li a").click(function (a) {
+                    if(this.target === "_blank") {
+                        return; // default behavior
+                    }
                     a.preventDefault();
                     if (!$(this).parent('li').hasClass("active") && !nav.hasClass("animate")) {
                         var l = $(this);

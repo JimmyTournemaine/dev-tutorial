@@ -99,7 +99,9 @@ class ActionModule(ActionBase):
             for path in changes:
                 modified_at = self.mtime(os.path.join(base_path, path))
                 if modified_at > image_created_at:
-                    display.v(f"{path} has been modified since last build")
+                    display.warning(
+                        f"{path} has been modified since last build. Build will be forced."
+                    )
                     module_args["force_source"] = True
                     module_args["build"]["nocache"] = True
                     break

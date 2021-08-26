@@ -3,7 +3,7 @@
     src: Dockerfile.j2
     dest: /tmp/app/Dockerfile
   vars:
-    app_package: dev-tutorial-app
+    app_package: dist/dev-tutorial-app
 
 - name: Generate the NGINX configuration
   template:
@@ -20,3 +20,4 @@
     source: build
     changes:
       - dev-tutorial-app.conf
+      - dist
