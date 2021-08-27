@@ -20,3 +20,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: "**/report/TESTS-*.xml"
+          verbose: true
