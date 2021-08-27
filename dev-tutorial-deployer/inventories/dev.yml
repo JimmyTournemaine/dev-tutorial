@@ -11,14 +11,11 @@ all:
       run_api_token_refresh_secret: zsoxh0mdmygu7q1nt2sls4p7u7t5kq0h
       run_api_production: no
   children:
-<<<<<<< HEAD
-=======
     backends:
       hosts:
         dev-tutorial-api:
           api_port: 3000
           socket_port: 3001
->>>>>>> Securing the apps and OWASP zap scans
     frontends:
       hosts:
         dev-tutorial-app:
