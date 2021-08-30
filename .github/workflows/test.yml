@@ -17,5 +17,4 @@ jobs:
         with:
           files: "**/report/TESTS-*.xml"
       - name: Publish test coverage
-        if: always()
         run: curl -s https://codecov.io/bash | bash -s - -t ${{ secrets.CODECOV_TOKEN }}
