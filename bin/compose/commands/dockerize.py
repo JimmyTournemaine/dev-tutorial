@@ -20,6 +20,7 @@ class DockerizeCommand(Command):
             "environment",
             choices=["dev", "test", "ci"],
             default="dev",
+            nargs="?",
             help="select the environment, allowed values are %(choices)s (default: %(default)s)",
             metavar="environment",
         )

@@ -16,7 +16,6 @@ export class RefreshTokenInterceptor implements HttpInterceptor {
   private refreshToken = this.auth.refresh()
     .pipe(
       tap(newToken => {
-        console.log('newToken', newToken);
         if (newToken) {
           // eslint-disable-next-line @typescript-eslint/no-throw-literal
           throw this.retryRequest;
@@ -53,12 +52,9 @@ export class RefreshTokenInterceptor implements HttpInterceptor {
       switchMap((req) => next.handle(req)),
       // On 401, try refreshing the token
       catchError(err => {
-        console.log('gotcha', err);
         if (err instanceof HttpErrorResponse && err.status === 401) {
-          console.log('lets retry');
           return this.refreshToken;
         }
-        console.log('abort with error');
         throw err;
       }),
       retryWhen((obs) => {

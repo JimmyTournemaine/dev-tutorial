@@ -1,0 +1,4 @@
+---
+zap_scan_image: owasp/zap2docker-stable
+zap_scan_container: zap
+zap_scan_network: zap

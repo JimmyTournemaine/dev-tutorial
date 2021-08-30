@@ -1,6 +1,7 @@
 /* {{ ansible_managed }} */
 export const environment = {
   production: {{ run_api_production | string | lower }},
+  allowed_origins: ['{{ run_api_allowed_origins }}'],
   docker: {
   {% for key, value in run_api_docker.items() %}
   {{ key }}: {{ "'" + value + "'" if value is string else value }},

@@ -80,7 +80,6 @@ export class TutorialsWebServices extends AbstractWebServices {
             .pipe(
               map((response: HttpResponse<void>) => {
                 if (response.status === 200) { throw new Error(response.toString()); }
-                console.log('will retry');
                 return response;
               }),
               retryWhen(errors => {
@@ -115,6 +114,6 @@ export class TutorialsWebServices extends AbstractWebServices {
       /* eslint-disable-next-line @typescript-eslint/naming-convention */
       'Content-Type': 'application/octet-stream'
     });
-    return this.post<void>(`/tuto/${tutoId}/write?path=${path}`, content, { headers });
+    return this.post<void>(`/tuto/${tutoId}/write?path=${encodeURIComponent(path)}`, content, { headers });
   }
 }

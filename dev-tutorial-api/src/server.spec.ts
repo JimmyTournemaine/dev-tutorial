@@ -255,7 +255,7 @@ describe('[IT] Server', () => {
 
               // send a file (should complete the tutorial - see on('completed')
               void request(server.app)
-                .post(`/api/tuto/dev/write?path=${encodeURI('/root/test.txt')}`)
+                .post(`/api/tuto/dev/write?path=${encodeURIComponent('/root/test.txt')}`)
                 .set('Authorization', `Bearer ${token.token}`)
                 .set('Content-Type', 'application/octet-stream')
                 .send(fs.readFileSync('./test/test-file.txt'))

@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       languages:
-        description: 'Languages to lint'
+        description: "Languages to lint"
         required: false
-        default: ''
+        default: ""
 jobs:
   lint:
     runs-on: ubuntu-latest

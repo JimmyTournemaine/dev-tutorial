@@ -1,0 +1,130 @@
+---
+- name: SonarQube analysis
+  hosts: deployer
+  vars:
+    sonar_image: sonarqube:8.9-community
+    sonar_container: sonarqube
+  tasks:
+    - name: Pull the image
+      docker_image:
+        name: "{{ sonar_image }}"
+        source: pull
+
+    - name: Create the network
+      docker_network:
+        name: sonarqube
+
+    - name: Start the Sonarqube server
+      docker_container:
+        name: "{{ sonar_container }}"
+        image: "{{ sonar_image }}"
+        auto_remove: yes
+        ports:
+          - "9000:9000"
+        networks:
+          - name: sonarqube
+
+    - name: Make sure Sonarqube server is accessible
+      uri:
+        url: "http://localhost:9000"
+      register: _result
+      until: _result.status == 200
+      retries: 50
+
+    - name: Let SonarQube mount the API
+      pause:
+        seconds: 70
+      when: _result.attempts > 1
+
+    - name: Change the admin password
+      uri:
+        url: "http://localhost:9000/api/users/change_password"
+        method: POST
+        user: admin
+        password: admin
+        force_basic_auth: yes
+        body_format: form-urlencoded
+        body:
+          login: "admin"
+          password: "devtuto"
+          previousPassword: "admin"
+      register: change_password_response
+      changed_when: "change_password_response.status == 204"
+      failed_when:
+        - "change_password_response.status != 204"
+        - "change_password_response.status != 401"
+
+    - name: Create the projects
+      uri:
+        url: "http://localhost:9000/api/projects/create"
+        method: POST
+        user: admin
+        password: devtuto
+        force_basic_auth: yes
+        body_format: form-urlencoded
+        body:
+          name: "{{ item.name }}"
+          project: "{{ item.project }}"
+      register: create_response
+      changed_when: "change_password_response.status == 200"
+      failed_when:
+        - "create_response.status != 200"
+        - "create_response.json.errors is not defined or 'key already exists' not in create_response.json.errors[0].msg"
+      loop:
+        - { project: "dev-tutorial-api", name: "Dev'Tutorial REST API" }
+        - { project: "dev-tutorial-app", name: "Dev'Tutorial Angular frontend" }
+
+    - name: Run analysis
+      docker_container:
+        name: "{{ item }}-sonar-scanner"
+        image: "sonarsource/sonar-scanner-cli"
+        auto_remove: yes
+        command: "{{ command_args | join(' ') }}"
+        volumes:
+          - "{{ deployer_hosted_workspace }}/{{ item }}:/usr/src"
+        networks:
+          - name: sonarqube
+      loop:
+        - dev-tutorial-api
+        - dev-tutorial-app
+      register: running_analysis
+      vars:
+        command_args:
+          - "-Dsonar.host.url=http://{{ sonar_container }}:9000"
+          - "-Dsonar.login=admin"
+          - "-Dsonar.password=devtuto"
+          - "-Dsonar.projectKey={{ item }}"
+          - "-Dsonar.sources=src"
+
+    - name: Wait for analysis to complete
+      docker_host_info:
+        verbose_output: yes
+        containers: yes
+        containers_filters:
+          status: running
+      register: result
+      until:
+        - "'/dev-tutorial-api-sonar-scanner' not in containers"
+        - "'/dev-tutorial-app-sonar-scanner' not in containers"
+      retries: 99
+      delay: 60
+      vars:
+        containers: "{{ result.containers | map(attribute='Names') | flatten }}"
+
+    - name: Analysis completed
+      debug:
+        msg:
+          - "Anaysis has been completed successfully."
+          - "Please review new issues at :"
+          - http://localhost:9000/dashboard?id=dev-tutorial-api
+          - http://localhost:9000/dashboard?id=dev-tutorial-app
+
+- name: SonarQube cleanup
+  hosts: deployer
+  tags: [never, cleanup]
+  tasks:
+    - name: Remove the SonarQube server
+      docker_container:
+        name: sonarqube
+        state: absent
+      tags: cleanup

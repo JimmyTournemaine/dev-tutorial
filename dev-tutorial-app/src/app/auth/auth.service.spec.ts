@@ -25,10 +25,7 @@ describe('Auth: AuthService', () => {
 
     // Spy JWT validation
     jwtHelper = jasmine.createSpyObj<JwtHelperService>('JwtHelperService', ['isTokenExpired']);
-    jwtHelper.isTokenExpired.and.callFake(() => {
-      console.log('is token expired ?', false);
-      return false;
-    });
+    jwtHelper.isTokenExpired.and.callFake(() => false);
 
     // Spy Local Storage
     storage = {};

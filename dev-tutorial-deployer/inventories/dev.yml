@@ -3,16 +3,20 @@ all:
     dev-tutorial-deployer:
       deployer_env: dev
       run_api_command: yarn serve
-      run_app_command: yarn start --host 0.0.0.0 --no-progress
+      run_app_command: yarn start --host 0.0.0.0 --disable-host-check --no-progress
       run_app_production: false
       run_api_env:
         DEBUG: "server:*,app:access,docker:*"
       run_api_token_access_secret: lagv9f6whb4yd6oiyqxxabb2f4u0prw0
       run_api_token_refresh_secret: zsoxh0mdmygu7q1nt2sls4p7u7t5kq0h
       run_api_production: no
-    dev-tutorial-app:
-        healthcheck_app_port: 4200
   children:
+    backends:
+      hosts:
+        dev-tutorial-api:
+          api_port: 3000
+          socket_port: 3001
     frontends:
       hosts:
         dev-tutorial-app:
+          app_port: 4200

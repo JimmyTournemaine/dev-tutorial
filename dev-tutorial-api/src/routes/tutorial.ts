@@ -25,8 +25,6 @@ router.post('/:slug/write', appAuth, new PromiseHandler(TutorialController.write
 router.get('/:slug/slides/:id(\\d+)', appAuth, new PromiseHandler(TutorialController.slide).handler);
 // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
 router.get('/:slug/static/:path', new PromiseHandler(TutorialController.static).handler);
-// eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/unbound-method
-router.get('/:slug', appAuth, new PromiseHandler(TutorialController.content).handler);
 // eslint-disable-next-line @typescript-eslint/unbound-method
 router.post('/search', TutorialController.search);
 // eslint-disable-next-line @typescript-eslint/unbound-method

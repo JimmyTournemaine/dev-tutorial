@@ -10,7 +10,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: ["tsconfig.json"],
   },
-  ignorePatterns: ['.eslintrc.js'],
+  ignorePatterns: ['.eslintrc.js', '.scannerwork/**/*'],
   rules: {
     // to progressively activate
     "@typescript-eslint/no-unsafe-assignment": "warn",

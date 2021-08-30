@@ -2,12 +2,15 @@
 import { expect } from 'chai';
 import { agent as request } from 'supertest';
 import * as fs from 'fs';
+import * as sinon from 'sinon';
 import { RequestListener } from 'http';
 import { DockerService } from './services/docker/docker';
 import { DemuxStream } from './services/docker/stream';
 import { Server } from './server';
 import { User } from './models/user';
 import { Token } from './models/token';
+import { ErrorResponse } from './models/error';
+import { Application } from './app';
 
 /**
  * Create a new user
@@ -32,6 +35,24 @@ export async function createUser(app: RequestListener, username?: string): Promi
   return { accessToken: (res.body as Token), refreshToken: cookies[0] };
 }
 
+describe('Application unit tests', () => {
+  let sandbox: sinon.SinonSandbox;
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+  });
+  afterEach(() => {
+    sandbox.restore();
+  });
+  it('should initialize even on OpenAPI spec writing error', async () => {
+    sinon.stub(fs, 'writeFile').yields(new Error('write error'));
+    const appli = new Application();
+
+    expect(appli.app).to.not.equal(undefined);
+
+    await appli.unload();
+  });
+});
+
 describe('[IT] REST API Tests', () => {
   let server: Server;
   let app: RequestListener;
@@ -45,6 +66,19 @@ describe('[IT] REST API Tests', () => {
   after('stop the server', async function () {
     this.timeout(10000);
     await server.stop();
+  });
+
+  describe('Error handling', () => {
+    it('should return 404 errors in JSON format', async () => {
+      const res = await request(app)
+        .get('/api/do-not-exist')
+        .send();
+
+      expect(res.status).to.equal(404);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as { message: string; }).message).to.equal('not found');
+    });
   });
 
   describe('User API', () => {
@@ -89,6 +123,9 @@ describe('[IT] REST API Tests', () => {
         .send({ username, userId: accessToken.userId });
 
       expect(res.status).to.equal(401);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal('The refresh token is missing');
     });
 
     it('should not refresh a user token with invalid or expired refresh token', async () => {
@@ -101,6 +138,9 @@ describe('[IT] REST API Tests', () => {
         .send({ username, userId: accessToken.userId });
 
       expect(res.status).to.equal(401);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal('The refresh token is not valid or expired');
     });
 
     it('should not impersonate access token using a refresh token', async () => {
@@ -113,6 +153,9 @@ describe('[IT] REST API Tests', () => {
         .send({ username: 'user-test1', userId: accessToken.userId });
 
       expect(res.status).to.equal(403);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal('The refresh token is not valid');
     });
 
     it('should not refresh a token when the user is not created', async function () {
@@ -125,6 +168,9 @@ describe('[IT] REST API Tests', () => {
         .send({ username, userId: username });
 
       expect(res.status).to.equal(404);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal("Unknown username 'user-test12'");
     });
   });
 
@@ -148,11 +194,6 @@ describe('[IT] REST API Tests', () => {
       expect(tuto).to.have.property('slides');
     }
 
-    it('should get 404 on non existing path', async () => {
-      const res = await request(app).get('/api');
-      expect(res.status).to.equal(404);
-    });
-
     it('should get a public asset from a tutorial', async () => {
       const res = await request(app).get('/api/tuto/dev/static/icon.png');
       expect(res.status).to.equal(200);
@@ -160,7 +201,11 @@ describe('[IT] REST API Tests', () => {
 
     it('should get a not found response for public asset from non existent tutorial', async () => {
       const res = await request(app).get('/api/tuto/oops/static/icon.png');
+
       expect(res.status).to.equal(404);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal("Tutorial 'oops' not found.");
     });
 
     it('should list all tutorials', async () => {
@@ -187,24 +232,11 @@ describe('[IT] REST API Tests', () => {
 
     it('should not list matching tutorials on malformed request', async () => {
       const res = await request(app).post('/api/tuto/search').send({});
+
       expect(res.status).to.equal(400);
-    });
-
-    it('should get some tutorial details', async () => {
-      const res = await request(app).get('/api/tuto/dev').set('Authorization', `Bearer ${token.token}`);
-
-      expect(res.ok);
-      expect(res.body).to.be.an('array').with.length.greaterThan(0);
-      (res.body as unknown[]).forEach((content: unknown) => {
-        expect(content).to.be.a('string').with.length.greaterThan(0);
-        expect(content).to.have.length.greaterThan(30);
-      });
-    });
-
-    it('should respond 404 on unknown tutorial', async () => {
-      const res = await request(app).get('/api/tuto/not-exists').set('Authorization', `Bearer ${token.token}`);
-
-      expect(res.status).to.equal(404);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal('Malformed search entity');
     });
 
     it('should get a tutorial slide content', async () => {
@@ -218,12 +250,18 @@ describe('[IT] REST API Tests', () => {
       const res = await request(app).get('/api/tuto/dev/slides/3').set('Authorization', `Bearer ${token.token}`);
 
       expect(res.status).to.equal(404);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal("Slide 3 not found for tutorial 'dev'");
     });
 
     it('should respond 404 on unknown tutorial', async () => {
       const res = await request(app).get('/api/tuto/not-exists/slides/1').set('Authorization', `Bearer ${token.token}`);
 
       expect(res.status).to.equal(404);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal("Tutorial 'not-exists' not found");
     });
 
     it('should start and stop the given tutorial docker container', async function () {
@@ -272,14 +310,18 @@ describe('[IT] REST API Tests', () => {
     it('should got 404 response when trying to start container of tuto that does not exist', async () => {
       const start = await request(app).post('/api/tuto/oops/start').set('Authorization', `Bearer ${token.token}`);
       expect(start.status).to.equal(404);
+      expect((start.body as ErrorResponse).message).to.equal("Tutorial 'oops' not found.");
     });
 
     it('should got 404 response when trying to stop container of tuto that does not exist', async () => {
       const start = await request(app).delete('/api/tuto/oops/stop').set('Authorization', `Bearer ${token.token}`);
+
       expect(start.status).to.equal(404);
+      expect(start.body).to.have.property('message');
+      expect((start.body as ErrorResponse).message).to.equal("Tutorial 'oops' not found.");
     });
 
-    it('should write a file in a docker container', function (done) {
+    it('should write a file in a docker container (octet-stream)', function (done) {
       this.timeout(50000);
 
       // GIVEN
@@ -288,12 +330,13 @@ describe('[IT] REST API Tests', () => {
           .then(() => request(app).get('/api/tuto/dev/status').set('Authorization', `Bearer ${token.token}`).expect(201))
           // WHEN
           .then(async () => {
-            await request(app)
-              .post(`/api/tuto/dev/write?path=${encodeURI('/root/test-write-request.txt')}`)
+            const res = await request(app)
+              .post(`/api/tuto/dev/write?path=${encodeURIComponent('/root/test-write-request.txt')}`)
               .set('Authorization', `Bearer ${token.token}`)
               .set('Content-Type', 'application/octet-stream')
-              .send(fs.readFileSync('./test/test-file.txt'))
-              .expect(204);
+              .send(fs.readFileSync('./test/test-file.txt'));
+
+            expect(res.status).to.equal(204);
           })
           // THEN
           .then(() => DockerService.getInstance().exec('dev', 'cat /root/test-write-request.txt'))
@@ -310,47 +353,31 @@ describe('[IT] REST API Tests', () => {
           }))
         .catch(done);
     });
-    it('should got an error trying to write a file in a docker container that do not exist', async () => {
-      await request(app)
-        .post(`/api/tuto/test/write?path=${encodeURI('/root/test-write-request.txt')}`)
-        .set('Authorization', `Bearer ${token.token}`)
-        .set('Content-Type', 'application/octet-stream')
-        .attach('file', './test/test-file.txt')
-        .expect(404);
-    });
-    it('should got an error trying to write a file in a docker container that is not started (= not currently used)', async () => {
-      await request(app)
-        .post(`/api/tuto/git/write?path=${encodeURI('/root/test-write-request.txt')}`)
-        .set('Authorization', `Bearer ${token.token}`)
-        .set('Content-Type', 'application/octet-stream')
-        .attach('file', './test/test-file.txt')
-        .expect(409);
-    });
-    it('should write a file in a docker container', function (done) {
-      this.timeout(50000);
 
-      // GIVEN
-      void request(app)
-        .post('/api/tuto/dev/start')
+    it('should got an error trying to write a file in a docker container that do not exist', async () => {
+      const res = await request(app)
+        .post(`/api/tuto/test/write?path=${encodeURIComponent('/root/test-write-request.txt')}`)
         .set('Authorization', `Bearer ${token.token}`)
-        .expect(202)
-        .then(() => new Promise((resolve) => setTimeout(resolve, 20000))
-          .then(() => request(app).get('/api/tuto/dev/status').set('Authorization', `Bearer ${token.token}`).expect(201))
-          .then(() => request(app)
-            .post('/api/tuto/dev/write')
-            .set('Authorization', `Bearer ${token.token}`)
-            .set('Content-Type', 'application/octet-stream')
-            .send(fs.readFileSync('./test/test-file.txt'))
-            .expect(400))
-          .then(() => request(app)
-            .post('/api/tuto/dev/write')
-            .set('Authorization', `Bearer ${token.token}`)
-            .set('Content-Type', 'application/octet-stream')
-            .send(fs.readFileSync('./test/test-file.txt'))
-            .expect(400))
-          .then(() => done())
-          .catch(done))
-        .catch(done);
+        .set('Content-Type', 'application/octet-stream')
+        .send(fs.readFileSync('./test/test-file.txt'));
+
+      expect(res.status).to.equal(404);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal("Tutorial 'test' not found");
+    });
+
+    it('should got an error trying to write a file in a docker container that is not started (= not currently used)', async () => {
+      const res = await request(app)
+        .post(`/api/tuto/ansible/write?path=${encodeURIComponent('/root/test-write-request.txt')}`)
+        .set('Authorization', `Bearer ${token.token}`)
+        .set('Content-Type', 'application/octet-stream')
+        .send(fs.readFileSync('./test/test-file.txt'));
+
+      expect(res.status).to.equal(409);
+      expect(res.body).to.have.property('name');
+      expect(res.body).to.have.property('message');
+      expect((res.body as ErrorResponse).message).to.equal('You must start the container first');
     });
   });
 });

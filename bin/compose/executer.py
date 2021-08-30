@@ -59,7 +59,10 @@ class Executer:
         if self.exec_context.verbose() or self.exec_context.dry_run():
             print(cmd)
 
-        exit_code = os.system(cmd) >> 8 if not self.exec_context.dry_run() else 0
+        # Execute the command in a shell (be aware of possible injection in `cmd` var)
+        exit_code = (
+            os.system(cmd) >> 8 if not self.exec_context.dry_run() else 0  # nosec
+        )
 
         if self.exec_context.exit_on_error() and exit_code > 0:
             print(f"Exiting caused by a command error with exit code {exit_code}")

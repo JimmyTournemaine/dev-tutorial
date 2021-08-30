@@ -71,6 +71,7 @@ router.post('/', new PromiseHandler(async (req: Request<unknown, unknown, NewUse
 
   res.cookie('refresh_token', ts.createRefreshToken(user._id), {
     httpOnly: true,
+    sameSite: 'strict',
     maxAge: environment.tokens.refreshToken.expiresIn // 1 week
   }).status(201).json({
     userId: user._id,
@@ -91,13 +92,16 @@ router.post('/', new PromiseHandler(async (req: Request<unknown, unknown, NewUse
  *     summary: Refresh an access token.
  *     description: Return a token for a new user
  *     requestBody:
- *       schema:
- *         type: object
- *         properties:
- *           userId:
- *             type: string
- *           username:
- *             type: string
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *               username:
+ *                 type: string
  *     responses:
  *       '201':
  *         description: The refreshed token
@@ -164,7 +168,7 @@ router.put('/refresh', new PromiseHandler(async (req: Request<unknown, unknown, 
 
   } catch {
     // invalid or expires refresh token
-    res.status(401).send();
+    res.status(401).send(new ErrorResponse('The refresh token is not valid or expired'));
     return;
   }
 }).handler);

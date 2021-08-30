@@ -44,11 +44,13 @@ class DocsGenerateCommand(Command):
             dest="clean",
         )
         self.parser.add_argument(
-            "-f",
-            "--force",
-            action="store_true",
-            help="Force regeneration of documentation",
-            dest="force",
+            "-g",
+            "--generators",
+            choices=["asyncapi", "coverage", "marked", "openapi", "typedoc", "zap"],
+            nargs="+",
+            default=[],
+            help="select the generators to execute, allowed values are %(choices)s (default: run all of them)",
+            metavar="generators",
         )
 
     def run(self, args):
@@ -62,10 +64,8 @@ class DocsGenerateCommand(Command):
         if args.clean:
             builder.add_tag("all").add_tag("clean")
 
-        if args.force:
-            builder.add_extra_var("docsgen_force", "yes").add_extra_var(
-                "docs_restart", "yes"
-            )
+        if len(args.generators) > 0:
+            builder.add_extra_var("generators", ",".join(args.generators))
 
         # Run the deployer
         deployer = DeployerFactory().create(self.executer)

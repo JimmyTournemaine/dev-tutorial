@@ -6,6 +6,7 @@ import argparse
 import logging
 import os
 import sys
+from typing import List
 
 from molecule.command import base
 from molecule.config import DEFAULT_DRIVER
@@ -125,7 +126,7 @@ def run_molecule(role_path, subcommand, scenario_name):
 
 
 class Report:
-    results = list()
+    results: List[str] = list()
 
     def ok(self, role_name):
         self.results.append(f"ok {len(self.results) + 1} - {role_name}")

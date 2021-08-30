@@ -16,3 +16,5 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           files: "**/report/TESTS-*.xml"
+      - name: Publish test coverage
+        run: curl -s https://codecov.io/bash | bash -s - -t ${{ secrets.CODECOV_TOKEN }}

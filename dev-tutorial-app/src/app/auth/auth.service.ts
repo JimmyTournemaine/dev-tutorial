@@ -21,14 +21,12 @@ export class AuthService {
    *
    */
   login(): Observable<boolean> {
-    console.log('service:login');
     // eslint-disable-next-line no-bitwise
     const s4 = (): string => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     const username = `${s4()}-${s4()}-${s4()}-${s4()}`;
 
     return this.ws.login(username).pipe(
       map((res: Token) => {
-        console.log('registering token', { ...res, username });
         localStorage.setItem('token:userId', res.userId);
         localStorage.setItem('token:value', res.token);
         localStorage.setItem('token:username', username);
@@ -47,7 +45,6 @@ export class AuthService {
       username: defer(() => of(localStorage.getItem('token:username')))
     }).pipe(
       switchMap(value => this.ws.refresh(value.userId, value.username).pipe(tap(resp => {
-        console.log('refreshed access', resp.body);
         localStorage.setItem('token:userId', resp.body.userId);
         localStorage.setItem('token:value', resp.body.token);
       })))
