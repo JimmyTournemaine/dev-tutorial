@@ -11,8 +11,8 @@
     "lint": "eslint 'src/**/*.ts'",
     "serve": "nodemon -e ts --exec 'yarn specs && ts-node src/index.ts'",
     "specs": "swagger-jsdoc -d openapi.yml -o openapi-generated.yml src/**/*.ts",
-    "test": "nodemon -e ts --exec \"nyc $npm_package_config_mocha --exit\"",
-    "test-ci": "nyc $npm_package_config_mocha --reporter xunit --reporter-option output=report/TESTS-ALL.xml --exit"
+    "test": "nodemon -e ts --exec \"yarn specs && nyc $npm_package_config_mocha --exit\"",
+    "test-ci": "yarn specs && nyc $npm_package_config_mocha --reporter xunit --reporter-option output=report/TESTS-ALL.xml --exit"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
