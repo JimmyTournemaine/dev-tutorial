@@ -11,6 +11,7 @@
   loop:
     - package.json
     - yarn.lock
+    - openapi-generated.yml
 
 - name: Get required directories from sources
   copy:
@@ -30,4 +31,5 @@
     changes:
       - package.json
       - yarn.lock
+      - openapi-generated.yml
       - dist

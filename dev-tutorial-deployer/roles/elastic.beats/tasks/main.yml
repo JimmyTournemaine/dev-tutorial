@@ -1,0 +1,20 @@
+---
+- name: "Are the {{ beat_name }} dashboards loaded?"
+  uri:
+    url: http://localhost:9200/.kibana/_search
+    method: GET
+    body_format: json
+    body: >
+      {
+        "query": {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "type: dashboard AND dashboard.title: *{{ beat_name }}*"
+          }
+        }
+      }
+  register: dasboard_search_result
+
+- name: "Save the dashboards_exist result"
+  set_fact:
+    dashboards_exist: "{{ dasboard_search_result.json.hits.total.value | int > 0 }}"

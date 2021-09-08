@@ -6,9 +6,10 @@ from executer import Executer
 
 
 class Command(ABC):
-    def __init__(self, name, help_message):
+    def __init__(self, name, help_message, aliases = []):
         self.name = name
         self.help_message = help_message
+        self.aliases = aliases
 
     def parent_command(self):
         return BaseCommand
@@ -16,6 +17,7 @@ class Command(ABC):
     def create_parser(self, subparsers):
         self.parser = subparsers.add_parser(
             self.name,
+            aliases=self.aliases,
             parents=[self.parent_command()().create_parser(None)],
             help=self.help_message,
         )

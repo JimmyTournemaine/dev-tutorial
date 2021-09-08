@@ -1,0 +1,71 @@
+---
+- name: Make sure temp folder exists
+  file:
+    path: /tmp/metricbeat
+    state: directory
+
+- name: Generate metricbeat configuration
+  template:
+    src: metricbeat.yml.j2
+    dest: /tmp/metricbeat/metricbeat.yml
+    mode: 0644
+
+- name: Generate the Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: /tmp/metricbeat/Dockerfile
+    mode: 0644
+
+- name: Build the metricbeat customized image
+  docker_image:
+    name: "{{ elastic_metricbeat_custom_image }}"
+    build:
+      path: "/tmp/metricbeat"
+      pull: yes
+      rm: yes
+    changes:
+      - metricbeat.yml
+    state: present
+    source: build
+
+- name: Run the Metricbeat container to setup Kibana
+  docker_container:
+    name: "{{ elastic_metricbeat_container }}"
+    image: "{{ elastic_metricbeat_custom_image }}"
+    detach: no
+    auto_remove: no
+    command: "setup -E setup.kibana.host={{ elastic_kibana_container }}:5601"
+    networks:
+      - name: "{{ elastic_network }}"
+  when: not dashboards_exist
+
+- name: Run the Metricbeat container
+  docker_container:
+    name: "{{ elastic_metricbeat_container }}"
+    image: "{{ elastic_metricbeat_custom_image }}"
+    auto_remove: no
+    networks:
+      - name: "{{ elastic_network }}"
+      - name: "{{ deployer_network_db }}"
+      - name: "{{ deployer_network_api }}"
+
+- name: Stop and remove the container
+  docker_container:
+    name: "{{ elastic_metricbeat_container }}"
+    state: absent
+  tags: [never, cleanup]
+
+- name: Remove the images
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ elastic_metricbeat_custom_image }}"
+    - "{{ elastic_metricbeat_image }}"
+  tags: [never, cleanup]
+
+- name: Cleanup temp files
+  file:
+    path: /tmp/metricbeat
+    state: absent
+  tags: [never, cleanup]

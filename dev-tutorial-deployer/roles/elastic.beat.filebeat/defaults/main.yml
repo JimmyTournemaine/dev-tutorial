@@ -1,0 +1,2 @@
+---
+elastic_metricbeat_image: "docker.elastic.co/beats/metricbeat:{{ elastic_version }}"

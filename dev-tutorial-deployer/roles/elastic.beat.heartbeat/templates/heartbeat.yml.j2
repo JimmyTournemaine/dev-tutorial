@@ -1,0 +1,34 @@
+# {{ ansible_managed }}
+heartbeat.monitors:
+
+- id: frontend
+  type: http
+  schedule: '@every 15s'
+  urls:
+  {% for host in groups['frontends'] %}
+    - http://{{ host }}:{{ hostvars[host]['app_port'] }}{{ hostvars[host]['test_uri'] }}
+  {% endfor %}
+
+- id: backend
+  type: http
+  schedule: '@every 10s'
+  urls:
+  {% for host in groups['backends'] %}
+    - http://{{ host }}:{{ hostvars[host]['api_port'] }}{{ hostvars[host]['test_uri'] }}
+  {% endfor %}
+
+- id: 3rd-party
+  type: http
+  schedule: '@every 2m'
+  urls:
+    - http://{{ elastic_elasticsearch_container }}:9200
+    - http://{{ elastic_kibana_container }}:5601
+
+
+processors:
+- add_cloud_metadata: ~
+
+output.elasticsearch:
+  hosts: '{{ elastic_elasticsearch_container }}'
+  username: '{{ elastic_elasticsearch_user | default('') }}'
+  password: '{{ elastic_elasticsearch_password | default('') }}'

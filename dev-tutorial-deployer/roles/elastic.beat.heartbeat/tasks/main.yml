@@ -1,0 +1,86 @@
+---
+- name: Make sure temp folder exists
+  file:
+    path: /tmp/heartbeat
+    state: directory
+
+- name: Generate heartbeat configuration
+  template:
+    src: heartbeat.yml.j2
+    dest: /tmp/heartbeat/heartbeat.yml
+    mode: 0644
+
+- name: Generate the Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: /tmp/heartbeat/Dockerfile
+    mode: 0644
+
+- name: Build the heartbeat customized image
+  docker_image:
+    name: "{{ elastic_heartbeat_custom_image }}"
+    build:
+      path: "/tmp/heartbeat"
+      pull: yes
+      rm: yes
+    changes:
+      - heartbeat.yml
+    state: present
+    source: build
+
+- name: Run the heartbeat container to setup Kibana (index)
+  docker_container:
+    name: "{{ elastic_heartbeat_container }}"
+    image: "{{ elastic_heartbeat_custom_image }}"
+    detach: no
+    cleanup: yes
+    command: "setup -e"
+    networks:
+      - name: "{{ elastic_network }}"
+  when: not dashboards_exist
+
+- name: Import a dasboard to Kibana (heartbeat setup do not provide Kibana dasboard)
+  uri:
+    url: "http://localhost:5601/api/kibana/dashboards/import"
+    method: POST
+    body_format: json
+    body: >
+      {
+        "objects": [
+          {{ lookup('url', 'https://raw.githubusercontent.com/elastic/uptime-contrib/master/dashboards/7.x/http_dashboard.ndjson') }}
+        ]
+      }
+    headers:
+      kbn-xsrf: true
+  when: not dashboards_exist
+
+- name: Run the heartbeat container
+  docker_container:
+    name: "{{ elastic_heartbeat_container }}"
+    image: "{{ elastic_heartbeat_custom_image }}"
+    auto_remove: yes
+    networks:
+      - name: "{{ elastic_network }}"
+      - name: "{{ deployer_network_db }}"
+      - name: "{{ deployer_network_api }}"
+
+- name: Stop and remove the container
+  docker_container:
+    name: "{{ elastic_heartbeat_container }}"
+    state: absent
+  tags: [never, cleanup]
+
+- name: Remove the images
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ elastic_heartbeat_custom_image }}"
+    - "{{ elastic_heartbeat_image }}"
+  tags: [never, cleanup]
+
+- name: Cleanup temp files
+  file:
+    path: /tmp/heartbeat
+    state: absent
+  tags: [never, cleanup]

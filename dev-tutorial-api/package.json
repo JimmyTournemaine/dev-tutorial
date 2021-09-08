@@ -6,9 +6,11 @@
     "mocha": "mocha -r ts-node/register 'src/**/*.spec.ts' --require choma --trace-warnings"
   },
   "scripts": {
+    "build": "yarn specs && tsc",
     "start": "node dist/index.js",
     "lint": "eslint 'src/**/*.ts'",
-    "serve": "nodemon -e ts --exec ts-node src/index.ts",
+    "serve": "nodemon -e ts --exec 'yarn specs && ts-node src/index.ts'",
+    "specs": "swagger-jsdoc -d openapi.yml -o openapi-generated.yml src/**/*.ts",
     "test": "nodemon -e ts --exec \"nyc $npm_package_config_mocha --exit\"",
     "test-ci": "nyc $npm_package_config_mocha --reporter xunit --reporter-option output=report/TESTS-ALL.xml --exit"
   },

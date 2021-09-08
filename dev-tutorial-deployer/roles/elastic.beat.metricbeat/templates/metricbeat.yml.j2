@@ -1,0 +1,42 @@
+# {{ ansible_managed }}
+metricbeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+metricbeat.modules:
+- module: docker
+  enabled: true
+  metricsets:
+    - "container"
+    - "cpu"
+    - "diskio"
+    - "healthcheck"
+    - "info"
+    - "image"
+    - "memory"
+    - "network"
+  hosts: ["tcp://host.docker.internal:2375"]
+  period: 30s
+
+- module: mongodb
+  metricsets: ["status"]
+  hosts: ["{{ deployer_container_db }}:27017"]
+  period: 30s
+
+{% if groups['nginx'] is defined %}
+- module: nginx
+  enabled: true
+  metricsets: ["stubstatus"]
+  period: 10s
+  hosts: [{{ groups['nginx'] | join(', ') }}]
+  period: 30s
+{% endif %}
+
+processors:
+  - add_cloud_metadata: ~
+
+output.elasticsearch:
+  hosts: '{{ elastic_elasticsearch_container }}'
+  username: '{{ elastic_elasticsearch_user | default('') }}'
+  password: '{{ elastic_elasticsearch_password | default('') }}'

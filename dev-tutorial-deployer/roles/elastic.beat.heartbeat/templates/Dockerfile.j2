@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+FROM {{ elastic_heartbeat_image }}
+COPY heartbeat.yml /usr/share/heartbeat/heartbeat.yml
+USER root
+RUN chown root:heartbeat /usr/share/heartbeat/heartbeat.yml
+USER heartbeat

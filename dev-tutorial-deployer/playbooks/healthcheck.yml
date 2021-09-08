@@ -17,7 +17,7 @@
 
     - name: Backend check
       uri:
-        url: "http://localhost:{{ api_port }}/api/tuto"
+        url: "http://localhost:{{ api_port }}{{ test_uri }}"
 
 - name: Frontend applications healthcheck
   hosts: frontends
@@ -25,7 +25,7 @@
   tasks:
     - name: Wait for frontend application ports
       wait_for:
-        port: "{{ app_port | default(80) }}"
+        port: "{{ app_port }}"
         sleep: 5
         timeout: 600
         state: started
@@ -33,6 +33,6 @@
 
     - name: Frontend check
       uri:
-        url: "http://localhost:{{ port }}/"
+        url: "http://localhost:{{ port }}{{ test_uri }}"
       vars:
         port: "{{ app_port | default(80) }}"

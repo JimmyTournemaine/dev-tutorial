@@ -1,0 +1,35 @@
+---
+- name: Get the Kibana image
+  docker_image:
+    name: "{{ elastic_kibana_image }}"
+    source: pull
+
+- name: Run the Kibana container
+  docker_container:
+    name: "{{ elastic_kibana_container }}"
+    image: "{{ elastic_kibana_image }}"
+    ports:
+      - 5601:5601
+    env:
+      ELASTICSEARCH_HOSTS: "http://{{ elastic_elasticsearch_container }}:9200"
+    networks:
+      - name: "{{ elastic_network }}"
+
+- name: Make sure Kibana is accessible
+  uri:
+    url: "http://localhost:5601"
+  register: _result
+  until: _result.status == 200
+  retries: 20
+
+- name: Stop and remove the container
+  docker_container:
+    name: "{{ elastic_kibana_container }}"
+    state: absent
+  tags: [never, cleanup]
+
+- name: Remove the images
+  docker_image:
+    name: "{{ elastic_kibana_image }}"
+    state: absent
+  tags: [never, cleanup]

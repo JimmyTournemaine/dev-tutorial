@@ -12,10 +12,16 @@ server {
         proxy_pass http://{{ package_app_api_container }}:3001/socket.io;
     }
 
+    location /server-status {
+        stub_status;
+    }
+
     location / {
         root   /usr/share/nginx/dev-tutorial-app;
         try_files $uri $uri/ /index.html =404;
-        add_header Content-Security-Policy "default-src 'self';" always;
+        # FIXME (waiting for https://github.com/angular/angular/issues/26152)
+        # add_header Content-Security-Policy "script-src 'self' 'nonce-{{ package_app_nonce }}'; style-src 'self' 'nonce-{{ package_app_nonce }}'; font-src https://fonts.gstatic.com 'self'; object-src 'none'; connect-src 'self' wss: ws:; default-src 'self';" always;
+        add_header Content-Security-Policy "script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src https://fonts.gstatic.com 'self'; object-src 'none'; connect-src 'self' wss: ws:; default-src 'self';" always;
         add_header X-Frame-Options deny;
         add_header X-Content-Type-Options nosniff;
     }

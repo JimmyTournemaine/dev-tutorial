@@ -1,0 +1,13 @@
+galaxy_info:
+  author: Jimmy Tournemaine
+  description: Run shared beats-tasks
+  license: Apache-2.0
+  min_ansible_version: 2.9
+  platforms:
+    - name: Alpine
+      versions:
+        - 3.12
+        - 3.14
+  galaxy_tags: []
+dependencies:
+  - elastic

@@ -5,7 +5,7 @@
   vars:
     package_sources_directory: /usr/src/app/app-ui
     package_sources_changes: [node_modules, src]
-    package_sources_build_command: yarn build
+    package_sources_build_command: yarn build --subresource-integrity
     package_sources_fetch_path: /tmp/app
 
 - name: Build image

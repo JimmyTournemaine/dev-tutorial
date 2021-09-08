@@ -16,3 +16,6 @@ all:
       hosts:
         dev-tutorial-front:
           app_port: 80
+    nginx:
+      hosts:
+        dev-tutorial-front:
