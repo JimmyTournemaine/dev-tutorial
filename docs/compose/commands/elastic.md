@@ -1,6 +1,6 @@
 # Elastic
 
-```{program-output} /usr/src/bin/compose/compose.py security --help
+```{program-output} ../bin/compose/compose.py security --help
 
 ```
 

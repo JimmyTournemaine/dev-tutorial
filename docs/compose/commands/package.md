@@ -1,6 +1,6 @@
 # Package: package the production images
 
-```{program-output} /usr/src/bin/compose/compose.py package --help
+```{program-output} ../bin/compose/compose.py package --help
 
 ```
 

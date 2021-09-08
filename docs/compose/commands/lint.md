@@ -1,6 +1,6 @@
 # Lint
 
-```{program-output} /usr/src/bin/compose/compose.py lint --help
+```{program-output} ../bin/compose/compose.py lint --help
 
 ```
 

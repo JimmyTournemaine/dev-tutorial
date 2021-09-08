@@ -1,6 +1,6 @@
 # Molecule
 
-```{program-output} /usr/src/bin/compose/compose.py test-deployer --help
+```{program-output} ../bin/compose/compose.py test-deployer --help
 
 ```
 

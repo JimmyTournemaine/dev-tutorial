@@ -1,12 +1,12 @@
 ## Documentation
 
-```{program-output} /usr/src/bin/compose/compose.py docs --help
+```{program-output} ../bin/compose/compose.py docs --help
 
 ```
 
 ### Generate technical documentation
 
-```{program-output} /usr/src/bin/compose/compose.py docs generate --help
+```{program-output} ../bin/compose/compose.py docs generate --help
 
 ```
 
@@ -17,11 +17,11 @@ Generate the complete project documentation from some documentation files, code 
 
 ### Expose the documentation
 
-```{program-output} /usr/src/bin/compose/compose.py docs start --help
+```{program-output} ../bin/compose/compose.py docs start --help
 
 ```
 
-```{program-output} /usr/src/bin/compose/compose.py docs stop --help
+```{program-output} ../bin/compose/compose.py docs stop --help
 
 ```
 

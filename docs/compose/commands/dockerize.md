@@ -4,7 +4,7 @@ Build and run docker container using the local Docker daemon.
 
 ### Usage
 
-```{program-output} /usr/src/bin/compose/compose.py dockerize --help
+```{program-output} ../bin/compose/compose.py dockerize --help
 
 ```
 

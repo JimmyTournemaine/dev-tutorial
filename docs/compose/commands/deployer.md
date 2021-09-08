@@ -2,7 +2,7 @@
 
 ### Usage
 
-```{program-output} /usr/src/bin/compose/compose.py deployer --help
+```{program-output} ../bin/compose/compose.py deployer --help
 
 ```
 
