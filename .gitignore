@@ -14,9 +14,6 @@ coverage/
 # VSCode
 .editorconfig
 
-# CLI Tools (WIP: out of git)
-/dev-tutorial-cli
-
 # Tests
 report/
 .nyc_output/
@@ -38,7 +35,9 @@ Dockerfile
 !/dev-tutorial-deployer/Dockerfile
 /*/src/environments/
 /dev-tutorial-app/src/proxy.conf.js
-docs/
 
 # Sonarqube
 .scannerwork/
+
+# Documentation
+/docs/_build
