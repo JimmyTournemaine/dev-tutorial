@@ -27,3 +27,10 @@ pip install -U sphinx myst-parser sphinx-rtd-theme sphinxcontrib-programoutput
 ```
 
 Then, run `sphinx-build [-a] . _build` to regenerate the documentation after changes.
+
+In case you add plugins or any `pip` dependency. You must update the `requirements.txt`.
+
+```bash
+pip install my-new-dep
+pip freeze > requirements.txt
+```
