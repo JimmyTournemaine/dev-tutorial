@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+FROM {{ elastic_filebeat_image }}
+COPY filebeat.yml /usr/share/filebeat/filebeat.yml
+USER root
+RUN chown root:filebeat /usr/share/filebeat/filebeat.yml \
+  && find /usr/share/filebeat/kibana/7/dashboard \
+    ! -name 'Filebeat-nginx-overview.json' \
+    ! -name 'Filebeat-nginx-logs.json' \
+    ! -name 'Filebeat-syslog.json' \
+    ! -name 'Filebeat-Mongodb-overview.json' \
+    -type f \
+    -delete
+USER filebeat

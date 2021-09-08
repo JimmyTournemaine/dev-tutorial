@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+autodiscover.providers:
+  - type: docker
+    hosts: ["tcp://host.docker.internal:2375"]
+
+processors:
+  - add_cloud_metadata: ~
+
+output.elasticsearch:
+  hosts: '{{ elastic_elasticsearch_container }}'
+  username: '{{ elastic_elasticsearch_user | default('') }}'
+  password: '{{ elastic_elasticsearch_password | default('') }}'

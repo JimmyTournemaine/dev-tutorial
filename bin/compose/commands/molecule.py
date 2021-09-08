@@ -6,7 +6,7 @@ from deployer import DeployerFactory, DeployerShellCommandBuilder
 
 class TestDeployerCommand(Command):
     def __init__(self):
-        super().__init__("test-deployer", "Run a deployer unit test")
+        super().__init__("test-deployer", "Run a deployer unit test", ["molecule"])
 
     def parent_command(self):
         return BaseDeployerCommand

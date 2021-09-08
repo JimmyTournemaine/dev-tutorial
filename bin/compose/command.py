@@ -4,6 +4,7 @@ from commands.deploy import DeployCommand
 from commands.deployer import DeployerCommand
 from commands.dockerize import DockerizeCommand
 from commands.docs import DocsCommand
+from commands.elastic import ElasticCommand
 from commands.lint import LintCommand
 from commands.molecule import TestDeployerCommand
 from commands.package import PackageCommand
@@ -18,6 +19,7 @@ class CommandManager:
         DeployerCommand,
         DockerizeCommand,
         DocsCommand,
+        ElasticCommand,
         LintCommand,
         PackageCommand,
         PruneCommand,

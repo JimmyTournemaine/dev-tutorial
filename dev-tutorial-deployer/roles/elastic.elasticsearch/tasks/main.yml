@@ -1,0 +1,36 @@
+---
+- name: Get the Elasticsearch image
+  docker_image:
+    name: "{{ elastic_elasticsearch_image }}"
+    source: pull
+
+- name: Run the Elasticsearch container
+  docker_container:
+    name: "{{ elastic_elasticsearch_container }}"
+    image: "{{ elastic_elasticsearch_image }}"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    env:
+      discovery.type: single-node
+    networks:
+      - name: "{{ elastic_network }}"
+
+- name: Make sure Elasticsearch server is accessible
+  uri:
+    url: "http://localhost:9200"
+  register: _result
+  until: _result.status == 200
+  retries: 30
+
+- name: Stop and remove the container
+  docker_container:
+    name: "{{ elastic_elasticsearch_container }}"
+    state: absent
+  tags: [never, cleanup]
+
+- name: Remove the image
+  docker_image:
+    name: "{{ elastic_elasticsearch_image }}"
+    state: absent
+  tags: [never, cleanup]

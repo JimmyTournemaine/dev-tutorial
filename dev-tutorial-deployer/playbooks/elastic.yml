@@ -1,0 +1,8 @@
+- name: Elastic stack installation
+  hosts: deployer
+  roles:
+    - { role: elastic.elasticsearch, tags: elasticsearch }
+    - { role: elastic.kibana, tags: kibana }
+    - { role: elastic.beat.filebeat, tags: [beats, filebeat], when: deployer_host_system == 'linux' }
+    - { role: elastic.beat.metricbeat, tags: [beats, metricbeat] }
+    - { role: elastic.beat.heartbeat, tags: [beats, heartbeat] }

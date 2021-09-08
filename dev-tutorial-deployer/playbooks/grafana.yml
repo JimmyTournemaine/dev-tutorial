@@ -1,0 +1,9 @@
+---
+- name: Grafana agent setup
+  hosts: deployer
+  vars:
+    cadvisor_image: gcr.io/cadvisor/cadvisor
+    cadvisor_version: v0.38.6
+    cadvisor_port: 8082
+  roles:
+    - grafana-agent

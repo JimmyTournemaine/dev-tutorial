@@ -1,0 +1,21 @@
+---
+elastic_version: 7.14.0
+elastic_network: elastic
+
+elastic_elasticsearch_image: "docker.elastic.co/elasticsearch/elasticsearch:{{ elastic_version }}"
+elastic_elasticsearch_container: dev-tutorial-elasticsearch
+
+elastic_kibana_image: "docker.elastic.co/kibana/kibana:{{ elastic_version }}"
+elastic_kibana_container: dev-tutorial-kibana
+
+elastic_filebeat_image: "docker.elastic.co/beats/filebeat:{{ elastic_version }}"
+elastic_filebeat_custom_image: dev-tutorial-filebeat
+elastic_filebeat_container: dev-tutorial-filebeat
+
+elastic_heartbeat_image: "docker.elastic.co/beats/heartbeat:{{ elastic_version }}"
+elastic_heartbeat_custom_image: dev-tutorial-heartbeat
+elastic_heartbeat_container: dev-tutorial-heartbeat
+
+elastic_metricbeat_image: "docker.elastic.co/beats/metricbeat:{{ elastic_version }}"
+elastic_metricbeat_custom_image: dev-tutorial-metricbeat
+elastic_metricbeat_container: dev-tutorial-metricbeat

@@ -1,0 +1,8 @@
+---
+argument_specs:
+  main:
+    options:
+      beat_name:
+        type: "str"
+        required: true
+        description: "The name of the beat (ie: filebeat)"

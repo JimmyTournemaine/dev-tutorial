@@ -1,0 +1,12 @@
+galaxy_info:
+  author: Jimmy Tournemaine
+  description: Share some Elastic stack tasks and variables
+  license: Apache-2.0
+  min_ansible_version: 2.9
+  platforms:
+    - name: Alpine
+      versions:
+        - 3.12
+        - 3.14
+  galaxy_tags: []
+dependencies: []

@@ -1,0 +1,71 @@
+---
+- name: Make sure temp folder exists
+  file:
+    path: /tmp/filebeat
+    state: directory
+
+- name: Generate filebeat configuration
+  template:
+    src: filebeat.yml.j2
+    dest: /tmp/filebeat/filebeat.yml
+    mode: 0644
+
+- name: Generate the Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: /tmp/filebeat/Dockerfile
+    mode: 0644
+
+- name: Build the filebeat customized image
+  docker_image:
+    name: "{{ elastic_filebeat_custom_image }}"
+    build:
+      path: "/tmp/filebeat"
+      pull: yes
+      rm: yes
+    changes:
+      - filebeat.yml
+    state: present
+    source: build
+
+- name: Run the filebeat container to setup Kibana
+  docker_container:
+    name: "{{ elastic_filebeat_container }}"
+    image: "{{ elastic_filebeat_custom_image }}"
+    detach: no
+    cleanup: yes
+    command: "setup -E setup.kibana.host={{ elastic_kibana_container }}:5601"
+    networks:
+      - name: "{{ elastic_network }}"
+  when: not dashboards_exist
+
+- name: Run the filebeat container
+  docker_container:
+    name: "{{ elastic_filebeat_container }}"
+    image: "{{ elastic_filebeat_custom_image }}"
+    auto_remove: no
+    volumes:
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+    networks:
+      - name: "{{ elastic_network }}"
+
+- name: Stop and remove the container
+  docker_container:
+    name: "{{ elastic_filebeat_container }}"
+    state: absent
+  tags: [never, cleanup]
+
+- name: Remove the images
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ elastic_filebeat_custom_image }}"
+    - "{{ elastic_filebeat_image }}"
+  tags: [never, cleanup]
+
+- name: Cleanup temp files
+  file:
+    path: /tmp/filebeat
+    state: absent
+  tags: [never, cleanup]

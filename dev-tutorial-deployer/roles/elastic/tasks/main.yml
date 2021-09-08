@@ -1,0 +1,4 @@
+---
+- name: Make sure elastic network is created
+  docker_network:
+    name: "{{ elastic_network }}"

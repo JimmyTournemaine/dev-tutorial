@@ -25,9 +25,11 @@
 
     - name: Modified sources since last build
       debug:
-        var: file_list
+        var: limited_file_list
       vars:
         file_list: "{{ src_changes.files | map(attribute='path') | list }}"
+        more_label: "{{ (file_list | length > 20) | ternary(['and more...'], []) }}"
+        limited_file_list: "{{ file_list[:20] + more_label }}"
 
 - name: Build the production directory
   command:

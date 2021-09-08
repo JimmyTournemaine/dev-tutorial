@@ -70,7 +70,7 @@ class ActionModule(ActionBase):
         elif os.path.isdir(path):
             modified_at = max(walk_through(path))
         else:
-            raise AnsibleError("File does not exist")
+            raise AnsibleError(f"File {path} does not exist")
 
         return modified_at
 

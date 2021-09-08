@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+FROM {{ elastic_metricbeat_image }}
+COPY metricbeat.yml /usr/share/metricbeat/metricbeat.yml
+USER root
+RUN chown root:metricbeat /usr/share/metricbeat/metricbeat.yml \
+  && find /usr/share/metricbeat/kibana/7/dashboard \
+    ! -name 'Metricbeat-docker-overview.json' \
+    ! -name 'Metricbeat-mongodb-overview.json' \
+    ! -name 'metricbeat-nginx-overview.json' \
+    -type f \
+    -delete
+USER metricbeat
