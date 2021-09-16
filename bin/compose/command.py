@@ -39,6 +39,8 @@ class CommandManager:
 
             self.commands.append(command)
 
+        return self.parser
+
     def run(self, argv):
         args = self.parser.parse_args(argv)
         args.func(args)

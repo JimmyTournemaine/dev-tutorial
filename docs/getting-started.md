@@ -1,23 +1,24 @@
-## Getting started
+# Getting started
 
-### Requirements
+## Requirements
 
-* Python >= 2 (or download [the latest artifact generated from the GitHub action](https://github.com/JimmyTournemaine))
+* Python >= 3 (or download [the last bundle](https://github.com/JimmyTournemaine/dev-tutorial/actions/workflows/bundle.yml))
 * Docker Engine API >= 1.40
 
-#### OS Specific requirements
-
-* **MacOS:** None, a socat container will automatically start to expose the Docker daemon on port 2375
-
+```{warning}
+* **MacOS:** A socat container will automatically start to expose the Docker daemon on port 2375
 * **Windows:** make sure that the Docker Engine API is authorized using the setting: "Exposing Daemon on tcp://localhost:2375 without TLS".
+```
 
-### Build and run
+## Build and run
 
-#### Compose setup
+### Compose setup
 
-To setup your compose path, follow the [Compose setup instructions](./compose/index#setup)
+```{include} ./compose/setup_content.md
 
-#### Run with compose
+```
+
+### Run with compose
 
 ```bash
 # Development environment (watching for changes)

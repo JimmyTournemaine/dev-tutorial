@@ -1,4 +1,4 @@
-## Deploy: Production environment deployment
+# Deploy
 
 ```{program-output} ../bin/compose/compose.py deploy --help
 

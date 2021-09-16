@@ -1,10 +1,10 @@
-## Documentation
+# Documentation
 
 ```{program-output} ../bin/compose/compose.py docs --help
 
 ```
 
-### Generate technical documentation
+## Generate technical documentation
 
 ```{program-output} ../bin/compose/compose.py docs generate --help
 
@@ -15,7 +15,7 @@ $DEVTUTO_COMPOSE docs generate
 ```
 Generate the complete project documentation from some documentation files, code documentation and specification.
 
-### Expose the documentation
+## Expose the documentation
 
 ```{program-output} ../bin/compose/compose.py docs start --help
 

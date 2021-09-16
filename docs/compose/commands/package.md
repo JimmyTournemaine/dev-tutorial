@@ -1,4 +1,4 @@
-# Package: package the production images
+# Package
 
 ```{program-output} ../bin/compose/compose.py package --help
 

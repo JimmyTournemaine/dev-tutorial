@@ -1,14 +1,14 @@
-## Dockerize
+# Dockerize
 
 Build and run docker container using the local Docker daemon.
 
-### Usage
+## Usage
 
 ```{program-output} ../bin/compose/compose.py dockerize --help
 
 ```
 
-### Development
+## Development
 
 ```bash
 $DEVTUTO_COMPOSE dockerize dev
@@ -23,9 +23,9 @@ For example to run the normal *api* but run the *app* container without starting
 $DEVTUTO_COMPOSE dockerize dev -a run_app_command='sleep infinity'
 ```
 
-### Test
+## Test
 
----
+
 ```bash
 $DEVTUTO_COMPOSE dockerize test
 $DEVTUTO_COMPOSE dockerize test -s api # only API tests
@@ -35,7 +35,7 @@ Run a local test environment :
 * `dev-tutorial-app`: The angular application test container, watching for changes to rerun Karma tests (<http://localhost:9876>).
 * `dev-tutorial-api`: The API, watching for changes to rerun Mocha tests
 
-### CI
+## CI
 
 ```bash
 $DEVTUTO_COMPOSE dockerize ci

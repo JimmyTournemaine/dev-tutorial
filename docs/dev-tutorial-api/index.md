@@ -1,5 +1,16 @@
 # Dev'Tutorial API
 
+```{toctree}
+:titlesonly:
+:hidden:
+
+Dev'Tutorial API Specifications <./spec.html>
+```
+
+<a target="_blank" href="./rest-specs.html">REST<a>
+
+<a target="_blank" href="./websocket-specs.html">WS<a>
+
 ## API
 
 Any modification of the API has an impact on the front. Thus, these changes must be considered:
@@ -19,7 +30,7 @@ $DEVTUTO_COMPOSE docs start
 
 * When you add a node dependency, you shall rebuild your environment (to update the docker image and recreating your container). The *deployer* is able to detect any change in dependencies when mounting an environment.
 
-```plaintext
+```
 your-host$ docker exec -it dev-tutorial-api bash
 container# yarn add <my-deps>
 container# ^D

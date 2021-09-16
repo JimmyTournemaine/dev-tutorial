@@ -6,10 +6,11 @@ from datetime import datetime
 
 from command import CommandManager
 
+parser = 0
 
 def main(argv):
     manager = CommandManager()
-    manager.create_parsers()
+    parser = manager.create_parsers()
 
     start_time = datetime.now()
     manager.run(argv)

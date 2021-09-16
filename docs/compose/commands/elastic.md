@@ -1,13 +1,11 @@
 # Elastic
 
-```{program-output} ../bin/compose/compose.py security --help
+```{program-output} ../bin/compose/compose.py elastic --help
 
 ```
 
 ```bash
-$DEVTUTO_COMPOSE elastic # default: dev
-$DEVTUTO_COMPOSE elastic dev
-$DEVTUTO_COMPOSE elastic prod
+$DEVTUTO_COMPOSE elastic <env>
 ```
 
 Run the Elastic stack that is collecting :
@@ -15,8 +13,10 @@ Run the Elastic stack that is collecting :
 * Metrics using Metricbeat
 * Healthcheck using Heartbeat
 
-```bash
-$DEVTUTO_COMPOSE elastic --tags=cleanup # default: dev
-$DEVTUTO_COMPOSE elastic --tags=cleanup dev
-$DEVTUTO_COMPOSE elastic --tags=cleanup prod
-```
+## Development
+
+{{ figure_elastic_dev }}
+
+## Production
+
+{{ figure_elastic_prod }}
